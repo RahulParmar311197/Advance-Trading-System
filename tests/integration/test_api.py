@@ -5,3 +5,4 @@ def test_api_module_imports():
     assert "/health" in paths
     assert "/market-data/candles" in paths
     assert "/market-data/smc-events" in paths
+    assert "/backtest/run" in paths
