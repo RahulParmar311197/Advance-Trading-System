@@ -14,7 +14,7 @@ def test_depth_imbalance_uses_only_supplied_visible_quantities():
     assert depth_imbalance(
         (Decimal("60"), Decimal("20")),
         (Decimal("40"), Decimal("20")),
-    ) == Decimal("1") / Decimal("6")
+    ) == Decimal("1") / Decimal("7")
 
 
 def test_zero_total_quantity_fails_closed():
