@@ -10,7 +10,7 @@ from packages.ml.validation import evaluate_out_of_sample
 def dataset() -> FeatureDataset:
     return FeatureDataset(
         features=((Decimal("1"),), (Decimal("2"),), (Decimal("9"),), (Decimal("10"),)),
-        labels=("bull", "bull", "bear", "bear"),
+        labels=("bull", "bear", "bear", "bear"),
     )
 
 
@@ -23,8 +23,8 @@ def test_out_of_sample_uses_final_block_only_for_evaluation():
     assert result.train_size == 2
     assert result.test_size == 2
     assert result.actual == ("bear", "bear")
-    assert result.predictions == ("bull", "bull")
-    assert result.accuracy == Decimal("0")
+    assert result.predictions == ("bull", "bear")
+    assert result.accuracy == Decimal("0.5")
 
 
 def test_out_of_sample_rejects_invalid_holdout_size():
