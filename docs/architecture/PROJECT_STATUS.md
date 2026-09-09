@@ -28,10 +28,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Experiment-facing comparison and report API endpoints plus dashboard views consuming persisted results only.
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
 - P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
-- M7 spread implementation: deterministic bid/ask spread, mid, and relative-spread calculations with fail-closed quote validation and unit tests; authoritative Python CI verification is pending.
-- M7 depth implementation: deterministic validated level-2 bid/ask snapshots, best levels, visible total depth, and bounded depth queries with fail-closed validation and unit tests; authoritative Python CI verification is pending.
-- M7 imbalance implementation: deterministic normalized level-1 bid/ask quantity imbalance and supplied-depth quantity imbalance with fail-closed validation and unit tests; authoritative Python CI verification is pending.
-- M7 trade-flow implementation: deterministic signed executed-volume and normalized buy/sell flow imbalance using explicitly supplied trade sides, with fail-closed validation and unit tests; authoritative Python CI verification is pending.
+- M7 spread, depth, imbalance, and trade-flow implementations: deterministic microstructure analytics with fail-closed validation and unit tests; authoritative Python CI verification passed on full-suite run `34331678571`.
+- M7 trade-intensity implementation: deterministic supplied-trade count per explicitly supplied observation window, with targeted tests/checks; authoritative Python CI verification is pending for the new head.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -43,12 +41,13 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34327233459` completed successfully on the volatility-surface implementation/test revision; the full repository test suite passed.
 - Web CI run `34327336870` completed successfully on the payoff implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
 - Web CI run `34330218338` completed successfully on the spread implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
-- Web CI run `34330792178` completed successfully on the depth documentation/implementation head; this does not verify Python tests.
+- Web CI run `34330792178` completed successfully on the depth implementation head; this does not verify Python tests.
 - Web CI run `34331457669` completed successfully on the status-update head; this does not verify Python tests.
-- Python CI run `34331678571` is in progress for the trade-flow test head; no Python result is claimed until completion.
-- Payoff, spread, depth, imbalance, and trade flow remain unchecked until authoritative Python CI verifies the corresponding current revisions.
-- Targeted local trade-flow tests passed: 5 tests passed. This is not authoritative full-suite verification.
-- Local isolated execution of numerical/research checks is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
+- Python CI run `34331678571` completed successfully on the trade-flow test head; the workflow's test job passed all configured repository tests.
+- Targeted local trade-flow tests passed: 5 tests passed.
+- Targeted local trade-intensity checks passed: 4 checks passed; this is not authoritative full-suite verification.
+- Authoritative Python verification for the new trade-intensity head is pending.
+- Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
 - Backtest API returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
@@ -56,11 +55,11 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Authoritatively CI-verify the latest payoff/spread/depth/imbalance/trade-flow-containing Python head, then mark only verified items complete.
+1. Authoritatively CI-verify the new trade-intensity-containing Python head, then mark trade intensity complete.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 4. Verify the research-validation implementations in CI on their current integrated revision.
-5. Continue P2 microstructure dependencies with trade intensity after trade flow is validated.
+5. Continue P2 microstructure dependencies with price impact after trade intensity is validated.
 
 ## Next dependency
-Authoritatively CI-verify the latest Python head containing payoff, spread, depth, imbalance, and trade flow. If it passes, mark only those items complete and continue to M7 trade intensity; do not fabricate market or order-book data.
+Authoritatively CI-verify the latest Python head containing trade intensity. If it passes, mark trade intensity complete and continue to M7 price impact; do not fabricate market or order-book data.
