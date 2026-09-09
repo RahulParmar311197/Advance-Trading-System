@@ -90,7 +90,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [ ] Payoff analysis — deterministic expiry P&L for supplied option legs; implementation and unit tests committed, authoritative CI verification pending
 
 ### M7 Microstructure
-- [ ] Spread
+- [ ] Spread — deterministic bid/ask spread and relative-spread implementation and unit tests committed; authoritative CI verification pending
 - [ ] Depth
 - [ ] Imbalance
 - [ ] Trade flow
