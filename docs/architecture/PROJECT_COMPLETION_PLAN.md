@@ -51,9 +51,9 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Kill switch
 
 ### M4 Research
-- [ ] Experiment schema
-- [ ] Dataset/version metadata
-- [ ] Parameter capture
+- [x] Experiment schema
+- [x] Dataset/version metadata
+- [x] Parameter capture
 - [ ] Walk-forward
 - [ ] Out-of-sample
 - [ ] Stress tests
