@@ -37,5 +37,9 @@ def test_all_smc_events_uses_common_contract_and_preserves_order() -> None:
 
 
 def test_event_serialization_is_explicit_and_does_not_invent_confidence() -> None:
-    events = all_smc_events([], bos=[])
-    assert events == []
+    candles = [candle(0)]
+    events = all_smc_events(candles, liquidity=[LiquiditySweep(0, "bullish", Decimal("99"))])
+    record = events[0].as_dict()
+    assert record["event"] == "liquidity_sweep"
+    assert record["price"] == Decimal("99")
+    assert record["confidence"] is None
