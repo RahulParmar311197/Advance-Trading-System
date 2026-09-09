@@ -1,0 +1,2 @@
+type Event={event:string;timestamp:string;price:string|number;direction?:string};
+export default function SignalOverlay({events}:{events:Event[]}){return <div>{events.slice(-12).reverse().map((e,i)=><div className="event" key={`${e.timestamp}-${i}`}><span>{e.event}</span><span className="muted">{new Date(e.timestamp).toLocaleString()} · {e.price}</span></div>)}{!events.length&&<div className="muted">No SMC events returned.</div>}</div>}
