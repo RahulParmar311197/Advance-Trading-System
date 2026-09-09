@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from .manifest import ExperimentManifest
@@ -37,3 +38,60 @@ class ExperimentRepository:
                 (experiment_id, metrics, trades),
             )
         self.connection.commit()
+
+    def get_manifest(self, experiment_id: str) -> ExperimentManifest | None:
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                """SELECT experiment_id,data_version,strategy_version,code_version,parameters,universe,
+                          timeframe,start_date,end_date,transaction_costs,slippage,random_seed
+                   FROM experiments WHERE experiment_id=%s""",
+                (experiment_id,),
+            )
+            row = cursor.fetchone()
+        if row is None:
+            return None
+        return ExperimentManifest(
+            experiment_id=row[0],
+            data_version=row[1],
+            strategy_version=row[2],
+            code_version=row[3],
+            parameters=dict(row[4]),
+            universe=list(row[5]),
+            timeframe=row[6],
+            start_date=row[7],
+            end_date=row[8],
+            transaction_costs=dict(row[9]),
+            slippage=dict(row[10]),
+            random_seed=row[11],
+        )
+
+    def get_results(self, experiment_id: str) -> dict[str, Any] | None:
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT metrics,trades FROM experiment_results WHERE experiment_id=%s",
+                (experiment_id,),
+            )
+            row = cursor.fetchone()
+        if row is None:
+            return None
+        return {"metrics": row[0], "trades": row[1]}
+
+    def list_manifests(self, limit: int = 100) -> list[ExperimentManifest]:
+        if limit < 1:
+            raise ValueError("limit must be >= 1")
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                """SELECT experiment_id,data_version,strategy_version,code_version,parameters,universe,
+                          timeframe,start_date,end_date,transaction_costs,slippage,random_seed
+                   FROM experiments ORDER BY created_at DESC LIMIT %s""",
+                (limit,),
+            )
+            rows = cursor.fetchall()
+        return [
+            ExperimentManifest(
+                experiment_id=row[0], data_version=row[1], strategy_version=row[2], code_version=row[3],
+                parameters=dict(row[4]), universe=list(row[5]), timeframe=row[6], start_date=row[7],
+                end_date=row[8], transaction_costs=dict(row[9]), slippage=dict(row[10]), random_seed=row[11],
+            )
+            for row in rows
+        ]
