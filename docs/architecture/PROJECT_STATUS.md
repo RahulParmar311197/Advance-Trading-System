@@ -32,8 +32,10 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 regime features, detector, classifier, transitions, and deterministic candle-window dataset builder implementations with unit tests.
 - M8 nearest-centroid model baseline: dependency-free deterministic multiclass classifier with explicit training dataset and unit tests committed; supplementary baseline, not a replacement for the required logistic baseline.
 - M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, unit tests, and authoritative Python CI verification on run `34337582225`.
-- M8 Random Forest baseline: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, and unit tests.
-- M8 deterministic training layer: explicit model-selection configuration and public training/prediction dispatch for the supported baselines.
+- M8 Random Forest baseline: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, unit tests, and authoritative Python CI verification on run `34338335095`.
+- M8 deterministic training layer: explicit model-selection configuration and public training/prediction dispatch for supported baselines.
+- M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and tests committed, authoritative CI verification pending.
+- M8 Gradient Boosting baseline: deterministic one-vs-rest squared-error boosting over regression stumps, explicit estimator count/learning rate, immutable fitted stages, implementation and tests committed; authoritative CI verification pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -41,7 +43,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Web CI run `34337651570` completed successfully; dashboard lint and build passed.
 - Python CI run `34338164088` completed successfully; microstructure execution tests passed.
 - Python CI run `34338335095` completed successfully; Random Forest tests passed.
-- The newest training-layer revision is awaiting authoritative Python CI verification.
+- The current ML training/validation/Gradient Boosting revision is awaiting authoritative Python CI verification.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -50,9 +52,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative CI verification for the newest ML training-layer revision.
-5. Implement and verify the required Gradient Boosting baseline.
-6. Complete M8 out-of-sample model validation and model versioning.
+4. Complete authoritative CI verification for the current ML training/validation/Gradient Boosting revision.
+5. Complete M8 model validation across the supported baselines and model versioning.
 
 ## Next dependency
-Complete authoritative Python CI verification of the current ML training-layer revision. If green, implement the required Gradient Boosting baseline using explicit dataset inputs and deterministic configuration; if CI finds a failure, fix the actual failure before advancing.
+Complete authoritative Python CI verification of the current ML training/validation/Gradient Boosting revision. If green, mark the Gradient Boosting and strict OOS evaluator as verified and implement the model-versioning contract; if CI finds a failure, fix the actual failure before advancing.
