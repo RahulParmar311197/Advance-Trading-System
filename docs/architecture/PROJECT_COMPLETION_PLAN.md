@@ -56,7 +56,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Parameter capture
 - [x] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
 - [x] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
-- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
+- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same candles and strategy, with unit tests; CI verification pending
 - [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; API integration and JSON-safe output added
 - [x] Research report generation — factual Markdown report generated from persisted comparison results; API and dashboard integration added
 - [x] Portfolio exposure aggregation — deterministic symbol-level absolute notional exposure
@@ -92,7 +92,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 ### M7 Microstructure
 - [ ] Spread — deterministic bid/ask spread and relative-spread implementation and unit tests committed; authoritative Python CI verification pending
 - [ ] Depth — deterministic validated level-2 bid/ask snapshot, best levels, visible total depth, and bounded depth queries; implementation and unit tests committed; authoritative Python CI verification pending
-- [ ] Imbalance
+- [ ] Imbalance — deterministic normalized bid/ask and supplied-depth quantity imbalance; implementation and unit tests committed; authoritative Python CI verification pending
 - [ ] Trade flow
 - [ ] Trade intensity
 - [ ] Price impact
