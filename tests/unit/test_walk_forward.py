@@ -30,7 +30,7 @@ def candles(count: int) -> list[Candle]:
             "5m",
             Decimal("100"),
             Decimal("102") if i == count - 1 else Decimal("100"),
-            Decimal("99"),
+            Decimal("100"),
             Decimal("100"),
             Decimal("1000"),
         )
