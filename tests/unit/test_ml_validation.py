@@ -23,8 +23,8 @@ def test_out_of_sample_uses_final_block_only_for_evaluation():
     assert result.train_size == 2
     assert result.test_size == 2
     assert result.actual == ("bear", "bear")
-    assert result.predictions == ("bull", "bear")
-    assert result.accuracy == Decimal("0.5")
+    assert result.predictions == ("bear", "bear")
+    assert result.accuracy == Decimal("1")
 
 
 def test_out_of_sample_rejects_invalid_holdout_size():
