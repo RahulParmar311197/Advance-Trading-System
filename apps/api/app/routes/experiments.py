@@ -15,8 +15,10 @@ from packages.backtest.engine import run_backtest
 from packages.backtest.metrics import summarize
 from packages.instruments.symbol_map import canonical_symbol
 from packages.strategies.registry import get_strategy
+from research.experiments.comparison import compare_results
 from research.experiments.manifest import ExperimentManifest
 from research.experiments.repository import ExperimentRepository
+from research.reports.generator import generate_report
 
 router = APIRouter(prefix="/experiments", tags=["experiments"])
 
@@ -90,6 +92,22 @@ def _manifest_for(request: BacktestRequest, data_version: str, experiment_id: st
     )
 
 
+def _comparison_rows(repository: ExperimentRepository, limit: int) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for manifest in repository.list_manifests(limit):
+        result = repository.get_results(manifest.experiment_id)
+        if not result:
+            continue
+        rows.append(
+            {
+                "experiment_id": manifest.experiment_id,
+                "strategy_version": manifest.strategy_version,
+                "metrics": result.get("metrics") or {},
+            }
+        )
+    return rows
+
+
 @router.post("")
 def create_experiment(
     request: BacktestRequest,
@@ -114,6 +132,30 @@ def list_experiments(
     connection: Any = Depends(get_connection),
 ) -> list[dict[str, Any]]:
     return [manifest.as_record() for manifest in ExperimentRepository(connection).list_manifests(limit)]
+
+
+@router.get("/comparison")
+def compare_experiments(
+    limit: int = Query(default=100, ge=1, le=500),
+    connection: Any = Depends(get_connection),
+) -> dict[str, Any]:
+    repository = ExperimentRepository(connection)
+    comparisons = compare_results(_comparison_rows(repository, limit))
+    return {"results": [comparison.as_record() for comparison in comparisons]}
+
+
+@router.get("/report")
+def experiment_report(
+    limit: int = Query(default=100, ge=1, le=500),
+    connection: Any = Depends(get_connection),
+) -> dict[str, str]:
+    repository = ExperimentRepository(connection)
+    comparisons = compare_results(_comparison_rows(repository, limit))
+    try:
+        report = generate_report(comparisons)
+    except ValueError as exc:
+        raise HTTPException(404, "no experiment results available") from exc
+    return {"format": "markdown", "content": report.as_markdown()}
 
 
 @router.get("/{experiment_id}")
