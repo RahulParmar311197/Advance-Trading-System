@@ -118,7 +118,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`
 - [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; previous CI exposed and fixed an invalid monotonic fixture; authoritative verification of the corrected revision is pending
 - [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification pending
-- [ ] Walk-forward tool
+- [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; CI verification pending
 - [ ] Strategy comparison tool
 - [ ] Risk analysis tool
 - [ ] Report tool
