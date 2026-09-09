@@ -15,9 +15,20 @@ class StrategyComparison:
     win_rate: Decimal
     profit_factor: Decimal | None
 
+    def as_record(self) -> dict[str, Any]:
+        return {
+            "experiment_id": self.experiment_id,
+            "strategy_version": self.strategy_version,
+            "trade_count": self.trade_count,
+            "total_return": str(self.total_return),
+            "max_drawdown": str(self.max_drawdown),
+            "win_rate": str(self.win_rate),
+            "profit_factor": None if self.profit_factor is None else str(self.profit_factor),
+        }
+
 
 def compare_results(results: Iterable[dict[str, Any]]) -> list[StrategyComparison]:
-    """Normalize reproducible experiment results into a deterministic ranking."""
+    """Normalize reproducible experiment metrics into a deterministic ranking."""
     comparisons: list[StrategyComparison] = []
     for result in results:
         metrics = result.get("metrics") or {}
