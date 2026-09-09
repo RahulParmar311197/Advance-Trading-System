@@ -84,7 +84,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Greeks — dependency-free European Black-Scholes Greeks with input validation and parity tests
 - [x] IV — deterministic Black-Scholes price inversion by bisection with no-arbitrage validation and unit tests
 - [x] OI/OI change — deterministic calculation from supplied option-chain snapshots; missing and duplicate observations fail closed
-- [ ] PCR
+- [x] PCR — deterministic put/call open-interest ratio from supplied option-chain observations; missing OI and zero call OI fail closed, with unit tests and Python CI verification
 - [ ] Term structure
 - [ ] Volatility surface
 - [ ] Payoff analysis
