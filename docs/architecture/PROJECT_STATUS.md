@@ -16,23 +16,23 @@ The repository has a runnable Python/FastAPI foundation and deterministic resear
 - Common structured SMC event contract with serialization and tests.
 - Strategy framework/registry, Liquidity MSS FVG strategy, cost/slippage-aware backtest, metrics, portfolio/risk primitives.
 - Historical candle API and deterministic SMC-events API, both backed by PostgreSQL candle data.
-- Experiment manifest/repository persistence implementation.
+- Backtest execution API: validates the request, loads one immutable data version, executes the registered strategy/backtester, and returns metrics/trades without fabricated data.
+- Experiment API: creates and persists manifests/results, lists and retrieves experiments, and re-runs from the stored manifest while refusing a data-version mismatch.
 
 ## Verification
-- Setuptools package discovery is now explicit and editable installation succeeds in CI.
-- CI reached 17 passing tests before exposing a FastAPI route-introspection assertion that was incompatible with current FastAPI router representation; the test now uses the generated OpenAPI path set.
+- Setuptools package discovery is explicit and editable installation succeeds in CI.
+- CI run 28 completed successfully after the FastAPI route assertion fix; it included PostgreSQL service initialization and the existing repository integration tests.
+- CI run 40 is currently executing the newly added backtest/experiment API and repository retrieval tests; no pass claim is made until it completes.
 - CI also exposed and the implementation restored a missing deterministic provider module.
-- A PostgreSQL service plus real PostgreSQL repository integration test are part of CI; the test was reached successfully in the run that reported the API assertion failure.
-- A newer CI run is triggered by the latest test fix. No full-suite pass claim is made until that run completes.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
+- No dedicated lint/type-check configuration is currently present in `pyproject.toml`; CI's pytest run is the available automated verification gate for these changes.
 
 ## Remaining P0 blockers
-1. Verify the latest full pytest run and PostgreSQL integration; fix any remaining failures.
+1. Verify the current CI run and fix any remaining failures.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-3. Implement and test the backtest execution API endpoint.
-4. Implement experiment API endpoints and reproducibility re-run path.
-5. Build the dashboard/candlestick/event/backtest result journey.
-6. Run the full-stack acceptance test with real or explicitly user-supplied market data.
+3. Build the dashboard/candlestick/event/backtest result journey.
+4. Run the full-stack acceptance test with real or explicitly user-supplied market data.
+5. Add the remaining P0 equity-curve/research validation pieces needed by the acceptance journey.
 
 ## Next dependency
-Backtest execution API is the next application dependency once CI is green. Then complete experiment API/re-run and the web dashboard. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
+After CI is green, the next P0 application dependency is the web dashboard: historical candles → deterministic SMC events → backtest execution → metrics/trades → experiment results. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
