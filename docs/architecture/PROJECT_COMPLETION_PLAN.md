@@ -3,6 +3,9 @@
 ## Objective
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
+## Current continuation state
+The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward tool and deterministic strategy-comparison tool are implemented with unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is the risk analysis tool.
+
 ## Milestones
 
 ### M0 Bootstrap
@@ -116,10 +119,10 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification pending
 - [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification passed on the preceding M9 revision
 - [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`
-- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; previous CI exposed and fixed an invalid monotonic fixture; authoritative verification of the corrected revision is pending
+- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; authoritative verification of the corrected revision is pending
 - [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification pending
 - [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; CI verification pending
-- [ ] Strategy comparison tool
+- [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; CI verification pending
 - [ ] Risk analysis tool
 - [ ] Report tool
 - [ ] Experiment memory
