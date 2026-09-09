@@ -100,14 +100,7 @@ class LogisticRegressionClassifier:
                 bias -= learning_rate * bias_gradient / n
             trained_weights.append(tuple(weights))
             trained_biases.append(bias)
-        return cls(
-            labels=labels,
-            weights=tuple(trained_weights),
-            biases=tuple(trained_biases),
-            learning_rate=learning_rate,
-            epochs=epochs,
-            l2=l2,
-        )
+        return cls(labels=labels, weights=tuple(trained_weights), biases=tuple(trained_biases), learning_rate=learning_rate, epochs=epochs, l2=l2)
 
     def predict(self, features: Sequence[Decimal]) -> Regime:
         if not self.weights:
@@ -133,15 +126,11 @@ class _TreeNode:
 
 @dataclass(frozen=True, slots=True)
 class RandomForestClassifier:
-    """Dependency-free deterministic random-forest classification baseline.
-
-    Each tree uses bootstrap sampling and a deterministic random subset of
-    features at each split. The random seed is part of the fitted model so the
-    forest can be reproduced exactly from the same dataset and configuration.
-    """
+    """Dependency-free deterministic random-forest classification baseline."""
 
     labels: tuple[Regime, ...] = ()
     trees: tuple[_TreeNode, ...] = ()
+    feature_width: int = 0
     seed: int = 0
     n_trees: int = 25
     max_depth: int = 4
@@ -173,37 +162,16 @@ class RandomForestClassifier:
         rng = random.Random(seed)
         trees = []
         rows = dataset.features
-        labels_for_rows = dataset.labels
         for _ in range(n_trees):
             sample_indices = [rng.randrange(len(rows)) for _ in rows]
-            trees.append(
-                _fit_tree(
-                    rows,
-                    labels_for_rows,
-                    sample_indices,
-                    depth=0,
-                    max_depth=max_depth,
-                    min_samples_split=min_samples_split,
-                    max_features=max_features,
-                    rng=rng,
-                )
-            )
-        return cls(
-            labels=labels,
-            trees=tuple(trees),
-            seed=seed,
-            n_trees=n_trees,
-            max_depth=max_depth,
-            min_samples_split=min_samples_split,
-            max_features=max_features,
-        )
+            trees.append(_fit_tree(rows, dataset.labels, sample_indices, 0, max_depth, min_samples_split, max_features, rng))
+        return cls(labels=labels, trees=tuple(trees), feature_width=width, seed=seed, n_trees=n_trees, max_depth=max_depth, min_samples_split=min_samples_split, max_features=max_features)
 
     def predict(self, features: Sequence[Decimal]) -> Regime:
         if not self.trees:
             raise ValueError("classifier is not fitted")
         vector = tuple(features)
-        width = _tree_width(self.trees[0])
-        if len(vector) != width:
+        if len(vector) != self.feature_width:
             raise ValueError("feature width does not match fitted classifier")
         votes = tuple(_predict_tree(tree, vector) for tree in self.trees)
         return min(self.labels, key=lambda label: (-votes.count(label), self.labels.index(label)))
@@ -212,16 +180,7 @@ class RandomForestClassifier:
         return tuple(self.predict(row) for row in features)
 
 
-def _fit_tree(
-    rows: tuple[tuple[Decimal, ...], ...],
-    labels: tuple[Regime, ...],
-    indices: list[int],
-    depth: int,
-    max_depth: int,
-    min_samples_split: int,
-    max_features: int | None,
-    rng: random.Random,
-) -> _TreeNode:
+def _fit_tree(rows, labels, indices, depth, max_depth, min_samples_split, max_features, rng):
     node_labels = [labels[index] for index in indices]
     majority = _majority(node_labels)
     if len(set(node_labels)) == 1 or depth >= max_depth or len(indices) < min_samples_split:
@@ -233,12 +192,7 @@ def _fit_tree(
     if split is None:
         return _TreeNode(label=majority)
     feature_index, threshold, left_indices, right_indices = split
-    return _TreeNode(
-        feature_index=feature_index,
-        threshold=threshold,
-        left=_fit_tree(rows, labels, left_indices, depth + 1, max_depth, min_samples_split, max_features, rng),
-        right=_fit_tree(rows, labels, right_indices, depth + 1, max_depth, min_samples_split, max_features, rng),
-    )
+    return _TreeNode(feature_index=feature_index, threshold=threshold, left=_fit_tree(rows, labels, left_indices, depth + 1, max_depth, min_samples_split, max_features, rng), right=_fit_tree(rows, labels, right_indices, depth + 1, max_depth, min_samples_split, max_features, rng))
 
 
 def _best_split(rows, labels, indices, feature_indices):
@@ -275,14 +229,6 @@ def _predict_tree(node: _TreeNode, features: tuple[Decimal, ...]) -> Regime:
     if node.feature_index is None or node.threshold is None or node.left is None or node.right is None:
         raise ValueError("invalid fitted tree")
     return _predict_tree(node.left if features[node.feature_index] <= node.threshold else node.right, features)
-
-
-def _tree_width(node: _TreeNode) -> int:
-    if node.label is not None:
-        return 0
-    children = (node.left, node.right)
-    widths = [_tree_width(child) for child in children if child is not None]
-    return max(widths, default=0)
 
 
 def _dot(left: Sequence[Decimal], right: Sequence[Decimal]) -> Decimal:
