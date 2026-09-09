@@ -5,7 +5,7 @@
 The repository has a runnable Python/FastAPI foundation, deterministic research components, reproducible experiment persistence, and a Next.js web dashboard implementation. The P0 acceptance gate is not complete; milestone completion is based on runtime acceptance tests, not file presence.
 
 ## Completed foundations
-- M0 repository structure, Python package configuration, environment template, root Docker Compose, CI workflow, and health endpoint.
+- M0 repository structure, Python package configuration, environment template, Docker Compose, CI workflow, and health endpoint.
 - Market-data provider contract, OHLCV models/schemas, normalization, validation and ingestion.
 - Canonical importable `packages.market_data` candle persistence implementations.
 - Content-addressed immutable raw OHLCV storage.
@@ -29,35 +29,29 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
 - P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
 - M7 spread, depth, imbalance, trade-flow, trade intensity, price impact, and liquidity/resiliency implementations with fail-closed validation, unit tests, and authoritative Python CI verification.
-- M8 regime features: deterministic period return, mean absolute return, OLS close-price slope, price-path efficiency, and average volume with fail-closed candle-window validation and unit tests.
-- M8 regime detector: deterministic transparent threshold classifier over supplied regime features with explicit caller-supplied thresholds, validation, and unit tests.
-- M8 regime classifier: deterministic structured classification combining the verified primary detector label with explicit trend-direction and volatility-state labels, with immutable output and unit tests; Python CI run `34335923065` passed the full configured suite.
-- M8 regime transitions: deterministic primary-regime change detection over caller-supplied ordered classifications, with immutable transition records and unit tests committed.
-- M8 dataset builder: deterministic feature/classification rows from caller-supplied candle windows, with fail-closed validation inherited from the regime feature layer and unit tests committed.
+- M7 microstructure execution implementation: deterministic visible-order-book market-order consumption with explicit partial-fill accounting and average execution price; tests committed, authoritative CI verification pending.
+- M8 regime features, detector, classifier, transitions, and deterministic candle-window dataset builder implementations with unit tests; the latest status records their prior authoritative CI verification where available.
 - M8 nearest-centroid model baseline: dependency-free deterministic multiclass classifier with explicit training dataset and unit tests committed; supplementary baseline, not a replacement for the required logistic baseline.
-- M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, and unit tests committed; authoritative CI verification pending.
+- M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, unit tests, and authoritative Python CI verification on run `34337582225`.
+- M8 Random Forest baseline implementation: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, and unit tests; authoritative CI verification pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
-- Python CI run `34333070096` completed successfully on the corrected trade-intensity/price-impact head; all configured repository tests passed.
-- Python CI run `34333173992` completed successfully after liquidity/resiliency implementation and tests; all configured repository tests passed.
-- Python CI run `34333390091` exposed two genuine regime-feature issues; those implementation/test issues were corrected.
-- Python CI run `34333684477` exposed the remaining regime-feature fixture expectation error; the fixture was corrected to use the first and final candle closes.
-- Python CI run `34334649943` completed successfully on the integrated regime-feature/detector head; the full repository suite passed.
-- Python CI run `34335923065` completed successfully after the regime-classifier implementation and unit tests; the full configured repository test suite passed.
-- Web CI run `34336119528` completed successfully; dashboard lint and build passed.
-- Python CI run `34337298273` caught a test-fixture mismatch in the newly added ML baseline tests: the expected error text was too broad. The test was corrected rather than weakening the implementation.
-- Python CI run `34337472342` then passed 152 tests and exposed only that single assertion mismatch; the corrected test is committed in `b50128234c8a3648cf46f66e4ead9d7c9703c4f0` and a fresh CI run is pending.
+- Python CI run `34337582225` completed successfully on the corrected logistic-baseline revision.
+- Web CI run `34337651570` completed successfully; dashboard lint and build passed.
+- Python CI run `34338164088` is the authoritative verification run for the microstructure execution tests; status was in progress when this status was recorded.
+- Python CI run `34338335095` is the authoritative verification run for the Random Forest revision; status was queued/in progress when this status was recorded.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
+2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification of the current regime transition/dataset/logistic-baseline revision.
-5. Continue M8 with Random Forest after the logistic baseline is verified.
+4. Complete authoritative CI verification for the current microstructure execution and Random Forest revisions.
+5. Continue M8 with Gradient Boosting after Random Forest is verified.
+6. Complete M8 out-of-sample model validation and model versioning.
 
 ## Next dependency
-Verify the current `b50128234c8a3648cf46f66e4ead9d7c9703c4f0` revision in authoritative Python CI. If green, mark the logistic baseline as verified and implement the required Random Forest baseline with explicit dataset inputs. If CI finds another failure, fix the actual failure before advancing.
+Complete authoritative CI verification of the current microstructure execution and Random Forest revisions. If both are green, implement the required Gradient Boosting baseline with explicit dataset inputs and deterministic configuration; otherwise fix the actual failing revision first.
