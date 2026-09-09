@@ -28,19 +28,20 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Experiment-facing comparison and report API endpoints plus dashboard views consuming persisted results only.
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
 - P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
-- M7 spread, depth, imbalance, trade-flow, trade intensity, price impact, and liquidity/resiliency implementations with fail-closed validation, unit tests, and authoritative Python CI verification.
-- M7 microstructure execution implementation: deterministic visible-order-book market-order consumption with explicit partial-fill accounting and average execution price; tests committed, authoritative CI verification pending.
-- M8 regime features, detector, classifier, transitions, and deterministic candle-window dataset builder implementations with unit tests; the latest status records their prior authoritative CI verification where available.
+- M7 spread, depth, imbalance, trade-flow, trade intensity, price impact, liquidity/resiliency, and execution implementations with fail-closed validation and unit tests. Execution consumes only explicitly supplied visible order-book liquidity and reports partial fills without inventing liquidity.
+- M8 regime features, detector, classifier, transitions, and deterministic candle-window dataset builder implementations with unit tests.
 - M8 nearest-centroid model baseline: dependency-free deterministic multiclass classifier with explicit training dataset and unit tests committed; supplementary baseline, not a replacement for the required logistic baseline.
 - M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, unit tests, and authoritative Python CI verification on run `34337582225`.
-- M8 Random Forest baseline implementation: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, and unit tests; authoritative CI verification pending.
+- M8 Random Forest baseline: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, and unit tests.
+- M8 deterministic training layer: explicit model-selection configuration and public training/prediction dispatch for the supported baselines.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34337582225` completed successfully on the corrected logistic-baseline revision.
 - Web CI run `34337651570` completed successfully; dashboard lint and build passed.
-- Python CI run `34338164088` is the authoritative verification run for the microstructure execution tests; status was in progress when this status was recorded.
-- Python CI run `34338335095` is the authoritative verification run for the Random Forest revision; status was queued/in progress when this status was recorded.
+- Python CI run `34338164088` completed successfully; microstructure execution tests passed.
+- Python CI run `34338335095` completed successfully; Random Forest tests passed.
+- The newest training-layer revision is awaiting authoritative Python CI verification.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -49,9 +50,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative CI verification for the current microstructure execution and Random Forest revisions.
-5. Continue M8 with Gradient Boosting after Random Forest is verified.
+4. Complete authoritative CI verification for the newest ML training-layer revision.
+5. Implement and verify the required Gradient Boosting baseline.
 6. Complete M8 out-of-sample model validation and model versioning.
 
 ## Next dependency
-Complete authoritative CI verification of the current microstructure execution and Random Forest revisions. If both are green, implement the required Gradient Boosting baseline with explicit dataset inputs and deterministic configuration; otherwise fix the actual failing revision first.
+Complete authoritative Python CI verification of the current ML training-layer revision. If green, implement the required Gradient Boosting baseline using explicit dataset inputs and deterministic configuration; if CI finds a failure, fix the actual failure before advancing.
