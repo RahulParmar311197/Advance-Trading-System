@@ -82,8 +82,8 @@ Turn the architecture in the project source into a continuously runnable Indian 
 ### M6 Options
 - [x] Chain model — validated immutable option contracts and chain grouping with strike/call/put accessors
 - [x] Greeks — dependency-free European Black-Scholes Greeks with input validation and parity tests
-- [ ] IV — deterministic Black-Scholes price inversion by bisection implemented; CI verification pending
-- [ ] OI/OI change
+- [x] IV — deterministic Black-Scholes price inversion by bisection with no-arbitrage validation and unit tests
+- [x] OI/OI change — deterministic calculation from supplied option-chain snapshots; missing and duplicate observations fail closed
 - [ ] PCR
 - [ ] Term structure
 - [ ] Volatility surface
