@@ -34,11 +34,13 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, unit tests, and authoritative Python CI verification on run `34337582225`.
 - M8 Random Forest baseline: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, unit tests, and authoritative Python CI verification on run `34338335095`.
 - M8 deterministic training layer: explicit model-selection configuration and public training/prediction dispatch for supported baselines.
-- M8 Gradient Boosting baseline: deterministic one-vs-rest squared-error boosting over regression stumps, explicit estimator count/learning rate, immutable fitted stages, feature-width validation, implementation and unit tests.
-- M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and corrected deterministic tests committed.
-- M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests committed.
-- M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests committed.
+- M8 Gradient Boosting baseline: deterministic one-vs-rest squared-error boosting over regression stumps, explicit estimator count/learning rate, immutable fitted stages, feature-width validation, implementation and unit tests; full integrated M8 CI verification passed on run `34340996500`.
+- M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and corrected deterministic tests; full integrated M8 CI verification passed on run `34340996500`.
+- M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests; full integrated M8 CI verification passed on run `34340996500`.
+- M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests; full integrated M8 CI verification passed on run `34340996500`.
 - M9 agent interface: explicit research request/response contracts plus a deterministic research-agent implementation that proposes validation, feature, OOS backtest, and baseline-comparison steps without executing trades or inventing data; unit tests committed.
+- M9 research planner: immutable deterministic research plan over validation, feature construction, backtest, OOS evaluation, comparison, and reporting steps; unit tests committed.
+- M9 tool registry: deterministic named callable registry with explicit registration, duplicate-name rejection, lexical discovery, lookup validation, and explicit invocation; unit tests committed.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -49,7 +51,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34339142605` failed with 171 passed / 1 failed because the OOS test expected a particular logistic prediction that the deterministic implementation correctly returned differently. The fixture/expectation was corrected in subsequent commits.
 - Web CI run `34340571978` completed successfully; dashboard lint and build passed on the M8 status head.
 - Python CI run `34340996500` completed successfully; full suite passed for the integrated M8 model-versioning revision.
-- The latest AI-agent implementation/test commits are now awaiting their authoritative Python CI run.
+- Web CI run `34342815196` is in progress for the latest tool-registry test revision. The corresponding authoritative Python CI run has not yet been confirmed complete.
+- The completion-plan update was attempted against the fetched checklist SHA but GitHub returned a contents API `409`; therefore the checklist itself is not claimed as updated by that failed operation. This status file records the completed M8/M9 work and the next dependency instead.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -58,8 +61,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification for the current M9 agent-interface revision.
-5. Continue M9 research planner, tool registry, and concrete research tools after agent-interface verification.
+4. Complete authoritative Python CI verification for the current M9 planner/tool-registry revision.
+5. Continue M9 concrete research tools after the registry is verified.
 
 ## Next dependency
-Complete authoritative Python CI verification for the current agent-interface revision. If green, update the M9 completion checklist and implement the research planner. If CI finds a failure, fix the actual failure before advancing.
+Complete authoritative Python CI verification for the current M9 planner/tool-registry revision. If green, implement the historical-data research tool as the first concrete tool. If CI finds a failure, fix the actual failure before advancing.
