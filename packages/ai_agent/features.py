@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal
 from typing import Mapping, Sequence
 
@@ -41,7 +42,7 @@ class FeatureRequest:
 class FeatureRow:
     """One candle-aligned feature observation."""
 
-    timestamp: object
+    timestamp: datetime
     values: tuple[tuple[str, Decimal | None], ...]
 
     def as_mapping(self) -> Mapping[str, Decimal | None]:
