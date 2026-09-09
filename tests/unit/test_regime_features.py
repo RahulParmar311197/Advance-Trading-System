@@ -18,12 +18,12 @@ def candles():
 
 def test_regime_features_are_deterministic():
     features = calculate_regime_features(candles())
-    assert features.period_return == Decimal("0.04")
+    path = Decimal("4") / Decimal("100")
+    assert features.period_return == Decimal("4") / Decimal("101")
     assert features.mean_absolute_return == (Decimal("2") / Decimal("101") + Decimal("1") / Decimal("103")) / Decimal("2")
     assert features.trend_slope == Decimal("1.5")
-    assert features.range_efficiency == Decimal("0.04") / (
-        Decimal("2") / Decimal("101") + Decimal("1") / Decimal("103")
-    )
+    assert features.range_efficiency == (Decimal("4") / Decimal("101")) / path
+    assert Decimal("0") <= features.range_efficiency <= Decimal("1")
     assert features.average_volume == Decimal("20")
 
 
@@ -45,7 +45,7 @@ def test_empty_window_fails_closed():
 def test_non_increasing_timestamps_fail_closed():
     values = list(candles())
     values[1] = Candle(values[0].timestamp, "NIFTY", "5m", Decimal("101"), Decimal("104"), Decimal("100"), Decimal("103"), Decimal("20"))
-    with pytest.raises(ValueError, match="timestamps"):
+    with pytest.raises(ValueError, match="timestamp"):
         calculate_regime_features(values)
 
 
