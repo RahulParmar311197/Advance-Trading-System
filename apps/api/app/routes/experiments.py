@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any
@@ -10,7 +11,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from apps.api.app.config import settings
 from apps.api.app.dependencies import get_connection
 from apps.api.app.routes.backtest import BacktestRequest, _load_candles, _trade_record
-from packages.backtest.commission import commission
 from packages.backtest.engine import run_backtest
 from packages.backtest.metrics import summarize
 from packages.instruments.symbol_map import canonical_symbol
@@ -30,8 +30,6 @@ def _run_request(request: BacktestRequest, connection: Any) -> tuple[dict[str, A
     if request.start > request.end:
         raise HTTPException(400, "start must be <= end")
     if hasattr(strategy, "risk_reward"):
-        from dataclasses import replace
-
         strategy = replace(strategy, risk_reward=request.reward_risk)
 
     candles, data_version = _load_candles(
@@ -64,7 +62,7 @@ def _manifest_for(request: BacktestRequest, data_version: str, experiment_id: st
         experiment_id=experiment_id,
         data_version=data_version,
         strategy_version=f"{request.strategy}:v1",
-        code_version=settings.environment + ":api-0.1.0",
+        code_version=settings.code_version,
         parameters={
             "initial_capital": str(request.initial_capital),
             "risk_per_trade": str(request.risk_per_trade),
