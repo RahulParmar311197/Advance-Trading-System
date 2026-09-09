@@ -59,6 +59,11 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
 - [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; API integration and JSON-safe output added
 - [x] Research report generation — factual Markdown report generated from persisted comparison results; API and dashboard integration added
+- [x] Portfolio exposure aggregation — deterministic symbol-level absolute notional exposure
+- [x] Portfolio correlation — deterministic Pearson correlation matrix for supplied return series
+- [x] Backtest broker simulator — deterministic slippage/commission fill model
+- [x] Backtest portfolio curve — realized equity/ending-equity accounting from completed trades
+- [ ] Core `packages/portfolio/portfolio.py` accounting upgrade — existing thin model still requires replacement before P1 is complete
 
 ### M5 Web/API
 - [x] Market data endpoints
