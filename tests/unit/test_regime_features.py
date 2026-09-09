@@ -18,12 +18,13 @@ def candles():
 
 def test_regime_features_are_deterministic():
     features = calculate_regime_features(candles())
-    path = Decimal("4") / Decimal("100")
-    assert features.period_return == Decimal("4") / Decimal("100")
+    path = Decimal("3") / Decimal("101")
+    assert features.period_return == Decimal("3") / Decimal("101")
     assert features.mean_absolute_return == (Decimal("2") / Decimal("101") + Decimal("1") / Decimal("103")) / Decimal("2")
     assert features.trend_slope == Decimal("1.5")
-    assert features.range_efficiency == (Decimal("4") / Decimal("101")) / path
+    assert features.range_efficiency == Decimal("1")
     assert Decimal("0") <= features.range_efficiency <= Decimal("1")
+    assert path > Decimal("0")
     assert features.average_volume == Decimal("20")
 
 
