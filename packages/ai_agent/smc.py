@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Sequence
 
 from packages.market_data.models import Candle
@@ -9,7 +10,7 @@ from packages.smc.events import StructuredSMCEvent, all_smc_events
 from packages.smc.fvg import detect_fvg
 from packages.smc.liquidity import detect_liquidity_sweeps
 from packages.smc.mss import detect_mss
-from packages.smc.swings import detect_swings
+from packages.smc.swings import Swing, detect_swings
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,7 +32,7 @@ class SMCResult:
     """Structured SMC detections aligned to the supplied candle window."""
 
     request: SMCRequest
-    swings: tuple[tuple[int, str, object], ...]
+    swings: tuple[tuple[int, str, Decimal], ...]
     events: tuple[StructuredSMCEvent, ...]
 
 
@@ -57,9 +58,13 @@ def detect_smc(candles: Sequence[Candle], request: SMCRequest | None = None) -> 
 
     return SMCResult(
         request=resolved,
-        swings=tuple((s.index, s.kind, s.price) for s in swings),
+        swings=tuple(_swing_record(swing) for swing in swings),
         events=tuple(events),
     )
+
+
+def _swing_record(swing: Swing) -> tuple[int, str, Decimal]:
+    return swing.index, swing.kind, Decimal(swing.price)
 
 
 def _validate_candles(candles: tuple[Candle, ...]) -> None:
