@@ -8,10 +8,14 @@ class Cursor:
     def __init__(self):
         self.calls = []
         self.rowcount = 1
+        self.fetchone_result = None
+        self.fetchall_result = []
 
     def __enter__(self): return self
     def __exit__(self, *args): return False
     def execute(self, sql, params): self.calls.append((sql, params))
+    def fetchone(self): return self.fetchone_result
+    def fetchall(self): return self.fetchall_result
 
 
 class Connection:
@@ -48,3 +52,24 @@ def test_repository_persists_manifest_and_results():
     assert connection.commits == 2
     assert "INSERT INTO experiments" in connection.cursor_obj.calls[0][0]
     assert "INSERT INTO experiment_results" in connection.cursor_obj.calls[1][0]
+
+
+def test_repository_reads_manifest_and_results():
+    connection = Connection()
+    connection.cursor_obj.fetchone_result = (
+        "EXP-2026-00128", "sha256:data", "liquidity-mss-fvg:v1", "git:abc",
+        {"risk_per_trade": "0.005", "rr": "3"}, ["NIFTY"], "5m",
+        datetime(2026, 1, 1, tzinfo=timezone.utc), datetime(2026, 1, 1, tzinfo=timezone.utc),
+        {"brokerage": "20"}, {"bps": "1"}, 42,
+    )
+    repository = ExperimentRepository(connection)
+    loaded = repository.get_manifest("EXP-2026-00128")
+
+    assert loaded is not None
+    assert loaded.experiment_id == manifest().experiment_id
+    assert loaded.data_version == "sha256:data"
+    assert loaded.parameters["rr"] == "3"
+
+    connection.cursor_obj.fetchone_result = ({"win_rate": "0.5"}, [{"pnl": "100"}])
+    results = repository.get_results("EXP-2026-00128")
+    assert results == {"metrics": {"win_rate": "0.5"}, "trades": [{"pnl": "100"}]}
