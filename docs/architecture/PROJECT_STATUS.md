@@ -27,14 +27,14 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Markdown research report generator based only on supplied comparison results, with explicit methodology and limitations, plus unit tests.
 - Experiment-facing comparison and report API endpoints plus dashboard views consuming persisted results only.
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
-- P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, and deterministic Black-Scholes price/inversion IV implementation with unit tests.
+- P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, and deterministic OI/OI-change analytics with unit tests.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34317901724` completed successfully after the options chain/Greeks foundation and tests.
 - Web CI run `34317602647` completed successfully: dependency installation, ESLint with zero warnings, and Next.js production build all passed.
-- The latest IV test change triggered Python/Web CI; the Web build was still in progress at the latest inspection, so IV is not yet marked CI-verified.
-- Local isolated execution of the IV numerical checks passed; the repository CI remains the authoritative full-suite verification because this environment is not a Git checkout.
+- The latest OI implementation triggered Python/Web CI run `34319546635`; at the latest repository inspection that run was still queued, so OI is implemented and tested in source but is not yet CI-verified.
+- Local isolated execution of numerical/research checks is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
 - Backtest API returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
@@ -42,12 +42,12 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Verify the latest IV Python/Web CI runs and fix any failures before marking IV complete.
-2. Complete the remaining P2 options analytics: OI/OI change, PCR, term structure, volatility surface, and payoff analysis.
+1. Verify OI Python/Web CI run `34319546635` and fix any failures before relying on OI as CI-verified.
+2. Complete the remaining P2 options analytics: PCR, term structure, volatility surface, and payoff analysis.
 3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 4. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 5. Verify the research-validation implementations in CI on their current integrated revision.
 6. Continue P2 microstructure and regime dependencies after the options foundation is validated.
 
 ## Next dependency
-Verify the latest IV CI run, then implement options open-interest/OI-change analytics using supplied option-chain observations only. Do not fabricate option-chain data.
+Verify OI CI, then implement options put/call ratio analytics using supplied option-chain observations only. Do not fabricate option-chain data.
