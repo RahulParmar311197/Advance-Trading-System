@@ -34,6 +34,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 regime classifier: deterministic structured classification combining the verified primary detector label with explicit trend-direction and volatility-state labels, with immutable output and unit tests; Python CI run `34335923065` passed the full configured suite.
 - M8 regime transitions: deterministic primary-regime change detection over caller-supplied ordered classifications, with immutable transition records and unit tests committed.
 - M8 dataset builder: deterministic feature/classification rows from caller-supplied candle windows, with fail-closed validation inherited from the regime feature layer and unit tests committed.
+- M8 nearest-centroid model baseline: dependency-free deterministic multiclass classifier with explicit training dataset and unit tests committed; supplementary baseline, not a replacement for the required logistic baseline.
+- M8 logistic-regression baseline: dependency-free deterministic one-vs-rest logistic classifier with explicit learning configuration, immutable fitted parameters, fail-closed validation, and unit tests committed; authoritative CI verification pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -43,9 +45,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34333684477` exposed the remaining regime-feature fixture expectation error; the fixture was corrected to use the first and final candle closes.
 - Python CI run `34334649943` completed successfully on the integrated regime-feature/detector head; the full repository suite passed.
 - Python CI run `34335923065` completed successfully after the regime-classifier implementation and unit tests; the full configured repository test suite passed.
-- Current regime-transition/dataset-builder revision has not yet received an authoritative full-suite result at the time of this status update.
-- Web CI run `34336119528` is validating the preceding transition-test revision; dashboard lint passed and the build was still running at the latest check.
-- Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
+- Web CI run `34336119528` completed successfully; dashboard lint and build passed.
+- The current transition/dataset/model revision is awaiting authoritative Python CI verification.
+- Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
@@ -53,7 +55,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative verification of the current regime transition/dataset revision, then continue M8 model baselines.
+4. Complete authoritative Python CI verification of the current regime transition/dataset/model revision.
+5. Continue M8 with Random Forest after the logistic baseline is verified.
 
 ## Next dependency
-Complete authoritative CI verification for the current M8 regime transition/dataset revision. Then implement the first M8 model baseline with explicit dataset inputs and reproducible training configuration; never fabricate labels or market data.
+Complete authoritative Python CI verification for the current M8 transition/dataset/logistic-baseline revision. Then implement and verify the required Random Forest baseline with explicit dataset inputs; never fabricate labels or market data.
