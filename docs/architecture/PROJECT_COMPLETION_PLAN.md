@@ -114,8 +114,8 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification pending
 - [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification pending
 - [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification pending
-- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; CI verification pending
-- [ ] Feature tool
+- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification pending
+- [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative CI verification pending
 - [ ] SMC tool
 - [ ] Backtest tool
 - [ ] Walk-forward tool
