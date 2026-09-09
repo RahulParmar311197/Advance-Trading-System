@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward, strategy-comparison, and risk-analysis tools now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is the report tool.
+The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward, strategy-comparison, risk-analysis, and factual report tools now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is experiment memory.
 
 ## Milestones
 
@@ -124,7 +124,7 @@ The M9 AI research-agent dependency chain is being implemented incrementally. Th
 - [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; CI verification pending
 - [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; CI verification pending
 - [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; CI verification pending
-- [ ] Report tool
+- [x] Report tool — factual Markdown report generated solely from supplied strategy-comparison results, with explicit limitations and unit tests; CI verification pending
 - [ ] Experiment memory
 
 ### M10 Paper/live execution
