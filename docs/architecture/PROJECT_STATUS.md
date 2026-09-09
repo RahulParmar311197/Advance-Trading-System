@@ -15,23 +15,24 @@ The repository has a runnable Python/FastAPI foundation and deterministic resear
 - EMA/ATR/VWAP and deterministic swing/BOS/MSS/liquidity/FVG calculations.
 - Common structured SMC event contract with serialization and tests.
 - Strategy framework/registry, Liquidity MSS FVG strategy, cost/slippage-aware backtest, metrics, portfolio/risk primitives.
-- Historical candle API endpoint backed by PostgreSQL.
+- Historical candle API and deterministic SMC-events API, both backed by PostgreSQL candle data.
 - Experiment manifest/repository persistence implementation.
 
 ## Verification
-- CI previously reached package installation successfully after fixing setuptools discovery, then exposed a pre-existing API integration-test incompatibility; that test was corrected.
-- CI subsequently exposed a missing `packages.market_data.provider_memory` module; the deterministic provider was restored.
-- The latest CI run includes the current changes and is the authoritative full-suite verification path. At the time this status was written, that run had not yet completed, so no passing-suite claim is made.
-- A PostgreSQL integration test and PostgreSQL service were added to CI; completion remains unchecked until that test actually passes.
+- The previous CI package-install failure was fixed with explicit setuptools package discovery.
+- CI then exposed and the implementation fixed a stale FastAPI route assertion.
+- CI then exposed a missing deterministic provider module; it was restored.
+- A PostgreSQL service plus real PostgreSQL repository integration test are now part of CI.
+- The current branch has newer commits than the last completed CI run, so the latest run must finish before claiming a full-suite pass.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining P0 blockers
-1. Verify PostgreSQL integration in CI and fix any failures.
+1. Verify the PostgreSQL integration test and full pytest suite in the latest CI run; fix failures before marking the integration complete.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-3. Complete API SMC-event retrieval and backtest execution endpoints.
-4. Complete experiment API endpoints and reproducibility re-run path.
+3. Implement and test the backtest execution API endpoint.
+4. Implement experiment API endpoints and reproducibility re-run path.
 5. Build the dashboard/candlestick/event/backtest result journey.
 6. Run the full-stack acceptance test with real or explicitly user-supplied market data.
 
 ## Next dependency
-Finish and verify the PostgreSQL-backed/API vertical slice: SMC events endpoint → backtest endpoint → experiment endpoint, then wire the web dashboard. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
+Backtest execution API is now the next application dependency after CI verification. Then complete experiment API/re-run and the web dashboard. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
