@@ -80,9 +80,9 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [ ] Full-stack acceptance with supplied/real market data
 
 ### M6 Options
-- [ ] Chain model
-- [ ] Greeks
-- [ ] IV
+- [x] Chain model — validated immutable option contracts and chain grouping with strike/call/put accessors
+- [x] Greeks — dependency-free European Black-Scholes Greeks with input validation and parity tests
+- [ ] IV — deterministic Black-Scholes price inversion by bisection implemented; CI verification pending
 - [ ] OI/OI change
 - [ ] PCR
 - [ ] Term structure
