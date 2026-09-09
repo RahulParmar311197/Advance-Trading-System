@@ -29,7 +29,7 @@ def test_fit_requires_at_least_two_classes():
     data = FeatureDataset(
         features=((Decimal("1"),), (Decimal("2"),)), labels=("bull", "bull")
     )
-    with pytest.raises(ValueError, match="two classes"):
+    with pytest.raises(ValueError, match="two distinct labels"):
         NearestCentroidClassifier().fit(data)
 
 
