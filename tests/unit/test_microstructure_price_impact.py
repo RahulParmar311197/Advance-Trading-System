@@ -31,7 +31,8 @@ def test_implementation_shortfall_is_execution_vwap_minus_arrival():
         TradePrint(Decimal("101"), Decimal("2"), "buy"),
         TradePrint(Decimal("103"), Decimal("1"), "buy"),
     )
-    assert implementation_shortfall(trades, Decimal("100")) == Decimal("5") / Decimal("3")
+    actual = implementation_shortfall(trades, Decimal("100"))
+    assert actual.quantize(Decimal("0.0000000000000000000000001")) == Decimal("5") / Decimal("3").quantize(Decimal("0.0000000000000000000000001"))
 
 
 def test_zero_quantity_vwap_fails_closed():
