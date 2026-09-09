@@ -99,7 +99,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Liquidity/resiliency — deterministic visible-depth and quoted-spread liquidity snapshot plus depth/spread recovery ratios from explicitly supplied initial, stressed, and recovered observations; unit tests and authoritative Python CI verification pass on run `34333173992`
 
 ### M8 Regime/ML
-- [ ] Regime features
+- [ ] Regime features — deterministic period return, mean absolute return, OLS close-price slope, path efficiency, and average volume implementation with unit tests; authoritative Python CI verification pending after one genuine fixture/assertion failure was corrected
 - [ ] Regime classifier
 - [ ] Transitions
 - [ ] Dataset builder
