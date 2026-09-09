@@ -27,7 +27,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Markdown research report generator based only on supplied comparison results, with explicit methodology and limitations, plus unit tests.
 - Experiment-facing comparison and report API endpoints plus dashboard views consuming persisted results only.
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
-- P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, and deterministic implied-volatility term-structure ordering with unit tests.
+- P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -36,7 +36,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34319546635` completed successfully after the OI/OI-change implementation and tests.
 - Web CI run `34320730098` completed successfully on the PCR implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
 - Python CI run `34320854541` completed successfully on the PCR implementation/test revision; the full repository test suite passed.
-- Term-structure implementation and tests are committed; its Python CI run is currently in progress and the completion checklist remains unchecked until that authoritative run passes.
+- Python CI run `34327233459` completed successfully on the volatility-surface implementation/test revision; the full repository test suite passed.
+- Web CI run `34327336870` completed successfully on the payoff implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
+- Payoff and the latest combined Python CI verification are committed; authoritative Python CI for the payoff-containing head is pending because the latest visible completed Python run is the volatility-surface revision.
 - Local isolated execution of numerical/research checks is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
@@ -45,12 +47,12 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Authoritatively CI-verify the implemented options term-structure analytics, then mark term structure complete.
-2. Implement and CI-verify volatility surface and payoff analysis.
+1. Authoritatively CI-verify the payoff-containing head, then mark payoff complete.
+2. Authoritatively CI-verify the volatility-surface/payoff integrated revision if the workflow has not yet covered both on the same head.
 3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 4. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 5. Verify the research-validation implementations in CI on their current integrated revision.
 6. Continue P2 microstructure and regime dependencies after the options foundation is validated.
 
 ## Next dependency
-Authoritatively CI-verify the implemented options term-structure analytics from supplied implied-volatility observations only. After that, implement the volatility surface. Do not fabricate option-chain data.
+Authoritatively CI-verify the latest payoff-containing Python revision. If it passes, mark payoff complete and continue to the next P2 dependency; do not fabricate option-chain data.
