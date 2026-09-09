@@ -86,8 +86,8 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] OI/OI change — deterministic calculation from supplied option-chain snapshots; missing and duplicate observations fail closed
 - [x] PCR — deterministic put/call open-interest ratio from supplied option-chain observations; missing OI and zero call OI fail closed, with unit tests and Python CI verification
 - [x] Term structure — deterministic ordering of supplied implied-volatility observations by expiry; empty and duplicate observations fail closed, with unit tests and Python CI verification
-- [x] Volatility surface — deterministic ordering of supplied implied-volatility observations by expiry and strike; implementation and unit tests committed, authoritative Python CI verification pass on full-suite head
-- [x] Payoff analysis — deterministic expiry P&L for supplied option legs; implementation and unit tests committed, authoritative Python CI verification pass on full-suite head
+- [x] Volatility surface — deterministic ordering of supplied implied-volatility observations by expiry and strike; implementation and unit tests committed, authoritative CI verification pass on full-suite head
+- [x] Payoff analysis — deterministic expiry P&L for supplied option legs; implementation and unit tests committed, authoritative CI verification pass on full-suite head
 
 ### M7 Microstructure
 - [x] Spread — deterministic bid/ask spread and relative-spread implementation and unit tests; authoritative Python CI verification pass
@@ -95,7 +95,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Imbalance — deterministic normalized bid/ask and supplied-depth quantity imbalance; implementation and unit tests; authoritative Python CI verification pass
 - [x] Trade flow — deterministic signed executed-volume and normalized buy/sell flow imbalance using explicitly supplied trade sides; implementation and unit tests; authoritative Python CI verification pass
 - [ ] Trade intensity — deterministic supplied-trade count per explicitly supplied observation window; targeted checks pass, authoritative Python CI verification pending
-- [ ] Price impact
+- [ ] Price impact — deterministic signed notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; unit tests added, authoritative Python CI verification pending
 - [ ] Liquidity/resiliency
 
 ### M8 Regime/ML
