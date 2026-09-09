@@ -29,6 +29,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
 - P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
 - M7 spread implementation: deterministic bid/ask spread, mid, and relative-spread calculations with fail-closed quote validation and unit tests; authoritative Python CI verification is pending.
+- M7 depth implementation: deterministic validated level-2 bid/ask snapshots, best levels, visible total depth, and bounded depth queries with fail-closed validation and unit tests; authoritative Python CI verification is pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -40,7 +41,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34327233459` completed successfully on the volatility-surface implementation/test revision; the full repository test suite passed.
 - Web CI run `34327336870` completed successfully on the payoff implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
 - Web CI run `34330218338` completed successfully on the spread implementation/test revision: dependency installation, ESLint, and Next.js production build all passed.
-- Payoff and spread remain unchecked until authoritative Python CI verifies the corresponding current revisions.
+- Web CI run `34330792178` completed successfully on the depth documentation/implementation head; this does not verify Python tests.
+- Payoff, spread, and depth remain unchecked until authoritative Python CI verifies the corresponding current revisions.
 - Local isolated execution of numerical/research checks is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
@@ -49,11 +51,11 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Authoritatively CI-verify the latest payoff/spread-containing Python head, then mark only verified items complete.
+1. Authoritatively CI-verify the latest payoff/spread/depth-containing Python head, then mark only verified items complete.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 4. Verify the research-validation implementations in CI on their current integrated revision.
-5. Continue P2 microstructure dependencies with depth after spread is validated.
+5. Continue P2 microstructure dependencies with imbalance after depth is validated.
 
 ## Next dependency
-Authoritatively CI-verify the latest Python head containing payoff and spread. If it passes, mark those items complete and continue to M7 depth; do not fabricate market or order-book data.
+Authoritatively CI-verify the latest Python head containing payoff, spread, and depth. If it passes, mark only those items complete and continue to M7 imbalance; do not fabricate market or order-book data.
