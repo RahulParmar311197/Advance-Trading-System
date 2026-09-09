@@ -35,5 +35,10 @@ def test_gradient_boosting_rejects_invalid_configuration():
 
 def test_gradient_boosting_rejects_wrong_width():
     model = GradientBoostingClassifier.fit(dataset(), n_estimators=3)
-    with pytest.raises(IndexError):
+    with pytest.raises(ValueError, match="feature width"):
         model.predict(())
+
+
+def test_gradient_boosting_predict_many_uses_same_fitted_model():
+    model = GradientBoostingClassifier.fit(dataset(), n_estimators=5)
+    assert model.predict_many(((Decimal("1.5"),), (Decimal("9.5"),))) == ("bull", "bear")
