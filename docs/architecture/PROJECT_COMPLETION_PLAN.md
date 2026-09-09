@@ -114,9 +114,9 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification pending
 - [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification pending
 - [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification pending
-- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification pending
-- [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative CI verification pending
-- [ ] SMC tool
+- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification passed on the preceding M9 revision
+- [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`
+- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; authoritative CI verification pending
 - [ ] Backtest tool
 - [ ] Walk-forward tool
 - [ ] Strategy comparison tool
