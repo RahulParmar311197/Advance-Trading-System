@@ -6,12 +6,12 @@ Turn the architecture in the project source into a continuously runnable Indian 
 ## Milestones
 
 ### M0 Bootstrap
-- [ ] Repository structure
-- [ ] Python package configuration
-- [ ] Environment template
-- [ ] Docker Compose
+- [x] Repository structure
+- [x] Python package configuration
+- [x] Environment template
+- [x] Docker Compose
 - [x] CI workflow added
-- [ ] Health endpoint
+- [x] Health endpoint
 
 ### M1 Data foundation
 - [x] Provider interface
@@ -21,7 +21,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Instruments
 - [x] Symbol mapping
 - [x] Trading calendar
-- [ ] PostgreSQL migrations/integration
+- [ ] PostgreSQL migrations/integration — implementation and CI test added; latest CI verification pending
 - [x] Immutable raw storage
 - [x] Data-quality tests
 - [ ] Authorized real historical provider configured for Indian market data
@@ -35,7 +35,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] MSS
 - [x] Liquidity sweep
 - [x] FVG
-- [ ] Structured event schema integration
+- [x] Structured event schema integration
 
 ### M3 Strategy/backtest
 - [x] Strategy base/registry
@@ -61,10 +61,10 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [ ] Research report generation
 
 ### M5 Web/API
-- [ ] Market data endpoints
-- [ ] SMC events endpoint
+- [x] Market data endpoints
+- [x] SMC event contract
 - [ ] Backtest job endpoint
-- [ ] Experiment endpoints
+- [ ] Experiment endpoints — persistence implementation exists; API integration remains
 - [ ] Dashboard
 - [ ] Candlestick chart
 - [ ] Signal/event overlays
