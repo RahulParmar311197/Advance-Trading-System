@@ -1,0 +1,2 @@
+type Experiment={experiment_id:string;strategy_version:string;universe:string[];timeframe:string;start_date:string;end_date:string};
+export default function ExperimentTable({experiments}:{experiments:Experiment[]}){return <table className="table"><thead><tr><th>ID</th><th>Strategy</th><th>Universe</th><th>Timeframe</th></tr></thead><tbody>{experiments.map(e=><tr key={e.experiment_id}><td>{e.experiment_id}</td><td>{e.strategy_version}</td><td>{e.universe.join(", ")}</td><td>{e.timeframe}</td></tr>)}</tbody></table>}
