@@ -21,14 +21,14 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Next.js dashboard implementation: candle chart, SMC event overlay, backtest results, realized equity curve, experiment table, API controls, and local Docker service.
 - FastAPI CORS boundary for the local dashboard origin.
 - Walk-forward research engine with rolling train/test windows, optional strategy fitting, OOS-only signal execution, compounding equity, window-level metrics, and tests.
-- Web lint configuration and a patched supported Next.js 15.5.24 dependency were added after the first lint gate failed because `next lint` attempted interactive ESLint setup; the workflow now invokes ESLint directly.
+- Explicit out-of-sample evaluator using a final holdout block, train-only optional fitting, holdout-only execution, and tests.
+- Web lint configuration and patched supported Next.js dependency were added after the first lint gate failed because `next lint` attempted interactive ESLint setup; the workflow now invokes ESLint directly.
 
 ## Verification
-- Python CI run 64 completed successfully after dashboard work; the PostgreSQL integration suite passed in CI.
-- Web CI run 1 completed successfully with `npm install` and `npm run build`.
-- Web CI run 3 failed at the newly added lint step because no ESLint configuration existed; this was a real CI failure and was fixed in the subsequent commit.
-- The latest Web CI run for the lint/configuration fix is pending verification.
-- Python CI for the latest research/web changes is also pending verification.
+- Previous Python CI passed the PostgreSQL integration suite.
+- The first Web lint gate failed because ESLint was unconfigured; this was fixed with explicit ESLint configuration and a direct lint command.
+- The Python CI triggered by the research changes exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
+- Latest Python and Web CI runs triggered by the correction are pending verification.
 - The backtest API returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
@@ -37,7 +37,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Verify the latest Python and Web CI runs and fix any failures.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
-4. Verify and mark walk-forward complete, then implement out-of-sample evaluation and stress testing.
+4. Verify walk-forward and explicit out-of-sample evaluation in CI, then implement stress testing.
 
 ## Next dependency
-After CI verification, complete walk-forward validation, then add explicit out-of-sample evaluation and stress testing. Strategy comparison and research report generation remain downstream P1 work. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain later dependencies.
+After the current CI verification, complete stress testing. Strategy comparison and research report generation remain downstream P1 work. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain later dependencies.
