@@ -27,22 +27,26 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Markdown research report generator based only on supplied comparison results, with explicit methodology and limitations, plus unit tests.
 - Experiment-facing comparison and report API endpoints plus dashboard views consuming persisted results only.
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
+- P2 options foundation now includes a validated immutable option-contract/chain model and dependency-free Black-Scholes Greeks calculation, with unit tests.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34317564177` completed successfully after the P1 portfolio/broker additions and tests.
 - Web CI run `34317602647` completed successfully: dependency installation, ESLint with zero warnings, and Next.js production build all passed.
+- The latest options changes triggered new Python/Web CI runs; final completion of those runs is pending.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
 - Backtest API returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
-## Remaining P0/P1 blockers
-1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
-3. Verify walk-forward, out-of-sample, stress-test, strategy-comparison, and report implementations in CI on their current integrated revision.
-4. Continue P2 options/microstructure/regime dependencies after P1 verification.
+## Remaining blockers
+1. Verify current options CI runs and fix any failures.
+2. Complete the remaining P2 options analytics: IV, OI/OI change, PCR, volatility surface, and payoff analysis.
+3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+4. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
+5. Verify the research-validation implementations in CI on their current integrated revision.
+6. Continue P2 microstructure and regime dependencies after the options foundation is validated.
 
 ## Next dependency
-Run/verify the integrated research-validation path in CI for walk-forward, out-of-sample, stress-test, comparison, and reporting. In parallel, real provider configuration and full-stack acceptance remain explicit blockers. After those gates, begin P2 options analytics from the required architecture inventory.
+Verify the options chain/Greeks CI run, then implement implied volatility (`packages/options/iv.py`) using the same validated option inputs and deterministic numerical methods. Do not fabricate option quotes or implied-volatility observations.
