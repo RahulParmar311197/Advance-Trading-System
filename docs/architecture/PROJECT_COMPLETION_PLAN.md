@@ -1,0 +1,161 @@
+# Project Completion Plan
+
+## Objective
+Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
+
+## Milestones
+
+### M0 Bootstrap
+- [ ] Repository structure
+- [ ] Python package configuration
+- [ ] Environment template
+- [ ] Docker Compose
+- [ ] CI
+- [ ] Health endpoint
+
+### M1 Data foundation
+- [ ] Provider interface
+- [ ] Historical OHLCV ingestion
+- [ ] Normalization
+- [ ] Validation
+- [ ] Instruments
+- [ ] Symbol mapping
+- [ ] Trading calendar
+- [ ] PostgreSQL migrations
+- [ ] Immutable raw storage
+- [ ] Data-quality tests
+
+### M2 Analytics foundation
+- [ ] EMA
+- [ ] ATR
+- [ ] VWAP
+- [ ] Swing highs/lows
+- [ ] BOS
+- [MSS]
+- [ ] Liquidity sweep
+- [ ] FVG
+- [ ] Structured event schema
+
+### M3 Strategy/backtest
+- [ ] Strategy base/registry
+- [ ] Liquidity MSS FVG
+- [ ] Event-driven backtest
+- [ ] Fills
+- [ ] Position sizing
+- [ ] Brokerage/fees
+- [ ] Slippage
+- [ ] Equity curve
+- [ ] Performance metrics
+- [ ] Risk limits
+- [ ] Kill switch
+
+### M4 Research
+- [ ] Experiment schema
+- [ ] Dataset/version metadata
+- [ ] Parameter capture
+- [ ] Walk-forward
+- [ ] Out-of-sample
+- [ ] Stress tests
+- [ ] Strategy comparison
+- [ ] Research report generation
+
+### M5 Web/API
+- [ ] Market data endpoints
+- [ ] SMC events endpoint
+- [ ] Backtest job endpoint
+- [ ] Experiment endpoints
+- [ ] Dashboard
+- [ ] Candlestick chart
+- [ ] Signal/event overlays
+- [ ] Backtest results
+- [ ] Experiment comparison
+
+### M6 Options
+- [ ] Chain model
+- [ ] Greeks
+- [ ] IV
+- [ ] OI/OI change
+- [ ] PCR
+- [ ] Term structure
+- [ ] Volatility surface
+- [ ] Payoff analysis
+
+### M7 Microstructure
+- [ ] Spread
+- [ ] Depth
+- [ ] Imbalance
+- [ ] Trade flow
+- [ ] Trade intensity
+- [ ] Price impact
+- [ ] Liquidity/resiliency
+
+### M8 Regime/ML
+- [ ] Regime features
+- [ ] Regime classifier
+- [ ] Transitions
+- [ ] Dataset builder
+- [ ] Logistic baseline
+- [ ] Random Forest
+- [ ] Gradient boosting
+- [ ] Out-of-sample model validation
+- [ ] Model versioning
+
+### M9 AI research agent
+- [ ] Agent interface
+- [ ] Research planner
+- [ ] Tool registry
+- [ ] Historical data tool
+- [ ] Feature tool
+- [ ] SMC tool
+- [ ] Backtest tool
+- [ ] Walk-forward tool
+- [ ] Strategy comparison tool
+- [ ] Risk analysis tool
+- [ ] Report tool
+- [ ] Experiment memory
+
+### M10 Paper/live execution
+- [ ] Broker interface
+- [ ] Paper broker
+- [ ] Order manager
+- [ ] Execution simulator
+- [ ] Reconciliation
+- [ ] Live adapter behind feature flag
+- [ ] Execution monitoring
+- [ ] Kill switch integration
+
+### M11 Production/SaaS
+- [ ] Authentication
+- [ ] Authorization
+- [ ] Organizations
+- [ ] API keys
+- [ ] Audit logs
+- [ ] Redis/cache
+- [ ] Queue/workers
+- [ ] Scheduled jobs
+- [ ] Monitoring
+- [ ] Alerts
+- [ ] Error tracking
+- [ ] Data-quality monitoring
+- [ ] Deployment
+- [ ] Billing hooks
+
+### M12 Hardening
+- [ ] Bad-data tests
+- [ ] Missing-candle tests
+- [ ] Duplicate-tick tests
+- [ ] Timestamp tests
+- [ ] Market-closure tests
+- [ ] Network failure tests
+- [ ] Database failure tests
+- [ ] Broker failure tests
+- [ ] Partial-fill tests
+- [ ] Rejected-order tests
+- [ ] API timeout tests
+- [ ] Recovery/runbook tests
+
+## Critical acceptance test
+A fresh developer must be able to start the stack, load sample NIFTY data, open the dashboard, see 5m candles and SMC events, run the Liquidity MSS FVG backtest, see realistic metrics, and reproduce the experiment from its recorded metadata.
+
+## Delivery rule
+Do not mark a milestone complete because files exist. Mark it complete only when the code runs and its acceptance tests pass.
