@@ -21,19 +21,20 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Next.js dashboard implementation: candle chart, SMC event overlay, backtest results, realized equity curve, experiment table, API controls, and local Docker service.
 - FastAPI CORS boundary for the local dashboard origin.
 - Walk-forward research engine with rolling train/test windows, optional strategy fitting, OOS-only signal execution, compounding equity, window-level metrics, and tests.
+- Web lint configuration and a patched supported Next.js 15.5.24 dependency were added after the first lint gate failed because `next lint` attempted interactive ESLint setup; the workflow now invokes ESLint directly.
 
 ## Verification
 - Python CI run 64 completed successfully after dashboard work; the PostgreSQL integration suite passed in CI.
 - Web CI run 1 completed successfully with `npm install` and `npm run build`.
-- A new Web CI run is currently verifying the added lint gate and equity-curve changes; no new pass claim is made until it completes.
-- Python integration tests cover the API route contract and dashboard CORS configuration.
+- Web CI run 3 failed at the newly added lint step because no ESLint configuration existed; this was a real CI failure and was fixed in the subsequent commit.
+- The latest Web CI run for the lint/configuration fix is pending verification.
+- Python CI for the latest research/web changes is also pending verification.
 - The backtest API returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
-- Web CI now runs the available `npm run lint` check before the production build.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining P0 blockers
-1. Verify the current Web CI run and the Python CI run triggered by the latest research changes.
+1. Verify the latest Python and Web CI runs and fix any failures.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 4. Verify and mark walk-forward complete, then implement out-of-sample evaluation and stress testing.
