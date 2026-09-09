@@ -99,21 +99,21 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Liquidity/resiliency — deterministic visible-depth and quoted-spread liquidity snapshot plus depth/spread recovery ratios from explicitly supplied initial, stressed, and recovered observations; unit tests and authoritative Python CI verification pass on run `34333173992`
 
 ### M8 Regime/ML
-- [ ] Regime features — deterministic period return, mean absolute return, OLS close-price slope, path efficiency, and average volume implementation with unit tests; corrected implementation/tests committed, authoritative Python CI verification pending
-- [ ] Regime detector — deterministic transparent threshold classifier over supplied regime features; explicit caller-supplied thresholds, validation, and unit tests committed, authoritative Python CI verification pending
-- [ ] Regime classifier
-- [ ] Transitions
-- [ ] Dataset builder
-- [ ] Logistic baseline
-- [ ] Random Forest
-- [ ] Gradient boosting
-- [ ] Out-of-sample model validation
-- [ ] Model versioning
+- [x] Regime features — deterministic period return, mean absolute return, OLS close-price slope, path efficiency, and average volume implementation with unit tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Regime detector — deterministic transparent threshold classifier over supplied regime features; explicit caller-supplied thresholds, validation, and unit tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Regime classifier — structured primary, trend, and volatility labels with deterministic tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Transitions — deterministic primary-regime transition detection with tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Dataset builder — deterministic candle-window feature/label rows with tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Logistic baseline — dependency-free deterministic one-vs-rest classifier with explicit configuration and tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Random Forest — dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration and tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Gradient boosting — deterministic one-vs-rest squared-error boosting over regression stumps with explicit estimator count/learning rate, feature validation and tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Out-of-sample model validation — final holdout excluded from training, with deterministic holdout predictions/accuracy and tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Model versioning — content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; authoritative Python CI verification pass on run `34340996500`
 
 ### M9 AI research agent
-- [ ] Agent interface
-- [ ] Research planner
-- [ ] Tool registry
+- [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification pending
+- [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification pending
+- [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification pending
 - [ ] Historical data tool
 - [ ] Feature tool
 - [ ] SMC tool
