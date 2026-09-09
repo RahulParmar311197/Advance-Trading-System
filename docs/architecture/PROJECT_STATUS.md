@@ -29,8 +29,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - P1 deterministic exposure aggregation, return-series correlation, broker fill simulation, realized backtest portfolio accounting, and core portfolio accounting with trade recording/equity/realized P&L, each with tests.
 - P2 options foundation: validated immutable option-contract/chain model, dependency-free European Black-Scholes Greeks, deterministic Black-Scholes price/inversion IV, deterministic OI/OI-change analytics, deterministic put/call open-interest ratio analytics, deterministic implied-volatility term-structure ordering, deterministic volatility-surface observation ordering, and deterministic option expiry payoff analysis.
 - M7 spread, depth, imbalance, and trade-flow implementations: deterministic microstructure analytics with fail-closed validation and unit tests; authoritative Python CI verification passed on full-suite run `34331678571`.
-- M7 trade-intensity implementation: deterministic supplied-trade count per explicitly supplied observation window, with targeted checks; authoritative Python CI verification is pending for the current head.
-- M7 price-impact implementation: deterministic signed traded notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; unit tests added; the precision assertion exposed by CI was corrected without changing the calculation implementation; authoritative Python CI verification is pending for the current head.
+- M7 trade intensity: deterministic supplied-trade count per explicitly supplied observation window; authoritative Python CI verification passed on run `34333070096`.
+- M7 price impact: deterministic signed traded notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; authoritative Python CI verification passed on run `34333070096` after correcting the Decimal precision assertion without changing the calculation implementation.
+- M7 liquidity/resiliency: deterministic `LiquiditySnapshot` over supplied quote/depth, visible-liquidity aggregation, depth-recovery ratio, and spread-recovery ratio; unit tests and authoritative Python CI verification passed on run `34333173992`.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -45,10 +46,10 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Web CI run `34330792178` completed successfully on the depth implementation head; this does not verify Python tests.
 - Web CI run `34331457669` completed successfully on the status-update head; this does not verify Python tests.
 - Python CI run `34331678571` completed successfully on the trade-flow test head; the workflow's test job passed all configured repository tests.
-- The most recent Python CI run before the corrected price-impact assertion failed on one Decimal-precision comparison while 108 other tests passed; the test comparison was corrected to quantize both operands explicitly. No calculation implementation was weakened or changed.
-- Targeted local trade-flow tests passed: 5 tests passed.
-- Targeted local trade-intensity checks passed: 4 checks passed; this is not authoritative full-suite verification.
-- Authoritative Python verification for trade intensity and price impact is pending on the current corrected head.
+- Python CI run `34333070096` completed successfully on the corrected trade-intensity/price-impact head; the workflow test job passed all configured repository tests.
+- Python CI run `34333173992` completed successfully after liquidity/resiliency implementation and tests; the workflow test job passed all configured repository tests.
+- Targeted local trade-flow tests previously passed: 5 tests passed.
+- Targeted local trade-intensity checks previously passed: 4 checks passed; these were supplementary to authoritative CI.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
@@ -57,11 +58,10 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Authoritatively CI-verify the current corrected trade-intensity and price-impact-containing Python head, then mark only verified items complete.
-2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
-4. Verify the research-validation implementations in CI on their current integrated revision.
-5. Continue P2 microstructure with liquidity/resiliency after price impact is validated.
+1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
+3. Verify the research-validation implementations in CI on their current integrated revision.
+4. Continue M8 with regime features/detector work.
 
 ## Next dependency
-Authoritatively CI-verify the latest corrected Python head containing trade intensity and price impact. If it passes, mark both complete and continue to M7 liquidity/resiliency; do not fabricate market or order-book data.
+Begin M8 regime features/detector work after the current documentation-only status commits are CI-verified. Do not fabricate market or order-book data.
