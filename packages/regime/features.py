@@ -48,7 +48,13 @@ def calculate_regime_features(candles: Sequence[Candle]) -> RegimeFeatureVector:
         else Decimal("0")
     )
     trend_slope = _ols_slope(tuple(candle.close for candle in ordered))
-    total_path = sum((abs(value) for value in returns), Decimal("0"))
+    total_path = sum(
+        (
+            abs(current.close - previous.close) / ordered[0].close
+            for previous, current in zip(ordered, ordered[1:])
+        ),
+        Decimal("0"),
+    )
     range_efficiency = (
         abs(period_return) / total_path if total_path != 0 else Decimal("0")
     )
