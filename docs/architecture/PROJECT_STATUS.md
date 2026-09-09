@@ -32,7 +32,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M7 trade intensity: deterministic supplied-trade count per explicitly supplied observation window; authoritative Python CI verification passed on run `34333070096`.
 - M7 price impact: deterministic signed traded notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; authoritative Python CI verification passed on run `34333070096` after correcting the Decimal precision assertion without changing the calculation implementation.
 - M7 liquidity/resiliency: deterministic `LiquiditySnapshot` over supplied quote/depth, visible-liquidity aggregation, depth-recovery ratio, and spread-recovery ratio; unit tests and authoritative Python CI verification passed on run `34333173992`.
-- M8 regime features implementation: deterministic period return, mean absolute return, OLS close-price slope, price-path efficiency, and average volume with fail-closed candle-window validation and unit tests. Authoritative CI verification is pending on the corrected head.
+- M8 regime features implementation: deterministic period return, mean absolute return, OLS close-price slope, price-path efficiency, and average volume with fail-closed candle-window validation and unit tests. Corrected implementation/test revision is awaiting authoritative CI verification.
+- M8 regime detector implementation: deterministic transparent threshold classifier over supplied regime features, with explicit caller-supplied thresholds, validation, and unit tests. Authoritative CI verification is pending on the current integrated head.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -49,18 +50,20 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34331678571` completed successfully on the trade-flow test head; the workflow's test job passed all configured repository tests.
 - Python CI run `34333070096` completed successfully on the corrected trade-intensity/price-impact head; the workflow test job passed all configured repository tests.
 - Python CI run `34333173992` completed successfully after liquidity/resiliency implementation and tests; the workflow test job passed all configured repository tests.
-- Python CI run `34333390091` caught two genuine regime-test issues: an incorrect expected period return and an over-broad timestamp error match; 121 other repository tests passed. The implementation was then corrected so price-path efficiency is bounded by one, and the tests were corrected to assert the actual contract.
-- A new authoritative Python CI run is pending for the corrected regime-feature head.
+- Python CI run `34333390091` caught two genuine regime-feature issues; 121 other repository tests passed. The subsequent implementation/test correction fixed the period-return assertion and bounded path-efficiency calculation.
+- Python CI run `34333684477` caught one remaining genuine regime-feature fixture assertion: the test expected 4/101 while the specified period return contract correctly computes final-vs-initial close, 4/100. The test was corrected.
+- Isolated detector checks passed 5/5 and syntax compilation passed in the analysis environment; these are supplementary and not authoritative repository verification.
+- A fresh authoritative Python CI run is pending for the corrected regime-feature plus detector head.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Authoritatively CI-verify the corrected M8 regime-feature head, then mark regime features complete only if the full suite passes.
+1. Authoritatively CI-verify the corrected M8 regime-feature and detector head, then mark only passing components complete.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 4. Verify the research-validation implementations in CI on their current integrated revision.
-5. Continue M8 with the regime detector after regime features are verified.
+5. Continue M8 with regime classifier and transitions after the detector is verified.
 
 ## Next dependency
-Authoritatively CI-verify the corrected M8 regime-feature implementation. If it passes, mark regime features complete and implement the deterministic regime detector; do not fabricate market data or regime labels.
+Authoritatively CI-verify the current M8 regime-feature/detector head. If green, mark verified components complete and implement the next M8 regime dependency without fabricating market data or labels.
