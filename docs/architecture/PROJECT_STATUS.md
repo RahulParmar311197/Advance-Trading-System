@@ -37,6 +37,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 Gradient Boosting baseline: deterministic one-vs-rest squared-error boosting over regression stumps, explicit estimator count/learning rate, immutable fitted stages, feature-width validation, implementation and unit tests committed; authoritative CI verification pending on the current revision.
 - M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and corrected deterministic tests committed; authoritative CI verification pending on the current revision.
 - M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests committed; authoritative CI verification pending.
+- M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests committed; authoritative Python CI verification pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -44,8 +45,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Web CI run `34337651570` completed successfully; dashboard lint and build passed.
 - Python CI run `34338164088` completed successfully; microstructure execution tests passed.
 - Python CI run `34338335095` completed successfully; Random Forest tests passed.
-- Python CI run `34339142605` failed with 171 passed / 1 failed because the OOS test expected a particular logistic prediction that the deterministic implementation correctly returned differently. The fixture/expectation was corrected in subsequent commits; the corrected revision is awaiting authoritative Python CI verification.
-- The latest Web CI for the inference-test head is in progress; a current authoritative Python CI result has not yet been observed.
+- Python CI run `34339142605` failed with 171 passed / 1 failed because the OOS test expected a particular logistic prediction that the deterministic implementation correctly returned differently. The fixture/expectation was corrected in subsequent commits; a later integrated CI run is still required.
+- Web CI run `34340571978` completed successfully; dashboard lint and build passed on the M8 status head.
+- Python CI run `34340996500` is currently in progress for the model-versioning revision; no authoritative conclusion is recorded yet.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -54,8 +56,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative CI verification for the current ML training/validation/Gradient Boosting/inference revision.
-5. Complete M8 model versioning.
+4. Complete authoritative CI verification for the current ML training/validation/Gradient Boosting/inference/model-versioning revision.
+5. Continue with M9 AI research agent after M8 verification and any remaining M8 hardening.
 
 ## Next dependency
-Complete authoritative Python CI verification of the current ML training/validation/Gradient Boosting/inference revision. If green, update the completion checklist for the verified M8 components and implement the model-versioning contract. If CI finds a failure, fix the actual failure before advancing.
+Complete authoritative Python CI verification for the current M8 revision. If green, reconcile the M8 completion checklist and begin the first M9 dependency, the agent interface. If CI finds a failure, fix the actual failure before advancing.
