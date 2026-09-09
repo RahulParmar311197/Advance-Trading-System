@@ -85,9 +85,9 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] IV — deterministic Black-Scholes price inversion by bisection with no-arbitrage validation and unit tests
 - [x] OI/OI change — deterministic calculation from supplied option-chain snapshots; missing and duplicate observations fail closed
 - [x] PCR — deterministic put/call open-interest ratio from supplied option-chain observations; missing OI and zero call OI fail closed, with unit tests and Python CI verification
-- [ ] Term structure
-- [ ] Volatility surface
-- [ ] Payoff analysis
+- [x] Term structure — deterministic ordering of supplied implied-volatility observations by expiry; empty and duplicate observations fail closed, with unit tests and Python CI verification
+- [ ] Volatility surface — deterministic ordering of supplied implied-volatility observations by expiry and strike; implementation and unit tests committed, authoritative CI verification pending
+- [ ] Payoff analysis — deterministic expiry P&L for supplied option legs; implementation and unit tests committed, authoritative CI verification pending
 
 ### M7 Microstructure
 - [ ] Spread
