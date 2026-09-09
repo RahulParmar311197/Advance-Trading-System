@@ -17,8 +17,8 @@ def test_buy_consumes_best_asks_then_next_level():
     result = execute_market_order(book(), "buy", Decimal("4"))
     assert result.filled_quantity == Decimal("4")
     assert result.unfilled_quantity == Decimal("0")
-    assert result.notional == Decimal("203")
-    assert result.average_price == Decimal("203") / Decimal("2")
+    assert result.notional == Decimal("406")
+    assert result.average_price == Decimal("406") / Decimal("4")
     assert result.fills == (
         ExecutionFill(Decimal("101"), Decimal("2")),
         ExecutionFill(Decimal("102"), Decimal("2")),
@@ -29,8 +29,8 @@ def test_sell_consumes_best_bids_then_next_level():
     result = execute_market_order(book(), "sell", Decimal("5"))
     assert result.filled_quantity == Decimal("5")
     assert result.unfilled_quantity == Decimal("0")
-    assert result.notional == Decimal("494")
-    assert result.average_price == Decimal("494") / Decimal("5")
+    assert result.notional == Decimal("493")
+    assert result.average_price == Decimal("493") / Decimal("5")
 
 
 def test_insufficient_visible_depth_returns_partial_fill():
