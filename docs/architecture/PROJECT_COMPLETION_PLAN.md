@@ -54,10 +54,10 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Experiment schema
 - [x] Dataset/version metadata
 - [x] Parameter capture
-- [ ] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; latest CI verification pending after fixture correction
-- [ ] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
-- [ ] Stress tests
-- [ ] Strategy comparison
+- [x] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
+- [x] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
+- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
+- [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; unit tests added
 - [ ] Research report generation
 
 ### M5 Web/API
