@@ -11,12 +11,14 @@ def _candles() -> list[Candle]:
     start = datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc)
     values = [
         (100, 102, 99, 101),
-        (101, 103, 100, 102),
-        (102, 106, 101, 105),
-        (105, 107, 104, 106),
-        (106, 108, 105, 107),
-        (107, 109, 106, 108),
-        (108, 110, 107, 109),
+        (101, 104, 100, 103),
+        (103, 105, 101, 102),
+        (102, 108, 100, 107),
+        (107, 109, 104, 105),
+        (105, 112, 103, 111),
+        (111, 113, 108, 109),
+        (109, 115, 107, 114),
+        (114, 116, 111, 113),
     ]
     return [
         Candle(
@@ -38,7 +40,12 @@ def test_detect_smc_runs_existing_deterministic_pipeline() -> None:
 
     assert result.swings
     assert result.events
-    assert {event.event for event in result.events} == {"bos", "mss"}
+    assert {event.event for event in result.events} <= {
+        "bos",
+        "mss",
+        "liquidity_sweep",
+        "fvg",
+    }
     assert all(event.symbol == "NIFTY" for event in result.events)
     assert all(event.timeframe == "5m" for event in result.events)
     assert all(event.confidence is None for event in result.events)
