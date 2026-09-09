@@ -94,8 +94,8 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Depth — deterministic validated level-2 bid/ask snapshot, best levels, visible total depth, and bounded depth queries; implementation and unit tests; authoritative Python CI verification pass
 - [x] Imbalance — deterministic normalized bid/ask and supplied-depth quantity imbalance; implementation and unit tests; authoritative Python CI verification pass
 - [x] Trade flow — deterministic signed executed-volume and normalized buy/sell flow imbalance using explicitly supplied trade sides; implementation and unit tests; authoritative Python CI verification pass
-- [ ] Trade intensity — deterministic supplied-trade count per explicitly supplied observation window; targeted checks pass, authoritative Python CI verification pending
-- [ ] Price impact — deterministic signed notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; unit tests added, authoritative Python CI verification pending
+- [x] Trade intensity — deterministic supplied-trade count per explicitly supplied observation window; targeted checks and authoritative Python CI verification pass on run `34333070096`
+- [x] Price impact — deterministic signed notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; tests and authoritative Python CI verification pass on run `34333070096`
 - [ ] Liquidity/resiliency
 
 ### M8 Regime/ML
