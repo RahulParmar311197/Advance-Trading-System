@@ -31,6 +31,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M7 spread, depth, imbalance, trade-flow, trade intensity, price impact, and liquidity/resiliency implementations with fail-closed validation, unit tests, and authoritative Python CI verification.
 - M8 regime features: deterministic period return, mean absolute return, OLS close-price slope, price-path efficiency, and average volume with fail-closed candle-window validation and unit tests.
 - M8 regime detector: deterministic transparent threshold classifier over supplied regime features with explicit caller-supplied thresholds, validation, and unit tests.
+- M8 regime classifier: deterministic structured classification combining the verified primary detector label with explicit trend-direction and volatility-state labels, with immutable output and unit tests.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -39,6 +40,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34333390091` exposed two genuine regime-feature issues; those implementation/test issues were corrected.
 - Python CI run `34333684477` exposed the remaining regime-feature fixture expectation error; the fixture was corrected to use the first and final candle closes.
 - Python CI run `34334649943` completed successfully on the integrated regime-feature/detector head; the full repository suite passed.
+- Python CI run `34335923065` completed successfully after the regime-classifier implementation and unit tests; the full configured repository test suite passed.
 - Supplementary isolated detector checks passed 5/5 and syntax compilation passed in the analysis environment.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
@@ -48,7 +50,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Continue M8 with regime classifier and transitions.
+4. Continue M8 with regime transitions.
 
 ## Next dependency
-Implement the deterministic M8 regime classifier on top of the verified regime feature/detector interfaces, with explicit inputs, fail-closed validation, unit tests, and authoritative CI verification. Do not fabricate market data or labels.
+Implement deterministic M8 regime transitions on top of the verified classifier, with explicit transition inputs, fail-closed validation, unit tests, and authoritative CI verification. Do not fabricate market data or labels.
