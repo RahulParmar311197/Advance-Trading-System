@@ -33,7 +33,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 ## Verification
 - Python CI run `34317901724` completed successfully after the options chain/Greeks foundation and tests.
 - Web CI run `34317602647` completed successfully: dependency installation, ESLint with zero warnings, and Next.js production build all passed.
-- The latest OI implementation triggered Python/Web CI run `34319546635`; at the latest repository inspection that run was still queued, so OI is implemented and tested in source but is not yet CI-verified.
+- Python CI run `34319546635` completed successfully after the OI/OI-change implementation and tests.
 - Local isolated execution of numerical/research checks is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout.
 - The Web workflow previously caught a real React Hook dependency warning; it was fixed with `useCallback` and a dependency-correct effect rather than suppressing lint.
 - The Python CI previously exposed a real walk-forward fixture error; the fixture was corrected to make the intended target fill possible instead of weakening the assertion.
@@ -42,12 +42,11 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining blockers
-1. Verify OI Python/Web CI run `34319546635` and fix any failures before relying on OI as CI-verified.
-2. Complete the remaining P2 options analytics: PCR, term structure, volatility surface, and payoff analysis.
-3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-4. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
-5. Verify the research-validation implementations in CI on their current integrated revision.
-6. Continue P2 microstructure and regime dependencies after the options foundation is validated.
+1. Implement and CI-verify the remaining P2 options analytics: PCR, term structure, volatility surface, and payoff analysis.
+2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
+4. Verify the research-validation implementations in CI on their current integrated revision.
+5. Continue P2 microstructure and regime dependencies after the options foundation is validated.
 
 ## Next dependency
-Verify OI CI, then implement options put/call ratio analytics using supplied option-chain observations only. Do not fabricate option-chain data.
+Implement options put/call ratio analytics from supplied option-chain observations only. Do not fabricate option-chain data.
