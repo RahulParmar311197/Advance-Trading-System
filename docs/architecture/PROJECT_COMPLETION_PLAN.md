@@ -54,7 +54,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Experiment schema
 - [x] Dataset/version metadata
 - [x] Parameter capture
-- [ ] Walk-forward
+- [ ] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
 - [ ] Out-of-sample
 - [ ] Stress tests
 - [ ] Strategy comparison
