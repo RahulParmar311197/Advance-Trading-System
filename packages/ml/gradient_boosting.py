@@ -30,6 +30,7 @@ class GradientBoostingClassifier:
     initial_scores: tuple[Decimal, ...]
     estimators: tuple[tuple[_Stump, ...], ...]
     learning_rate: Decimal
+    feature_width: int
 
     @classmethod
     def fit(
@@ -62,14 +63,14 @@ class GradientBoostingClassifier:
                     predictions[row_index] += learning_rate * value
             initial_scores.append(mean)
             all_estimators.append(tuple(stumps))
-        return cls(tuple(labels), tuple(initial_scores), tuple(all_estimators), learning_rate)
+        return cls(tuple(labels), tuple(initial_scores), tuple(all_estimators), learning_rate, width)
 
     def predict(self, features: Sequence[Decimal]) -> Regime:
         if not self.estimators:
             raise ValueError("classifier is not fitted")
         vector = tuple(features)
-        if not self.estimators[0]:
-            raise ValueError("classifier is not fitted")
+        if len(vector) != self.feature_width:
+            raise ValueError("feature width does not match fitted classifier")
         scores = []
         for initial, stumps in zip(self.initial_scores, self.estimators):
             score = initial
