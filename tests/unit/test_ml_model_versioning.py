@@ -56,8 +56,11 @@ def test_model_version_rejects_non_dataclass_model():
 
 
 def test_model_version_preserves_explicit_training_configuration():
-    model = LogisticRegressionClassifier.fit(dataset(), learning_rate=Decimal("0.2"), epochs=20, l2=Decimal("0.01"))
+    model = LogisticRegressionClassifier.fit(
+        dataset(), learning_rate=Decimal("0.2"), epochs=20, l2=Decimal("0.01")
+    )
     version = create_model_version(model, dataset(), config())
-    assert dict(version.training_config)["learning_rate"] == '"0.2"'
-    assert dict(version.training_config)["epochs"] == "20"
-    assert dict(version.training_config)["l2"] == '"0.01"'
+    config_values = dict(version.training_config)
+    assert config_values["learning_rate"] == '{"__decimal__":"0.2"}'
+    assert config_values["epochs"] == "20"
+    assert config_values["l2"] == '{"__decimal__":"0.01"}'
