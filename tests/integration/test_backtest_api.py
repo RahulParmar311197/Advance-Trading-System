@@ -39,6 +39,10 @@ def test_run_executes_registered_strategy_and_returns_metrics():
     assert result["trade_count"] == 0
     assert result["metrics"]["trade_count"] == 0
     assert result["trades"] == []
+    assert len(result["equity_curve"]) == 6
+    assert result["equity_curve"][0]["equity"] == Decimal("100000")
+    assert result["equity_curve"][-1]["equity"] == Decimal("100000")
+    assert result["equity_curve"][0]["timestamp"] == _rows()[0][0]
 
 
 def test_run_rejects_mixed_data_versions():

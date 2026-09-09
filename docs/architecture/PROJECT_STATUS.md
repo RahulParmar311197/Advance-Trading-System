@@ -18,22 +18,22 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Historical candle API and deterministic SMC-events API, both backed by PostgreSQL candle data.
 - Backtest execution API: validates the request, loads one immutable data version, executes the registered strategy/backtester, and returns metrics/trades without fabricated data.
 - Experiment API: creates and persists manifests/results, lists and retrieves experiments, and re-runs from the stored manifest while refusing a data-version mismatch.
-- Next.js dashboard implementation: candle chart, SMC event overlay, backtest results, experiment table, API controls, and local Docker service.
+- Next.js dashboard implementation: candle chart, SMC event overlay, backtest results, realized equity curve, experiment table, API controls, and local Docker service.
 - FastAPI CORS boundary for the local dashboard origin.
 
 ## Verification
-- CI run 44 completed successfully after the experiment JSON serialization boundary fix.
-- The Python CI run triggered after dashboard work is in progress; no pass claim is made until it completes.
-- A separate Web CI workflow now runs `npm install` and `npm run build` against `apps/web`.
+- Python CI run 64 completed successfully after dashboard work; the PostgreSQL integration suite passed in CI.
+- Web CI run 1 completed successfully with `npm install` and `npm run build`.
 - Python integration tests cover the API route contract and dashboard CORS configuration.
+- The backtest API now returns a candle-aligned realized equity curve derived from actual closed-trade P&L.
+- Web CI now runs the available `npm run lint` check before the production build.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 
 ## Remaining P0 blockers
-1. Verify the current Python and Web CI runs and fix any failures.
-2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-3. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
-4. Add the remaining P0 equity-curve/research validation pieces needed by the acceptance journey.
+1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
+3. Add walk-forward, out-of-sample, and stress-test research validation.
 
 ## Next dependency
-After dashboard verification, the next P0 research dependency is the equity curve plus walk-forward/out-of-sample/stress-test research validation. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
+The next research dependency is walk-forward validation, followed by out-of-sample evaluation and stress testing. Strategy comparison and research report generation remain downstream P1 work. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain later dependencies.

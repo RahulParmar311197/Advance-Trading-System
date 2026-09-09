@@ -21,7 +21,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Instruments
 - [x] Symbol mapping
 - [x] Trading calendar
-- [ ] PostgreSQL migrations/integration — implementation and CI test added; latest verification tracked below
+- [x] PostgreSQL migrations/integration — implementation, integration test, and CI verification pass
 - [x] Immutable raw storage
 - [x] Data-quality tests
 - [ ] Authorized real historical provider configured for Indian market data
@@ -45,7 +45,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Position sizing
 - [x] Brokerage/fees
 - [x] Slippage
-- [ ] Equity curve
+- [x] Equity curve — realized, candle-aligned curve returned by the API and rendered in the dashboard
 - [x] Performance metrics
 - [x] Risk limits
 - [x] Kill switch
@@ -70,7 +70,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Signal/event overlays
 - [x] Backtest results view
 - [x] Experiment table
-- [ ] Dashboard runtime/build verification in CI
+- [x] Dashboard runtime/build verification in CI
 - [ ] Full-stack acceptance with supplied/real market data
 
 ### M6 Options

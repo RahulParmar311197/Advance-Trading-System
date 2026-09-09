@@ -5,12 +5,12 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from apps.api.app.dependencies import get_connection
 from packages.backtest.engine import run_backtest
-from packages.backtest.metrics import summarize
+from packages.backtest.metrics import build_equity_curve, summarize
 from packages.instruments.symbol_map import canonical_symbol
 from packages.market_data.models import Candle
 from packages.strategies.registry import get_strategy
@@ -78,6 +78,17 @@ def _trade_record(trade: Any) -> dict[str, Any]:
     }
 
 
+def _equity_record(curve: list[dict[str, Decimal | int]], candles: list[Candle]) -> list[dict[str, Any]]:
+    return [
+        {
+            "index": point["index"],
+            "timestamp": candles[int(point["index"])].timestamp,
+            "equity": point["equity"],
+        }
+        for point in curve
+    ]
+
+
 @router.post("/validate")
 def validate_request(request: BacktestRequest) -> dict[str, Any]:
     if request.start > request.end:
@@ -126,6 +137,7 @@ def run(
         slippage_bps=request.slippage_bps,
     )
     metrics = summarize(trades, request.initial_capital)
+    curve = build_equity_curve(trades, request.initial_capital, len(candles))
 
     return {
         "status": "completed",
@@ -137,5 +149,6 @@ def run(
         "signal_count": len(signals),
         "trade_count": len(trades),
         "metrics": metrics,
+        "equity_curve": _equity_record(curve, candles),
         "trades": [_trade_record(trade) for trade in trades],
     }
