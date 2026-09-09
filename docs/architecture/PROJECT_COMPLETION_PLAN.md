@@ -63,7 +63,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Portfolio correlation — deterministic Pearson correlation matrix for supplied return series
 - [x] Backtest broker simulator — deterministic slippage/commission fill model
 - [x] Backtest portfolio curve — realized equity/ending-equity accounting from completed trades
-- [ ] Core `packages/portfolio/portfolio.py` accounting upgrade — existing thin model still requires replacement before P1 is complete
+- [x] Core `packages/portfolio/portfolio.py` accounting upgrade — deterministic realized P&L, trade recording, equity, and candle-indexed realized curve
 
 ### M5 Web/API
 - [x] Market data endpoints
