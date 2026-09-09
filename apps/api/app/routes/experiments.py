@@ -21,6 +21,16 @@ from research.experiments.repository import ExperimentRepository
 router = APIRouter(prefix="/experiments", tags=["experiments"])
 
 
+def _json_safe(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(item) for item in value]
+    return value
+
+
 def _run_request(request: BacktestRequest, connection: Any) -> tuple[dict[str, Any], str]:
     try:
         symbol = canonical_symbol(request.symbol)
@@ -90,7 +100,11 @@ def create_experiment(
     manifest = _manifest_for(request, data_version, experiment_id)
     repository = ExperimentRepository(connection)
     repository.save_manifest(manifest)
-    repository.save_results(experiment_id, result["metrics"], result["trades"])
+    repository.save_results(
+        experiment_id,
+        _json_safe(result["metrics"]),
+        _json_safe(result["trades"]),
+    )
     return {"experiment": manifest.as_record(), "result": result}
 
 
@@ -140,5 +154,9 @@ def rerun_experiment(
     result, data_version = _run_request(request, connection)
     if data_version != manifest.data_version:
         raise HTTPException(409, "stored data version is no longer available for the requested range")
-    repository.save_results(experiment_id, result["metrics"], result["trades"])
+    repository.save_results(
+        experiment_id,
+        _json_safe(result["metrics"]),
+        _json_safe(result["trades"]),
+    )
     return {"experiment_id": experiment_id, "replayed": True, "result": result}
