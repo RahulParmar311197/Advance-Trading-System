@@ -19,15 +19,15 @@ The repository has a runnable Python/FastAPI foundation and deterministic resear
 - Experiment manifest/repository persistence implementation.
 
 ## Verification
-- The previous CI package-install failure was fixed with explicit setuptools package discovery.
-- CI then exposed and the implementation fixed a stale FastAPI route assertion.
-- CI then exposed a missing deterministic provider module; it was restored.
-- A PostgreSQL service plus real PostgreSQL repository integration test are now part of CI.
-- The current branch has newer commits than the last completed CI run, so the latest run must finish before claiming a full-suite pass.
+- Setuptools package discovery is now explicit and editable installation succeeds in CI.
+- CI reached 17 passing tests before exposing a FastAPI route-introspection assertion that was incompatible with current FastAPI router representation; the test now uses the generated OpenAPI path set.
+- CI also exposed and the implementation restored a missing deterministic provider module.
+- A PostgreSQL service plus real PostgreSQL repository integration test are part of CI; the test was reached successfully in the run that reported the API assertion failure.
+- A newer CI run is triggered by the latest test fix. No full-suite pass claim is made until that run completes.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining P0 blockers
-1. Verify the PostgreSQL integration test and full pytest suite in the latest CI run; fix failures before marking the integration complete.
+1. Verify the latest full pytest run and PostgreSQL integration; fix any remaining failures.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Implement and test the backtest execution API endpoint.
 4. Implement experiment API endpoints and reproducibility re-run path.
@@ -35,4 +35,4 @@ The repository has a runnable Python/FastAPI foundation and deterministic resear
 6. Run the full-stack acceptance test with real or explicitly user-supplied market data.
 
 ## Next dependency
-Backtest execution API is now the next application dependency after CI verification. Then complete experiment API/re-run and the web dashboard. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
+Backtest execution API is the next application dependency once CI is green. Then complete experiment API/re-run and the web dashboard. Advanced options, microstructure, ML, AI-agent, execution, SaaS and hardening remain downstream dependencies.
