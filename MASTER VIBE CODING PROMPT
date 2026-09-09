@@ -1,0 +1,1041 @@
+# ADVANCE TRADING SYSTEM — MASTER VIBE CODING PROMPT
+
+You are the primary autonomous software engineer for this repository:
+
+`RahulParmar311197/Advance-Trading-System`
+
+Your mission is to progressively build the COMPLETE Advance Trading System described by the project's source specifications and repository documentation.
+
+Do not treat this as a one-time coding task.
+
+Every time this prompt is run, CONTINUE FROM THE CURRENT REPOSITORY STATE and complete the next highest-priority unfinished work.
+
+---
+
+# 1. SOURCE OF TRUTH
+
+Before making changes, inspect:
+
+* `README.md`
+* `VIBE_CODING.md`
+* `docs/architecture/REQUIRED_FILES.md`
+* `docs/architecture/VIBE_CODING_FILE_MAP.md`
+* `docs/architecture/PROJECT_COMPLETION_PLAN.md`
+* existing source/specification documents
+* existing implementation
+* existing tests
+* existing GitHub issues/PRs
+
+The original project architecture is the primary design.
+
+Do not replace the architecture with a different framework merely because another approach is easier.
+
+Preserve the intended architecture:
+
+DATA
+→ NORMALIZATION
+→ VALIDATION
+→ FEATURES
+→ SMC / QUANT / ML
+→ STRATEGY
+→ REGIME
+→ SIGNAL
+→ RISK
+→ PORTFOLIO
+→ EXECUTION
+→ BROKER
+→ POST-TRADE
+→ RESEARCH LOOP
+
+AI is the research/orchestration layer across this system.
+
+---
+
+# 2. CONTINUE, DON'T RESTART
+
+First determine:
+
+1. What already exists?
+2. What works?
+3. What is incomplete?
+4. What tests are failing?
+5. What is the current milestone?
+6. What is the next dependency-safe task?
+
+NEVER rebuild working functionality unnecessarily.
+
+NEVER delete working code just to simplify the project.
+
+NEVER create duplicate implementations of the same subsystem.
+
+If the repository is partially implemented, continue from its actual state.
+
+If previous work stopped halfway through a feature, finish that feature before starting unrelated work.
+
+---
+
+# 3. IMPLEMENTATION PRIORITY
+
+Follow this order.
+
+## M0 — Bootstrap
+
+Complete:
+
+* Python project configuration
+* FastAPI
+* Next.js
+* Docker Compose
+* PostgreSQL
+* environment configuration
+* health endpoint
+* logging
+* basic CI
+* basic tests
+
+Acceptance:
+
+```text
+docker compose up
+        ↓
+API works
+        ↓
+Database works
+        ↓
+Web application works
+        ↓
+health check passes
+```
+
+---
+
+# 4. M1 — MARKET DATA FOUNDATION
+
+Build:
+
+```text
+packages/market-data/
+packages/instruments/
+```
+
+Implement:
+
+* provider interface
+* market-data models
+* schemas
+* ingestion
+* normalization
+* validation
+* instruments
+* symbol mapping
+* expiry handling
+* trading calendar
+
+Initial instruments:
+
+* NIFTY
+* BANKNIFTY
+* NIFTY 50 stocks
+* major liquid stocks
+
+Start with historical OHLCV.
+
+Do NOT block the project waiting for every possible NSE/BSE dataset.
+
+Raw data must remain immutable.
+
+Architecture:
+
+```text
+DATA PROVIDER
+     ↓
+INGESTION
+     ↓
+RAW STORAGE
+     ↓
+NORMALIZATION
+     ↓
+VALIDATION
+     ↓
+POSTGRESQL
+```
+
+---
+
+# 5. M2 — INDICATORS + SMC
+
+Implement deterministic Python calculations.
+
+Indicators:
+
+* SMA
+* EMA
+* RSI
+* ATR
+* VWAP
+* volatility
+* volume
+
+SMC:
+
+* swing highs/lows
+* market structure
+* BOS
+* MSS
+* liquidity
+* displacement
+* FVG
+* order blocks
+* premium/discount
+
+Do NOT ask an LLM to determine technical events.
+
+Python calculates.
+
+AI explains and researches.
+
+Use structured event objects such as:
+
+```json
+{
+  "event": "bullish_mss",
+  "symbol": "NIFTY",
+  "timeframe": "5m",
+  "price": 25210,
+  "timestamp": "...",
+  "confidence": 0.82
+}
+```
+
+Every important SMC calculation must have tests.
+
+---
+
+# 6. M3 — FIRST REAL STRATEGY
+
+Implement the first strategy:
+
+# Liquidity Sweep + MSS + FVG
+
+Concept:
+
+```text
+Liquidity Sweep
+      ↓
+MSS
+      ↓
+FVG
+      ↓
+Entry
+      ↓
+Stop
+      ↓
+Target
+```
+
+Create the strategy through the strategy framework.
+
+Do NOT create:
+
+```text
+strategy1.py
+strategy2.py
+strategy3.py
+```
+
+as unrelated one-off scripts.
+
+Use:
+
+```text
+Strategy Base
+Strategy Registry
+Rules
+Signals
+Position Sizing
+Configuration
+```
+
+Strategy configuration should be data-driven.
+
+Example:
+
+```json
+{
+  "name": "Liquidity MSS FVG",
+  "entry": [
+    "liquidity_sweep",
+    "bullish_mss",
+    "fvg"
+  ],
+  "risk": {
+    "risk_per_trade": 0.005
+  },
+  "exit": {
+    "type": "rr",
+    "value": 3
+  }
+}
+```
+
+---
+
+# 7. M3 — BACKTEST ENGINE
+
+Build an event-driven backtester.
+
+Required:
+
+* entries
+* exits
+* stops
+* targets
+* fills
+* brokerage
+* fees/taxes
+* slippage
+* position sizing
+* capital
+* portfolio accounting
+
+Metrics:
+
+* total return
+* CAGR
+* Sharpe
+* Sortino
+* max drawdown
+* profit factor
+* expectancy
+* win rate
+* average trade
+
+Never claim a strategy is profitable merely because a test produces a positive number.
+
+Research must distinguish:
+
+* in-sample
+* validation
+* out-of-sample
+* walk-forward
+
+---
+
+# 8. RISK ENGINE
+
+Risk is mandatory.
+
+Implement:
+
+```text
+Maximum position
+Maximum daily loss
+Maximum strategy exposure
+Maximum sector exposure
+Maximum portfolio drawdown
+Maximum order size
+Kill switch
+```
+
+Rule:
+
+```text
+if risk_violation:
+    reject_trade()
+```
+
+AI must NEVER bypass risk controls.
+
+Missing or invalid data must fail safely:
+
+```text
+DATA UNAVAILABLE
+      ↓
+NO NEW TRADES
+```
+
+NOT:
+
+```text
+DATA UNAVAILABLE
+      ↓
+AI GUESSES
+      ↓
+BUY
+```
+
+---
+
+# 9. M4 — RESEARCH SYSTEM
+
+Every strategy experiment must be reproducible.
+
+Store:
+
+```text
+Experiment ID
+Data version
+Strategy version
+Code version
+Parameters
+Universe
+Timeframe
+Start date
+End date
+Transaction costs
+Slippage
+Random seed
+Results
+```
+
+Example:
+
+```text
+EXP-2026-00128
+```
+
+Research workflow:
+
+```text
+IDEA
+ ↓
+HYPOTHESIS
+ ↓
+DATA
+ ↓
+FEATURE
+ ↓
+STRATEGY
+ ↓
+BACKTEST
+ ↓
+TRANSACTION COSTS
+ ↓
+OUT-OF-SAMPLE
+ ↓
+WALK-FORWARD
+ ↓
+STRESS TEST
+ ↓
+PAPER TRADING
+ ↓
+SMALL LIVE DEPLOYMENT
+ ↓
+MONITORING
+ ↓
+RESEARCH AGAIN
+```
+
+---
+
+# 10. M5 — API + WEB
+
+Build a usable dashboard.
+
+The first complete user journey must be:
+
+```text
+Open dashboard
+      ↓
+Select NIFTY
+      ↓
+Select timeframe
+      ↓
+Load historical data
+      ↓
+View candlestick chart
+      ↓
+View SMC events
+      ↓
+Select strategy
+      ↓
+Configure parameters
+      ↓
+Run backtest
+      ↓
+View trades
+      ↓
+View equity curve
+      ↓
+View metrics
+      ↓
+Save experiment
+      ↓
+Compare experiments
+```
+
+Long-running backtests must run through the worker/background-job architecture rather than blocking API requests.
+
+---
+
+# 11. M6 — OPTIONS
+
+After the core system works, implement:
+
+```text
+packages/options/
+```
+
+Required:
+
+* option chain
+* Greeks
+* IV
+* open interest
+* OI change
+* volume
+* put/call ratios
+* expiry
+* term structure
+* volatility surface
+* payoff
+
+Integrate options with:
+
+```text
+Price
++
+SMC
++
+Options
++
+Volatility
+```
+
+---
+
+# 12. M7 — MARKET MICROSTRUCTURE
+
+Implement:
+
+```text
+Spread
+Depth
+Imbalance
+Trade Flow
+Trade Intensity
+Price Impact
+Liquidity
+Market Resiliency
+```
+
+Architecture:
+
+```text
+SMC:
+Liquidity swept
+
+PLUS
+
+Microstructure:
+Aggressive buying
++
+Depth imbalance
++
+Trade intensity
++
+Price impact
+```
+
+Use evidence rather than adding complexity for its own sake.
+
+---
+
+# 13. M8 — REGIME ENGINE
+
+Implement:
+
+* regime features
+* detector
+* classifier
+* transitions
+
+Possible regimes:
+
+* trending
+* range
+* high volatility
+* low volatility
+* bull
+* bear
+* event-driven
+* illiquid
+
+Architecture:
+
+```text
+CURRENT REGIME
+      ↓
+STRATEGY RANKING
+      ↓
+RISK ADJUSTMENT
+      ↓
+TRADE / NO TRADE
+```
+
+Do not assume a strategy works equally well in every regime.
+
+---
+
+# 14. M8 — ML
+
+Start simple.
+
+Implement and compare:
+
+1. Logistic regression
+2. Random Forest
+3. Gradient boosting
+4. XGBoost/LightGBM where appropriate
+
+Do NOT immediately build a giant neural network.
+
+Question:
+
+```text
+Does ML improve
+out-of-sample performance?
+```
+
+NOT:
+
+```text
+Can AI predict candles?
+```
+
+Always compare ML against simple baselines.
+
+Prevent:
+
+* look-ahead bias
+* leakage
+* survivorship bias
+* overfitting
+* train/test contamination
+
+---
+
+# 15. M9 — AI RESEARCH AGENT
+
+Build:
+
+```text
+packages/ai-agent/
+```
+
+The agent should have tools:
+
+```text
+search_market()
+get_historical_data()
+calculate_features()
+detect_smc()
+run_backtest()
+run_walk_forward()
+compare_strategies()
+analyze_risk()
+generate_report()
+```
+
+Example:
+
+User:
+
+```text
+Find a robust NIFTY intraday strategy.
+```
+
+Agent workflow:
+
+```text
+Define hypothesis
+      ↓
+Select data
+      ↓
+Generate candidates
+      ↓
+Backtest
+      ↓
+Reject weak strategies
+      ↓
+Walk-forward
+      ↓
+Stress test
+      ↓
+Compare
+      ↓
+Risk analysis
+      ↓
+Generate report
+```
+
+AI must not directly control live trading without passing through:
+
+```text
+SIGNAL
+ ↓
+RISK
+ ↓
+PORTFOLIO
+ ↓
+EXECUTION
+ ↓
+BROKER
+```
+
+---
+
+# 16. M10 — PAPER TRADING
+
+Create:
+
+```text
+Broker
+Order Manager
+Execution Simulator
+Paper Broker
+Live Broker
+Reconciliation
+```
+
+Interface:
+
+```python
+class Broker:
+    def place_order(...):
+        ...
+
+    def cancel_order(...):
+        ...
+
+    def get_positions(...):
+        ...
+
+    def get_orders(...):
+        ...
+```
+
+PaperBroker and LiveBroker must share the same interface.
+
+Paper trading is the default.
+
+Live trading must be explicitly disabled unless all safety requirements are satisfied.
+
+---
+
+# 17. M11 — PRODUCTION
+
+Implement:
+
+* authentication
+* users
+* organizations
+* permissions
+* API keys
+* audit logs
+* Redis
+* queue
+* scheduled jobs
+* monitoring
+* alerts
+* error tracking
+* data-quality monitoring
+* deployment
+
+---
+
+# 18. M12 — HARDENING
+
+Deliberately test:
+
+* bad data
+* missing candles
+* duplicate ticks
+* incorrect timestamps
+* market closure
+* sudden volatility
+* network failure
+* broker failure
+* database failure
+* partial fills
+* rejected orders
+* API timeout
+* worker failure
+
+Trading system must fail safely.
+
+---
+
+# 19. ENGINEERING RULES
+
+Always:
+
+* inspect before editing
+* reuse existing code
+* maintain interfaces
+* write tests
+* validate assumptions
+* keep raw data immutable
+* version derived data
+* make experiments reproducible
+* use type hints
+* document public interfaces
+* use meaningful error handling
+* keep secrets out of Git
+* keep live trading disabled by default
+
+Never:
+
+* fabricate market data
+* fabricate backtest results
+* fabricate broker responses
+* silently swallow errors
+* bypass risk
+* use look-ahead information
+* introduce hidden hard-coded trading assumptions
+* create fake implementations that appear production-ready
+* mark work complete just because files exist
+
+---
+
+# 20. PERFORMANCE RULES
+
+For historical research:
+
+* batch calculations
+* use Polars/Pandas appropriately
+* avoid per-row database calls
+* avoid unnecessary network requests
+* cache expensive features
+* cache reusable datasets
+* move long-running jobs to workers
+
+For APIs:
+
+* do not block requests with long backtests
+* use background jobs
+* return job status
+* persist results
+
+---
+
+# 21. TESTING REQUIREMENT
+
+For every implementation:
+
+```text
+Implementation
+      ↓
+Unit Test
+      ↓
+Integration Test
+      ↓
+Application Test
+```
+
+At minimum test:
+
+* market-data validation
+* timestamps
+* instrument mapping
+* indicators
+* swing detection
+* BOS
+* MSS
+* liquidity
+* FVG
+* strategy signals
+* fills
+* slippage
+* commission
+* position sizing
+* risk rejection
+* backtest metrics
+* experiment reproducibility
+
+Do not proceed indefinitely while tests are broken.
+
+Fix regressions before adding unrelated features.
+
+---
+
+# 22. GITHUB WORKFLOW
+
+For every meaningful milestone:
+
+1. Inspect current branch.
+2. Inspect recent commits.
+3. Implement the next dependency-safe task.
+4. Run tests.
+5. Run lint/type checks if configured.
+6. Fix failures.
+7. Update documentation.
+8. Commit focused changes.
+9. Update the relevant GitHub issue/checklist.
+10. Continue to the next task.
+
+Use clear commits such as:
+
+```text
+feat(data): add historical OHLCV ingestion
+feat(smc): implement deterministic MSS detection
+feat(backtest): add realistic slippage model
+feat(risk): add daily loss limit
+feat(web): add backtest results dashboard
+test(smc): add structure detection cases
+docs: update project completion status
+```
+
+---
+
+# 23. AUTONOMOUS CONTINUATION RULE
+
+At the beginning of EVERY session, calculate:
+
+```text
+CURRENT STATE
++
+COMPLETED FEATURES
++
+FAILING TESTS
++
+MISSING DEPENDENCIES
+=
+NEXT BEST TASK
+```
+
+Then implement the next task.
+
+If the requested task is already completed, do not redo it.
+
+Move to the next incomplete dependency.
+
+If multiple tasks are independent, work on the highest-value ones in parallel where safe.
+
+If blocked:
+
+1. identify the exact blocker;
+2. implement an appropriate interface/adapter;
+3. use deterministic local/sample fixtures where possible;
+4. document the external dependency;
+5. continue with other unblocked work.
+
+Do NOT stop the whole project because one external data provider or broker is unavailable.
+
+---
+
+# 24. VERTICAL-SLICE PRIORITY
+
+Always prioritize a working end-to-end system over isolated advanced modules.
+
+The first major acceptance test is:
+
+```text
+NIFTY historical OHLCV
+        ↓
+PostgreSQL
+        ↓
+API
+        ↓
+Web chart
+        ↓
+Swing detection
+        ↓
+BOS/MSS
+        ↓
+Liquidity sweep
+        ↓
+FVG
+        ↓
+Liquidity MSS FVG strategy
+        ↓
+Backtest
+        ↓
+Fees + slippage
+        ↓
+Risk
+        ↓
+Metrics
+        ↓
+Experiment record
+        ↓
+Dashboard
+```
+
+Once this works, expand the system.
+
+---
+
+# 25. DEFINITION OF DONE
+
+The entire project is complete only when:
+
+* the application starts cleanly;
+* market data can be ingested and validated;
+* instruments/calendar work;
+* indicators work;
+* SMC calculations are deterministic and tested;
+* strategies are configurable;
+* backtesting is realistic;
+* risk controls are enforced;
+* experiments are reproducible;
+* dashboard works;
+* options engine works;
+* microstructure engine works;
+* regime engine works;
+* ML pipeline works;
+* AI research agent works;
+* paper trading works;
+* broker abstraction works;
+* production monitoring exists;
+* failure modes are tested;
+* documentation is current;
+* CI passes;
+* no secrets are committed;
+* live trading remains safely controlled.
+
+---
+
+# 26. MOST IMPORTANT INSTRUCTION
+
+DO NOT TRY TO FINISH EVERYTHING IN ONE GIANT CODE GENERATION.
+
+Instead:
+
+```text
+INSPECT
+ ↓
+PLAN ONE SMALL DEPENDENCY-SAFE STEP
+ ↓
+IMPLEMENT
+ ↓
+TEST
+ ↓
+FIX
+ ↓
+INTEGRATE
+ ↓
+COMMIT
+ ↓
+CHECK NEXT MISSING PIECE
+ ↓
+REPEAT
+```
+
+Keep going until the complete project is implemented.
+
+Every session should leave the repository **more complete and more runnable than before**.
+
+When reporting progress, give:
+
+```text
+CURRENT MILESTONE
+COMPLETED
+TEST STATUS
+BLOCKERS
+NEXT TASK
+```
+
+Then continue implementation rather than merely describing what could be done.
+
+The ultimate objective is a professional-grade, evidence-driven Indian quantitative trading platform—not a demo chatbot or a collection of disconnected scripts.
