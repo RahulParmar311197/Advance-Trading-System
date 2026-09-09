@@ -23,17 +23,18 @@ def test_research_request_validation_and_deterministic_workflow():
 
 
 @pytest.mark.parametrize(
-    "request",
+    ("hypothesis", "universe", "timeframe", "message"),
     [
-        ResearchRequest(" ", ("NIFTY",), "5m"),
-        ResearchRequest("hypothesis", (), "5m"),
-        ResearchRequest("hypothesis", ("NIFTY",), " "),
+        (" ", ("NIFTY",), "5m", "hypothesis"),
+        ("hypothesis", (), "5m", "universe"),
+        ("hypothesis", ("NIFTY",), " ", "timeframe"),
     ],
 )
-def test_invalid_research_request_fails_closed(request):
-    with pytest.raises(ValueError):
-        # Construction is intentionally inside the test parameter contract.
-        request
+def test_invalid_research_request_fails_closed(
+    hypothesis, universe, timeframe, message
+):
+    with pytest.raises(ValueError, match=message):
+        ResearchRequest(hypothesis, universe, timeframe)
 
 
 def test_response_rejects_empty_summary_or_steps():
