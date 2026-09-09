@@ -10,44 +10,45 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [ ] Python package configuration
 - [ ] Environment template
 - [ ] Docker Compose
-- [ ] CI
+- [x] CI workflow added
 - [ ] Health endpoint
 
 ### M1 Data foundation
-- [ ] Provider interface
-- [ ] Historical OHLCV ingestion
-- [ ] Normalization
-- [ ] Validation
-- [ ] Instruments
-- [ ] Symbol mapping
-- [ ] Trading calendar
-- [ ] PostgreSQL migrations
-- [ ] Immutable raw storage
-- [ ] Data-quality tests
+- [x] Provider interface
+- [x] Historical OHLCV ingestion
+- [x] Normalization
+- [x] Validation
+- [x] Instruments
+- [x] Symbol mapping
+- [x] Trading calendar
+- [ ] PostgreSQL migrations/integration
+- [x] Immutable raw storage
+- [x] Data-quality tests
+- [ ] Authorized real historical provider configured for Indian market data
 
 ### M2 Analytics foundation
-- [ ] EMA
-- [ ] ATR
-- [ ] VWAP
-- [ ] Swing highs/lows
-- [ ] BOS
-- [MSS]
-- [ ] Liquidity sweep
-- [ ] FVG
-- [ ] Structured event schema
+- [x] EMA
+- [x] ATR
+- [x] VWAP
+- [x] Swing highs/lows
+- [x] BOS
+- [x] MSS
+- [x] Liquidity sweep
+- [x] FVG
+- [ ] Structured event schema integration
 
 ### M3 Strategy/backtest
-- [ ] Strategy base/registry
-- [ ] Liquidity MSS FVG
-- [ ] Event-driven backtest
-- [ ] Fills
-- [ ] Position sizing
-- [ ] Brokerage/fees
-- [ ] Slippage
+- [x] Strategy base/registry
+- [x] Liquidity MSS FVG
+- [x] Event-driven backtest
+- [x] Fills
+- [x] Position sizing
+- [x] Brokerage/fees
+- [x] Slippage
 - [ ] Equity curve
-- [ ] Performance metrics
-- [ ] Risk limits
-- [ ] Kill switch
+- [x] Performance metrics
+- [x] Risk limits
+- [x] Kill switch
 
 ### M4 Research
 - [ ] Experiment schema
