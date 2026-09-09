@@ -21,7 +21,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [x] Instruments
 - [x] Symbol mapping
 - [x] Trading calendar
-- [ ] PostgreSQL migrations/integration — implementation and CI test added; latest CI verification pending
+- [ ] PostgreSQL migrations/integration — implementation and CI test added; latest verification tracked below
 - [x] Immutable raw storage
 - [x] Data-quality tests
 - [ ] Authorized real historical provider configured for Indian market data
@@ -63,8 +63,8 @@ Turn the architecture in the project source into a continuously runnable Indian 
 ### M5 Web/API
 - [x] Market data endpoints
 - [x] SMC event contract
-- [ ] Backtest job endpoint
-- [ ] Experiment endpoints — persistence implementation exists; API integration remains
+- [x] Backtest execution endpoint — implementation and tests added; latest CI verification pending
+- [x] Experiment endpoints — manifest persistence, retrieval/listing and reproducibility re-run implementation added; latest CI verification pending
 - [ ] Dashboard
 - [ ] Candlestick chart
 - [ ] Signal/event overlays
