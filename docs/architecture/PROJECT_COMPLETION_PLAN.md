@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward tool and deterministic strategy-comparison tool are implemented with unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is the risk analysis tool.
+The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward, strategy-comparison, and risk-analysis tools now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is the report tool.
 
 ## Milestones
 
@@ -123,7 +123,7 @@ The M9 AI research-agent dependency chain is being implemented incrementally. Th
 - [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification pending
 - [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; CI verification pending
 - [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; CI verification pending
-- [ ] Risk analysis tool
+- [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; CI verification pending
 - [ ] Report tool
 - [ ] Experiment memory
 
