@@ -46,7 +46,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Python CI run `34334649943` completed successfully on the integrated regime-feature/detector head; the full repository suite passed.
 - Python CI run `34335923065` completed successfully after the regime-classifier implementation and unit tests; the full configured repository test suite passed.
 - Web CI run `34336119528` completed successfully; dashboard lint and build passed.
-- The current transition/dataset/model revision is awaiting authoritative Python CI verification.
+- Python CI run `34337298273` caught a test-fixture mismatch in the newly added ML baseline tests: the expected error text was too broad. The test was corrected rather than weakening the implementation.
+- Python CI run `34337472342` then passed 152 tests and exposed only that single assertion mismatch; the corrected test is committed in `b50128234c8a3648cf46f66e4ead9d7c9703c4f0` and a fresh CI run is pending.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -55,8 +56,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with real or explicitly user-supplied market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification of the current regime transition/dataset/model revision.
+4. Complete authoritative Python CI verification of the current regime transition/dataset/logistic-baseline revision.
 5. Continue M8 with Random Forest after the logistic baseline is verified.
 
 ## Next dependency
-Complete authoritative Python CI verification for the current M8 transition/dataset/logistic-baseline revision. Then implement and verify the required Random Forest baseline with explicit dataset inputs; never fabricate labels or market data.
+Verify the current `b50128234c8a3648cf46f66e4ead9d7c9703c4f0` revision in authoritative Python CI. If green, mark the logistic baseline as verified and implement the required Random Forest baseline with explicit dataset inputs. If CI finds another failure, fix the actual failure before advancing.
