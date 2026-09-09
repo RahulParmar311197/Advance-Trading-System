@@ -12,8 +12,8 @@ from packages.regime.detector import Regime
 class NearestCentroidClassifier:
     """Dependency-free deterministic multiclass nearest-centroid baseline."""
 
-    labels: tuple[Regime, ...]
-    centroids: tuple[tuple[Decimal, ...], ...]
+    labels: tuple[Regime, ...] = ()
+    centroids: tuple[tuple[Decimal, ...], ...] = ()
 
     @classmethod
     def fit(cls, dataset: FeatureDataset) -> "NearestCentroidClassifier":
@@ -50,12 +50,12 @@ class NearestCentroidClassifier:
 class LogisticRegressionClassifier:
     """Dependency-free deterministic one-vs-rest logistic-regression baseline."""
 
-    labels: tuple[Regime, ...]
-    weights: tuple[tuple[Decimal, ...], ...]
-    biases: tuple[Decimal, ...]
-    learning_rate: Decimal
-    epochs: int
-    l2: Decimal
+    labels: tuple[Regime, ...] = ()
+    weights: tuple[tuple[Decimal, ...], ...] = ()
+    biases: tuple[Decimal, ...] = ()
+    learning_rate: Decimal = Decimal("0.1")
+    epochs: int = 500
+    l2: Decimal = Decimal("0")
 
     @classmethod
     def fit(
