@@ -39,15 +39,16 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests; full integrated M8 CI verification passed on run `34340996500`.
 - M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests; full integrated M8 CI verification passed on run `34340996500`.
 - M9 agent interface: explicit research request/response contracts plus a deterministic research-agent implementation that proposes validation, feature, OOS backtest, and baseline-comparison steps without executing trades or inventing data; unit tests committed.
-- M9 research planner: immutable deterministic research plan over validation, feature construction, backtest, OOS evaluation, comparison, and reporting steps; unit tests committed.
+- M9 research planner: immutable deterministic research plan over validation, feature, backtest, OOS evaluation, comparison, and reporting steps; unit tests committed.
 - M9 tool registry: deterministic named callable registry with explicit registration, duplicate-name rejection, lexical discovery, lookup validation, and explicit invocation; unit tests committed.
-- M9 historical-data tool: validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary, preserving provider-supplied rows without synthesis; explicit request/result contracts and fail-closed request/data validation; unit tests committed.
+- M9 historical-data tool: validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary, preserving provider-supplied rows without synthesis; explicit request/result contracts and fail-closed request/data validation; unit tests committed and authoritative CI verification passed on the preceding M9 revision.
+- M9 feature tool: deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, immutable request/result contracts, candle-aligned output, and fail-closed validation; unit tests committed. Authoritative CI verification is pending on the current feature revision.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
-- Web CI run `34342815196` was previously in progress for the tool-registry revision; the historical-data tool is now implemented and requires fresh authoritative CI verification.
-- Historical-data tool tests cover request validation, provider-row preservation, normalization ordering, and invalid OHLC rejection.
+- The preceding M9 historical-data revision completed its Python and Web CI successfully before feature-tool implementation.
+- Current feature-tool Python CI is queued for head `3fbeb97ad91e7ec983e493e8090aad36d64e702e` (workflow run `34344708096`); no result is claimed until completion.
 - Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
 - No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -56,8 +57,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification for the current M9 historical-data revision.
+4. Complete authoritative Python CI verification for the current M9 feature revision.
 5. Continue M9 concrete research tools after verification.
 
 ## Next dependency
-Complete authoritative Python CI verification for the current M9 historical-data revision. If green, implement the feature tool as the next concrete tool. If CI finds a failure, fix the actual failure before advancing.
+Complete authoritative Python CI verification for head `3fbeb97ad91e7ec983e493e8090aad36d64e702e`. If green, implement the SMC tool as the next concrete tool. If CI finds a failure, fix the actual failure before advancing.
