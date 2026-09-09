@@ -93,7 +93,7 @@ Turn the architecture in the project source into a continuously runnable Indian 
 - [ ] Spread — deterministic bid/ask spread and relative-spread implementation and unit tests committed; authoritative Python CI verification pending
 - [ ] Depth — deterministic validated level-2 bid/ask snapshot, best levels, visible total depth, and bounded depth queries; implementation and unit tests committed; authoritative Python CI verification pending
 - [ ] Imbalance — deterministic normalized bid/ask and supplied-depth quantity imbalance; implementation and unit tests committed; authoritative Python CI verification pending
-- [ ] Trade flow
+- [ ] Trade flow — deterministic signed executed-volume and normalized buy/sell flow imbalance using explicitly supplied trade sides; implementation and unit tests committed; authoritative Python CI verification pending
 - [ ] Trade intensity
 - [ ] Price impact
 - [ ] Liquidity/resiliency
