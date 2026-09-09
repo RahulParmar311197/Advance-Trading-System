@@ -63,13 +63,15 @@ Turn the architecture in the project source into a continuously runnable Indian 
 ### M5 Web/API
 - [x] Market data endpoints
 - [x] SMC event contract
-- [x] Backtest execution endpoint — implementation and tests added; latest CI verification pending
-- [x] Experiment endpoints — manifest persistence, retrieval/listing and reproducibility re-run implementation added; latest CI verification pending
-- [ ] Dashboard
-- [ ] Candlestick chart
-- [ ] Signal/event overlays
-- [ ] Backtest results
-- [ ] Experiment comparison
+- [x] Backtest execution endpoint
+- [x] Experiment endpoints
+- [x] Dashboard implementation — Next.js page consumes candles, SMC events, backtest results and experiments
+- [x] Candlestick chart implementation
+- [x] Signal/event overlays
+- [x] Backtest results view
+- [x] Experiment table
+- [ ] Dashboard runtime/build verification in CI
+- [ ] Full-stack acceptance with supplied/real market data
 
 ### M6 Options
 - [ ] Chain model
