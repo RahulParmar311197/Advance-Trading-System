@@ -21,7 +21,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M11 queue/workers: FIFO Redis queue with recoverable in-flight claims, acknowledgement/retry/backoff semantics, runnable worker process, Docker worker service, and a real PostgreSQL-persisted backtest job handler.
 - M11 scheduled jobs: separate interval scheduler service with validated explicit job configuration, Redis enqueue boundary, missed-interval storm protection, Redis outage recovery, Docker service, and unit coverage.
 - M11 monitoring: liveness plus PostgreSQL/Redis/queue readiness reporting, configurable queue selection, fail-closed HTTP 503 behavior, documentation and integration/unit coverage.
-- M11 alerts: readiness health-transition alerts through the application logging boundary with explicit delivery outcomes and transition de-duplication/recovery signaling.
+- M11 alerts: readiness health-transition alerts through the application logging boundary with explicit delivery outcomes and transition de-duplication/recovery signaling; transition and delivery-failure behavior now has direct unit coverage.
 - M11 error tracking: normalized exception events with HTTP request context and traceback-aware application logging, fail-closed database-error handling, and generic 500 handling without leaking exception text.
 - M11 data-quality monitoring: immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage.
 - M11 deployment: provider-neutral production Compose topology with explicit secrets/configuration, dependency health gates, restart policies, internal database/Redis networking, production configuration validation, CI Compose validation, and an operational deployment/rollback runbook.
@@ -33,7 +33,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows, reject naive query timestamps, and reject empty windows, with integration/unit coverage.
 
 ## Verification
-- Alerts and web lint/build passed on the recorded M11 alert revision.
+- Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd` and is awaiting its post-change CI run.
 - Error tracking Python CI passed on run `34577482109` / job `103193146616`.
 - Data-quality monitoring CI passed on run `34578034504` / job `103194909226`.
 - Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
@@ -44,7 +44,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - The CSV provider implementation and tests passed full Python/Compose CI on run `34584113636` / job `103214214002`; Web lint/build passed on run `34584113590` / job `103214213577`.
 - The first API-window-hardening revision failed because an existing unit fixture used an empty interval; the fixture was corrected to exercise a real half-open candle window, and an explicit empty-window rejection test was added.
 - The corrected API-window-hardening tests passed full Python/Compose CI on run `34585734250` / job `103219387353`.
-- The Web workflow for the preceding API-window-hardening revision passed lint/build on run `34585098388` / job `103217358543`; the current revision changes Python tests/docs only and does not alter Web sources.
+- The Web workflow for the preceding API-window-hardening revision passed lint/build on run `34585098388` / job `103217358543`; the subsequent changes are Python tests/docs only and do not alter Web sources.
 - The first causal-research fixture revision failed because its synthetic test strategy emitted a second entry signal; the fixture was corrected rather than weakening the research implementation.
 - The first combined-research fixture revision likewise emitted multiple holdout trades; it was corrected to exercise one deterministic test trade per evaluator without weakening production research code.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
