@@ -31,8 +31,8 @@ def _validate_window(start: datetime, end: datetime) -> None:
         raise HTTPException(400, "start must be timezone-aware")
     if end.tzinfo is None or end.utcoffset() is None:
         raise HTTPException(400, "end must be timezone-aware")
-    if start > end:
-        raise HTTPException(400, "start must be <= end")
+    if end <= start:
+        raise HTTPException(400, "end must be after start")
 
 
 def _load_candles(connection: Any, symbol: str, timeframe: str, start: datetime, end: datetime, limit: int) -> list[Candle]:
