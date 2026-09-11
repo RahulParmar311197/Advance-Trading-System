@@ -46,6 +46,21 @@ class FitRecordingStrategy(Strategy):
         ]
 
 
+class FutureLeakStrategy(Strategy):
+    def signals(self, candles):
+        if len(candles) < 6:
+            return []
+        return [
+            Signal(
+                index=3,
+                direction="bullish",
+                entry=Decimal("100"),
+                stop=Decimal("99"),
+                target=Decimal("102"),
+            )
+        ]
+
+
 def make_candles(count: int) -> list[Candle]:
     base = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
     return [
@@ -97,6 +112,18 @@ def test_oos_fit_receives_only_training_period():
     assert strategy.fit_end_timestamps == [dataset[2].timestamp]
     assert len(result.trades) == 1
     assert result.trades[0].entry_index == 1
+
+
+def test_oos_does_not_allow_future_test_candles_to_create_earlier_signal():
+    result = run_out_of_sample(
+        make_candles(6),
+        FutureLeakStrategy(),
+        test_size=3,
+        initial_capital=Decimal("100000"),
+        slippage_bps=Decimal("0"),
+    )
+
+    assert result.trades == []
 
 
 def test_oos_rejects_missing_train_or_test_period():
