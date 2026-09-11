@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from itertools import count
 
-from packages.execution.broker import Broker, Order, OrderRequest, OrderStatus, OrderType
+from packages.execution.broker import Broker, Order, OrderRequest, OrderSide, OrderStatus, OrderType
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,19 +26,11 @@ class PaperFill:
 
 
 class PaperBroker(Broker):
-    """Deterministic paper broker driven only by explicitly supplied prices.
+    """Deterministic paper broker driven only by explicitly supplied prices."""
 
-    No market data is generated. A submitted order remains accepted until the
-    caller supplies a compatible observation through ``process_fill``.
-    """
-
-    def __init__(self, fills: tuple[PaperFill, ...] = ()) -> None:
+    def __init__(self) -> None:
         self._orders: dict[str, Order] = {}
         self._sequence = count(1)
-        self._fills = fills
-        for fill in fills:
-            if fill.symbol != fill.symbol.strip():
-                raise ValueError("fill symbol must not have surrounding whitespace")
 
     def submit_order(self, request: OrderRequest) -> Order:
         order_id = request.client_order_id or f"PAPER-{next(self._sequence):08d}"
@@ -86,7 +78,6 @@ class PaperBroker(Broker):
             raise ValueError("fill symbol does not match order symbol")
         if not self._triggered(order.request, fill.price):
             return order
-
         filled = Order(
             order_id=order.order_id,
             request=order.request,
@@ -103,7 +94,7 @@ class PaperBroker(Broker):
         if request.order_type is OrderType.MARKET:
             return True
         if request.order_type is OrderType.LIMIT:
-            return price <= request.limit_price if request.side.value == "buy" else price >= request.limit_price
-        if request.side.value == "buy":
-            return price >= request.stop_price
-        return price <= request.stop_price
+            assert request.limit_price is not None
+            return price <= request.limit_price if request.side is OrderSide.BUY else price >= request.limit_price
+        assert request.stop_price is not None
+        return price >= request.stop_price if request.side is OrderSide.BUY else price <= request.stop_price
