@@ -10,16 +10,22 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./infra/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
   api:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.api
     environment:
       DATABASE_URL: postgresql://ats:ats@db:5432/ats
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
   web:
     build:
       context: ./apps/web
