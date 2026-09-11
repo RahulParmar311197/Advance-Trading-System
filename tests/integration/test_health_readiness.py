@@ -56,5 +56,7 @@ def test_readiness_fails_closed_without_redis(monkeypatch):
         body = response.json()
         assert body["components"]["redis"]["detail"] == "REDIS_URL is not configured"
         assert body["components"]["queue"]["status"] == "error"
+        assert body["alert"]["status"] == "degraded"
+        assert body["alert"]["delivery"]["status"] == "delivered"
     finally:
         app.dependency_overrides.clear()
