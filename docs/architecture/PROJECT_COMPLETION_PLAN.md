@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening now includes explicit paper partial fills, rejected-order behavior, and a typed `BrokerError` fail-closed contract with application-boundary tests. The broker-failure revision is awaiting authoritative CI verification. Next dependency is API-timeout/recovery hardening after broker-failure verification.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening includes explicit paper partial fills, rejected-order behavior, and typed `BrokerError` fail-closed handling. The broker-failure contract has passed authoritative CI. Network/database failure handling is now implemented with tests and is awaiting authoritative CI verification. Next dependency is API-timeout/recovery hardening after this verification.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -169,11 +169,11 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 execut
 - [ ] Duplicate-tick tests
 - [ ] Timestamp tests
 - [ ] Market-closure tests
-- [ ] Network failure tests
-- [ ] Database failure tests
-- [ ] Broker failure tests — typed `BrokerError` contract and OrderManager fail-closed propagation tests implemented; authoritative CI verification pending
+- [ ] Network failure tests — live broker translates connection/timeout/socket failures to typed `BrokerError`; tests committed, authoritative CI pending
+- [ ] Database failure tests — API translates PostgreSQL operational failures to fail-closed HTTP 503; integration test committed, authoritative CI pending
+- [x] Broker failure tests — typed `BrokerError` contract and OrderManager fail-closed propagation; authoritative Python CI verified on run `34567836083`
 - [x] Partial-fill tests — explicit paper partial-fill accumulation, weighted average price, and overfill rejection; authoritative Python CI verified on integrated revision `14533c19`
-- [x] Rejected-order tests — rejected broker state propagates through OrderManager and fail-closed fill/cancel behavior is covered; authoritative Python CI verified on integrated revision `14533c19`
+- [x] Rejected-order tests — rejected broker state propagates through OrderManager and fail-closed fill/cancel behavior; authoritative Python CI verified on integrated revision `14533c19`
 - [ ] API timeout tests
 - [ ] Recovery/runbook tests
 
