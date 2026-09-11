@@ -34,5 +34,14 @@ services:
       REDIS_URL: redis://redis:6379/0
       QUEUE_NAME: default
     depends_on: [db, redis]
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    command: ["python", "-m", "apps.scheduler.main"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      SCHEDULES_JSON: "[]"
+    depends_on: [redis]
 volumes:
   db_data:
