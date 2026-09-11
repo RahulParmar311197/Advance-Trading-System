@@ -26,6 +26,15 @@ router = APIRouter(
 )
 
 
+def _validate_window(start: datetime, end: datetime) -> None:
+    if start.tzinfo is None or start.utcoffset() is None:
+        raise HTTPException(400, "start must be timezone-aware")
+    if end.tzinfo is None or end.utcoffset() is None:
+        raise HTTPException(400, "end must be timezone-aware")
+    if start > end:
+        raise HTTPException(400, "start must be <= end")
+
+
 def _load_candles(connection: Any, symbol: str, timeframe: str, start: datetime, end: datetime, limit: int) -> list[Candle]:
     with connection.cursor() as cursor:
         cursor.execute(
@@ -71,8 +80,7 @@ def candles(
         symbol = canonical_symbol(symbol)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
-    if start > end:
-        raise HTTPException(400, "start must be <= end")
+    _validate_window(start, end)
     return [CandleResponse.model_validate(candle) for candle in _load_candles(connection, symbol, timeframe, start, end, limit)]
 
 
@@ -90,8 +98,7 @@ def smc_events(
         symbol = canonical_symbol(symbol)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
-    if start > end:
-        raise HTTPException(400, "start must be <= end")
+    _validate_window(start, end)
 
     cache_key = cache.key("smc-events", symbol=symbol, timeframe=timeframe,
                           start=start.isoformat(), end=end.isoformat(), limit=limit) if cache else None
