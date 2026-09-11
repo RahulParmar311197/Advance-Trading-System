@@ -46,6 +46,21 @@ class FitRecordingStrategy(Strategy):
         ]
 
 
+class FutureLeakStrategy(Strategy):
+    def signals(self, candles):
+        if len(candles) < 6:
+            return []
+        return [
+            Signal(
+                index=4,
+                direction="bullish",
+                entry=Decimal("100"),
+                stop=Decimal("99"),
+                target=Decimal("102"),
+            )
+        ]
+
+
 def candles(count: int) -> list[Candle]:
     base = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
     return [
@@ -111,3 +126,16 @@ def test_walk_forward_fit_receives_only_each_window_train_block():
     assert strategy.fit_lengths == [4, 4, 4]
     assert strategy.fit_end_timestamps == [dataset[3].timestamp, dataset[5].timestamp, dataset[7].timestamp]
     assert all(window["trade_count"] == 1 for window in result.windows)
+
+
+def test_walk_forward_does_not_allow_future_test_candles_to_create_earlier_signal():
+    result = run_walk_forward(
+        candles(6),
+        FutureLeakStrategy(),
+        train_size=3,
+        test_size=3,
+        initial_capital=Decimal("100000"),
+        slippage_bps=Decimal("0"),
+    )
+
+    assert result.trades == []
