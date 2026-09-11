@@ -8,6 +8,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from apps.api.app.auth import require_permission
 from apps.api.app.dependencies import get_connection
 from packages.backtest.engine import run_backtest
 from packages.backtest.metrics import build_equity_curve, summarize
@@ -89,7 +90,7 @@ def _equity_record(curve: list[dict[str, Decimal | int]], candles: list[Candle])
     ]
 
 
-@router.post("/validate")
+@router.post("/validate", dependencies=[Depends(require_permission("research"))])
 def validate_request(request: BacktestRequest) -> dict[str, Any]:
     if request.start > request.end:
         raise HTTPException(400, "start must be <= end")
@@ -100,7 +101,7 @@ def validate_request(request: BacktestRequest) -> dict[str, Any]:
     return {"accepted": True, "configuration": request.model_dump(mode="json") | {"symbol": symbol}}
 
 
-@router.post("/run")
+@router.post("/run", dependencies=[Depends(require_permission("research"))])
 def run(
     request: BacktestRequest,
     connection: Any = Depends(get_connection),
