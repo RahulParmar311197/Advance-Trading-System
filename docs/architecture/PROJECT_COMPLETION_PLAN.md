@@ -4,17 +4,17 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are now CI-verified on head `c93e7acb`. The next dependency is M12 execution hardening, beginning with explicit partial-fill lifecycle coverage in the paper broker.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening has begun: explicit paper partial fills and rejected-order behavior are implemented/tested and the latest integrated revision passed authoritative Python CI and web lint/build. Next dependency is broker-failure hardening.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
-- Paper broker: complete and CI verified; now supports explicit partial fills with weighted average fill price.
+- Paper broker: complete and CI verified; supports explicit market/limit/stop fills and explicit partial fills with weighted average price.
 - Order manager: complete and CI verified; new submissions are blocked while the optional kill switch is active.
 - Execution simulator: complete and CI verified.
 - Reconciliation: complete and CI verified.
 - Live adapter: complete, disabled by default, CI verified.
-- Execution monitoring: complete and CI verified on `c93e7acb`.
-- Kill-switch integration: complete and CI verified on `c93e7acb`.
+- Execution monitoring: complete and CI verified.
+- Kill-switch integration: complete and CI verified.
 
 ## Milestones
 
@@ -144,8 +144,8 @@ M10 execution monitoring and kill-switch integration are now CI-verified on head
 - [x] Execution simulator
 - [x] Reconciliation
 - [x] Live adapter behind feature flag
-- [x] Execution monitoring — deterministic stale-order/reconciliation health assessment with fail-closed new-order gate; authoritative CI verified on `c93e7acb`
-- [x] Kill switch integration — OrderManager blocks new submissions while active while preserving existing-order cancellation/status; authoritative CI verified on `c93e7acb`
+- [x] Execution monitoring
+- [x] Kill switch integration
 
 ### M11 Production/SaaS
 - [ ] Authentication
@@ -172,8 +172,8 @@ M10 execution monitoring and kill-switch integration are now CI-verified on head
 - [ ] Network failure tests
 - [ ] Database failure tests
 - [ ] Broker failure tests
-- [ ] Partial-fill tests — explicit paper partial-fill accumulation and overfill rejection implemented; authoritative CI verification pending
-- [ ] Rejected-order tests
+- [x] Partial-fill tests — explicit paper partial-fill accumulation, weighted average price, and overfill rejection; authoritative Python CI verified on integrated revision `14533c19`
+- [x] Rejected-order tests — rejected broker state propagates through OrderManager and fail-closed fill/cancel behavior is covered; authoritative Python CI verified on integrated revision `14533c19`
 - [ ] API timeout tests
 - [ ] Recovery/runbook tests
 
