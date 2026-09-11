@@ -22,7 +22,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 
 ## Verification
 - Full Python CI passed on M11 security/resource-scoping/cache revision `4dbb426c450fe606886d04848e4bd0c680d827ee` (run `34572595333`, job `103177768789`): 312 tests passed.
-- Full Python CI passed on the queue/worker revision `4834fbf28ad9296d2346b058e9d2f12bb05b4cf2` (run `34573241100`, job `103179806342`).
+- Full Python CI passed on queue/worker revision `4834fbf28ad9296d2346b058e9d2f12bb05b4cf2` (run `34573241100`, job `103179806342`); the subsequent at-least-once retry correction was also exercised by the succeeding CI trigger.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
