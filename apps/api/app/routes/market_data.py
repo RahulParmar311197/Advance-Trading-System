@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from apps.api.app.auth import require_permission
 from apps.api.app.dependencies import get_connection
 from apps.api.app.schemas import CandleResponse
 from packages.instruments.symbol_map import canonical_symbol
@@ -17,7 +18,11 @@ from packages.smc.liquidity import detect_liquidity_sweeps
 from packages.smc.mss import detect_mss
 from packages.smc.swings import detect_swings
 
-router = APIRouter(prefix="/market-data", tags=["market-data"])
+router = APIRouter(
+    prefix="/market-data",
+    tags=["market-data"],
+    dependencies=[Depends(require_permission("read"))],
+)
 
 
 def _load_candles(connection: Any, symbol: str, timeframe: str, start: datetime, end: datetime, limit: int) -> list[Candle]:
