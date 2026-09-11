@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 
 from packages.saas.auth import Role
-from packages.saas.repositories import APIKeyRepository, ExperimentRepository, OrganizationRepository, UserRepository
+from packages.saas.repositories import APIKeyRepository, OrganizationRepository, UserRepository
 from research.experiments.manifest import ExperimentManifest
+from research.experiments.repository import ExperimentRepository
 
 
 class FakeCursor:
@@ -83,13 +84,17 @@ def test_api_key_repository_get_and_revoke_are_parameterized():
     assert connection.commits == 1
 
 
-def test_experiment_repository_requires_and_applies_organization_scope():
-    manifest = ExperimentManifest(
+def _manifest() -> ExperimentManifest:
+    return ExperimentManifest(
         experiment_id="EXP-A", data_version="DATA-A", strategy_version="s:v1", code_version="code",
         parameters={}, universe=["NIFTY"], timeframe="5m",
         start_date=datetime(2026, 1, 1, tzinfo=timezone.utc),
         end_date=datetime(2026, 1, 2, tzinfo=timezone.utc), transaction_costs={}, slippage={},
     )
+
+
+def test_experiment_repository_requires_and_applies_organization_scope():
+    manifest = _manifest()
     connection = FakeConnection()
     repository = ExperimentRepository(connection)
     repository.save_manifest(manifest, "org-a")
