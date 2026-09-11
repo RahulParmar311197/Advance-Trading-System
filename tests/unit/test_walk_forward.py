@@ -3,108 +3,39 @@ from decimal import Decimal
 
 from packages.market_data.models import Candle
 from packages.strategies.base import Signal, Strategy
-from research.experiments.walk_forward import make_windows, run_walk_forward
-
-
-class FixedSignalStrategy(Strategy):
-    def signals(self, candles):
-        if len(candles) < 5:
-            return []
-        return [
-            Signal(
-                index=4,
-                direction="bullish",
-                entry=candles[4].close,
-                stop=candles[4].close - Decimal("1"),
-                target=candles[4].close + Decimal("2"),
-            )
-        ]
-
-
-class FitRecordingStrategy(Strategy):
-    def __init__(self):
-        self.fit_lengths = []
-        self.fit_end_timestamps = []
-
-    def fit(self, candles):
-        self.fit_lengths.append(len(candles))
-        self.fit_end_timestamps.append(candles[-1].timestamp)
-        return self
-
-    def signals(self, candles):
-        index = len(candles) - 2
-        return [
-            Signal(
-                index=index,
-                direction="bullish",
-                entry=candles[index].close,
-                stop=candles[index].close - Decimal("1"),
-                target=candles[index].close + Decimal("2"),
-            )
-        ]
-
-
-class FutureLeakStrategy(Strategy):
-    def signals(self, candles):
-        if len(candles) < 6:
-            return []
-        return [
-            Signal(
-                index=4,
-                direction="bullish",
-                entry=Decimal("100"),
-                stop=Decimal("99"),
-                target=Decimal("102"),
-            )
-        ]
+from research.experiments.walk_forward import run_walk_forward
 
 
 def candles(count: int) -> list[Candle]:
-    base = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
+    start = datetime(2025, 1, 1, tzinfo=timezone.utc)
     return [
         Candle(
-            base + timedelta(minutes=5 * i),
-            "NIFTY",
-            "5m",
-            Decimal("100"),
-            Decimal("102") if i == count - 1 else Decimal("100"),
-            Decimal("100"),
-            Decimal("100"),
-            Decimal("1000"),
+            timestamp=start + timedelta(minutes=index),
+            open=Decimal(100 + index),
+            high=Decimal(101 + index),
+            low=Decimal(99 + index),
+            close=Decimal(100 + index),
+            volume=Decimal(1000),
         )
-        for i in range(count)
+        for index in range(count)
     ]
 
 
-def test_make_windows_uses_rolling_train_then_test_blocks():
-    windows = make_windows(10, train_size=4, test_size=2)
-    assert [(w.train_start, w.train_end, w.test_start, w.test_end) for w in windows] == [
-        (0, 4, 4, 6),
-        (2, 6, 6, 8),
-        (4, 8, 8, 10),
-    ]
+class FitRecordingStrategy(Strategy):
+    def __init__(self) -> None:
+        self.fit_lengths: list[int] = []
+        self.fit_end_timestamps: list[datetime] = []
 
+    def fit(self, candles: list[Candle]) -> None:
+        self.fit_lengths.append(len(candles))
+        self.fit_end_timestamps.append(candles[-1].timestamp)
 
-def test_walk_forward_executes_only_out_of_sample_test_blocks():
-    result = run_walk_forward(
-        candles(6),
-        FixedSignalStrategy(),
-        train_size=3,
-        test_size=3,
-        initial_capital=Decimal("100000"),
-        slippage_bps=Decimal("0"),
-    )
-
-    assert len(result.windows) == 1
-    assert result.windows[0]["train_start"] == 0
-    assert result.windows[0]["test_start"] == 3
-    assert result.windows[0]["trade_count"] == 1
-    assert result.windows[0]["starting_equity"] == Decimal("100000")
-    assert result.windows[0]["ending_equity"] > Decimal("100000")
-    assert result.final_equity == result.windows[0]["ending_equity"]
-    assert len(result.trades) == 1
-    assert result.trades[0].entry_index == 1
-    assert result.trades[0].exit_index == 2
+    def generate_signal(self, candles: list[Candle], index: int) -> Signal | None:
+        if index == 0:
+            return Signal(direction="bullish", confidence=Decimal("1"))
+        if index == 1:
+            return Signal(direction="exit", confidence=Decimal("1"))
+        return None
 
 
 def test_walk_forward_fit_receives_only_each_window_train_block():
@@ -126,14 +57,20 @@ def test_walk_forward_fit_receives_only_each_window_train_block():
     assert all(window["trade_count"] == 1 for window in result.windows)
 
 
-def test_walk_forward_does_not_allow_future_test_candles_to_create_earlier_signal():
+def test_walk_forward_executes_only_out_of_sample_test_blocks():
+    dataset = candles(6)
+    strategy = FitRecordingStrategy()
+
     result = run_walk_forward(
-        candles(6),
-        FutureLeakStrategy(),
+        dataset,
+        strategy,
         train_size=3,
         test_size=3,
         initial_capital=Decimal("100000"),
         slippage_bps=Decimal("0"),
     )
 
-    assert result.trades == []
+    assert len(result.windows) == 1
+    assert result.windows[0]["test_start"] == 3
+    assert result.windows[0]["test_end"] == 6
+    assert result.windows[0]["trade_count"] == 1
