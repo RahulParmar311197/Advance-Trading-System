@@ -39,11 +39,13 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 deterministic model versioning implementation: content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; full integrated M8 CI verification passed on run `34340996500`.
 - M9 agent interface, planner, tool registry, historical-data tool, feature tool, SMC tool, backtest tool, walk-forward tool, strategy comparison tool, risk analysis tool, report tool, and experiment memory are implemented with deterministic validation and unit coverage.
 - M10 broker-neutral execution contract: validated broker-neutral order contract and abstract submit/cancel/query boundary in `packages/execution/broker.py`, with authoritative CI verification on head `e1eae697`.
-- M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, simulator integration, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
-- M10 order manager: thin broker application boundary for submit/cancel/status and fail-closed fill requirement, with unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
-- M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict symbol/timestamp/OHLC validation, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
+- M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, simulator integration, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`. It now also supports explicit partial fills with cumulative quantity and weighted average price.
+- M10 order manager: thin broker application boundary for submit/cancel/status and fail-closed fill requirement, with unit tests; authoritative Python/web CI verification passed in integrated revision `e37d39a8`. New submissions are blocked while the optional kill switch is active.
+- M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict symbol/timestamp/OHLC validation, no generated market data, and unit tests; authoritative Python/web CI verification passed in integrated revision `e37d39a8`.
 - M10 reconciliation: deterministic expected-versus-observed order-state comparison covering missing/unexpected orders, status differences, fill quantity/price differences, and duplicate-ID fail-closed validation; unit tests; authoritative Python/web CI verification passed on revision `9eb5c0e6`.
 - M10 live broker boundary: `LiveBroker` reuses the stable broker contract, requires an explicit injected transport when enabled, and is disabled by default; unit tests prove the default path cannot submit live orders; authoritative Python/web CI verification passed on revision `aef9e5d8`.
+- M10 execution monitoring: deterministic stale-order/missing-timestamp and reconciliation-health assessment with a fail-closed new-order gate; unit tests and corrected fixtures; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
+- M10 kill-switch integration: OrderManager enforces the risk kill switch for new submissions while preserving cancellation/status access; unit tests; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -54,7 +56,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Integrated M10 revision `e37d39a839ed1a8581cf47d2e3ef85c271e29b68` passed authoritative Python job `103160497826` / run `34566804336` and web build/lint job `103160497747` / run `34566804337`.
 - Reconciliation revision `9eb5c0e632158f5cf7a64d27782e7050095e859b` passed authoritative Python job `103160912873` / run `34566947165` and web build/lint job `103160912729` / run `34566947121`.
 - Live adapter revision `aef9e5d8a53edcd081f5dc4a8c5b364f8ad9c0c4` passed authoritative Python job `103161257166` / run `34567066295` and web build/lint job `103161257161` / run `34567066283`.
-- A private isolated execution-simulator test run passed 1/1, while repository-wide authoritative results are the GitHub Actions runs above.
+- Monitoring/kill-switch correction at head `c93e7acb30b79e1bb3285ba650c5dfa09401675a` passed authoritative Python CI run `34567439892`, including the full repository suite.
+- Private isolated partial-fill checks passed 3/3 for accumulation, weighted average price, and overfill rejection.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -63,8 +66,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-4. Add execution monitoring and kill-switch integration.
-5. Add hardening coverage for partial fills, rejected orders, broker/database/network failures, and recovery paths.
+4. Add hardening coverage for bad/missing/duplicate market data, broker/database/network failures, rejected orders, API timeouts, recovery paths, and partial fills.
+5. Continue M11 production/SaaS controls after execution hardening.
 
 ## Next dependency
-Implement execution monitoring around broker-observed order lifecycle and reconciliation outcomes. Define immutable execution events/health state, detect stale or unresolved orders and reconciliation failures, fail closed for new execution when monitoring is unhealthy, add unit/integration tests, then verify the integrated revision in CI before advancing to kill-switch integration.
+Complete M12 partial-fill hardening by verifying the new explicit paper partial-fill lifecycle in authoritative CI, then continue with rejected-order and broker-failure hardening. Do not mark hardening items complete until their tests pass in the integrated repository.
