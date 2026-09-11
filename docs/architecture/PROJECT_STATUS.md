@@ -32,6 +32,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Provider-supplied CSV market-data preparation: strict timezone-aware OHLCV parsing, explicit column mapping, requested symbol/timeframe/window filtering, and fail-closed malformed-row handling; no gap filling or fabricated observations.
 - Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows, reject naive query timestamps, and reject empty windows, with integration/unit coverage.
 - Deployment hardening: production `DATABASE_URL` and `REDIS_URL` now accept only schemes supported by their respective clients (`postgres`/`postgresql`, `redis`/`rediss`), with explicit wrong-scheme rejection and TLS Redis coverage.
+- Readiness hardening: PostgreSQL readiness connection failures and Redis client-construction failures now fail closed as structured 503 readiness responses rather than escaping through the HTTP layer.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd` and the subsequent documentation commits are awaiting their post-change CI run.
@@ -51,12 +52,13 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
+- Readiness hardening commits `1a60d63cf2de6f83f6775b2d2b5211816437081c`, `96d0e0b8ed22787eba0a7b3e12928d10c0205051`, `f1663acb21caa2b2af07a2925f2d4b3aae814706`, and `962b2d407cf80ce2d316f0e4b82db5829e99beb5` were followed by the readiness fixture alignment commit `7dafeda32b5272c6b1f7fe3b212ed13d7a664db1`; CI verification is pending for this latest test revision.
 
 ## Remaining blockers
-1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
+1. Select and authorize a production billing provider or supply the real internal billing contract, then implement an authenticated adapter.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Complete the full-stack acceptance journey with supplied/real market data.
 4. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Continue operational hardening at the production acceptance boundary. Billing provider integration remains blocked until an explicitly selected/authorized provider or real internal contract is supplied, and real Indian historical-data integration remains blocked until authorized real data access is supplied. The strict CSV adapter provides a non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
+Continue operational hardening at the production acceptance boundary. First verify the latest readiness dependency/fixture changes in CI, then harden the production Compose health gate if the existing liveness-only API healthcheck is insufficient for deployment acceptance. Billing provider integration remains blocked until an explicitly selected/authorized provider or real internal contract is supplied, and real Indian historical-data integration remains blocked until authorized real data access is supplied. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
