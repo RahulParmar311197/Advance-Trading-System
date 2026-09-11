@@ -60,3 +60,29 @@ def test_readiness_fails_closed_without_redis(monkeypatch):
         assert body["alert"]["delivery"]["status"] == "delivered"
     finally:
         app.dependency_overrides.clear()
+
+
+def test_readiness_fails_closed_when_redis_client_configuration_raises(monkeypatch):
+    monkeypatch.setattr(settings, "redis_url", "redis://malformed")
+
+    def raise_configuration_error(*_args, **_kwargs):
+        raise ValueError("unsupported Redis configuration")
+
+    monkeypatch.setattr(
+        "apps.api.app.routes.health.redis.Redis.from_url",
+        raise_configuration_error,
+    )
+    app.dependency_overrides[get_connection] = lambda: Database()
+    try:
+        response = TestClient(app).get("/health/ready")
+        assert response.status_code == 503
+        body = response.json()
+        assert body["components"]["database"]["status"] == "ok"
+        assert body["components"]["redis"]["status"] == "error"
+        assert body["components"]["redis"]["detail"] == (
+            "Redis client configuration failed: unsupported Redis configuration"
+        )
+        assert body["components"]["queue"]["status"] == "error"
+        assert body["components"]["queue"]["detail"] == "Redis client unavailable"
+    finally:
+        app.dependency_overrides.clear()
