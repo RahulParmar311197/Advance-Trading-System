@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from apps.api.app.auth import require_permission
 from apps.api.app.config import settings
 from apps.api.app.dependencies import get_connection
 from apps.api.app.routes.backtest import BacktestRequest, _load_candles, _trade_record
@@ -20,7 +21,11 @@ from research.experiments.manifest import ExperimentManifest
 from research.experiments.repository import ExperimentRepository
 from research.reports.generator import generate_report
 
-router = APIRouter(prefix="/experiments", tags=["experiments"])
+router = APIRouter(
+    prefix="/experiments",
+    tags=["experiments"],
+    dependencies=[Depends(require_permission("research"))],
+)
 
 
 def _json_safe(value: Any) -> Any:
