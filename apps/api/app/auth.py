@@ -7,42 +7,11 @@ from fastapi import Depends, Header, HTTPException, status
 from packages.saas.auth import APIKeyAuthenticator, Principal
 from packages.saas.repositories import APIKeyRepository
 
-from .config import settings
 from .dependencies import get_connection
 
 
-def _build_authenticator() -> APIKeyAuthenticator:
-    """Build the optional deterministic configuration boundary for local development."""
-    from packages.saas.auth import APIKeyRecord, Role
-
-    records: dict[str, APIKeyRecord] = {}
-    for raw_record in settings.api_key_records.split(";"):
-        raw_record = raw_record.strip()
-        if not raw_record:
-            continue
-        fields = raw_record.split("|")
-        if len(fields) != 6:
-            raise ValueError("API_KEY_RECORDS entries must contain 6 pipe-delimited fields")
-        key_id, organization_id, user_id, role, digest, active = fields
-        records[key_id] = APIKeyRecord(
-            key_id=key_id,
-            organization_id=organization_id,
-            user_id=user_id,
-            role=Role(role),
-            secret_digest=digest,
-            active=active.lower() == "true",
-        )
-    return APIKeyAuthenticator(records)
-
-
-_AUTHENTICATOR = _build_authenticator()
-
-
 def _authenticate(key_id: str, secret: str, connection: Any) -> Principal:
-    """Authenticate against PostgreSQL when available, retaining config-backed local tests."""
-    if settings.api_key_records.strip():
-        return _AUTHENTICATOR.authenticate(key_id, secret)
-
+    """Authenticate from persistent API-key metadata; plaintext secrets never reach storage."""
     record = APIKeyRepository(connection).get(key_id)
     if record is None or not record.active:
         raise PermissionError("invalid API key")
