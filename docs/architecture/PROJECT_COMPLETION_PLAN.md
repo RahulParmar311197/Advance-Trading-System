@@ -4,17 +4,17 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 broker interface, deterministic paper broker, order manager, execution simulator, reconciliation, disabled-by-default live adapter, and fail-closed execution monitoring are implemented with unit tests. Live-adapter CI passed; the latest monitoring/kill-switch integration revision is awaiting authoritative CI verification. Next dependency is to verify that revision, then continue M10 hardening/production execution controls.
+M10 execution monitoring and kill-switch integration are now CI-verified on head `c93e7acb`. The next dependency is M12 execution hardening, beginning with explicit partial-fill lifecycle coverage in the paper broker.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
-- Paper broker: complete and CI verified.
-- Order manager: complete and CI verified in integrated revision; now additionally gates new submissions through the optional risk kill switch.
+- Paper broker: complete and CI verified; now supports explicit partial fills with weighted average fill price.
+- Order manager: complete and CI verified; new submissions are blocked while the optional kill switch is active.
 - Execution simulator: complete and CI verified.
 - Reconciliation: complete and CI verified.
 - Live adapter: complete, disabled by default, CI verified.
-- Execution monitoring: implementation and unit tests complete; latest authoritative CI verification pending.
-- Kill-switch integration: implementation and unit tests complete; latest authoritative CI verification pending.
+- Execution monitoring: complete and CI verified on `c93e7acb`.
+- Kill-switch integration: complete and CI verified on `c93e7acb`.
 
 ## Milestones
 
@@ -144,8 +144,8 @@ M10 broker interface, deterministic paper broker, order manager, execution simul
 - [x] Execution simulator
 - [x] Reconciliation
 - [x] Live adapter behind feature flag
-- [ ] Execution monitoring — implementation and unit tests complete; authoritative CI pending
-- [ ] Kill switch integration — OrderManager blocks new submissions while active while preserving existing-order cancellation/status; implementation and unit tests complete; authoritative CI pending
+- [x] Execution monitoring — deterministic stale-order/reconciliation health assessment with fail-closed new-order gate; authoritative CI verified on `c93e7acb`
+- [x] Kill switch integration — OrderManager blocks new submissions while active while preserving existing-order cancellation/status; authoritative CI verified on `c93e7acb`
 
 ### M11 Production/SaaS
 - [ ] Authentication
@@ -172,7 +172,7 @@ M10 broker interface, deterministic paper broker, order manager, execution simul
 - [ ] Network failure tests
 - [ ] Database failure tests
 - [ ] Broker failure tests
-- [ ] Partial-fill tests
+- [ ] Partial-fill tests — explicit paper partial-fill accumulation and overfill rejection implemented; authoritative CI verification pending
 - [ ] Rejected-order tests
 - [ ] API timeout tests
 - [ ] Recovery/runbook tests
