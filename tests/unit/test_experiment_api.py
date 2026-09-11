@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from types import SimpleNamespace
 
@@ -14,13 +15,15 @@ def test_json_safe_converts_decimal_values_recursively():
 
 
 def test_rerun_endpoint_delegates_execution_to_experiment_runner(monkeypatch):
+    start = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
+    end = datetime(2026, 1, 2, 15, 30, tzinfo=timezone.utc)
     manifest = SimpleNamespace(
         experiment_id="EXP-2026-TEST",
         data_version="data-v1",
         strategy_version="Liquidity MSS FVG:v1",
         timeframe="5m",
-        start_date=SimpleNamespace(),
-        end_date=SimpleNamespace(),
+        start_date=start,
+        end_date=end,
         universe=["NIFTY"],
         parameters={
             "initial_capital": "100000",
