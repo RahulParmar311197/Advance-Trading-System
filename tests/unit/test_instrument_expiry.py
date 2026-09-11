@@ -47,6 +47,7 @@ def test_expiry_dates_are_inclusive_and_adjusted() -> None:
         rule,
         is_trading_day=weekdays_only,
     ) == (
+        date(2026, 9, 1),
         date(2026, 9, 8),
         date(2026, 9, 14),
         date(2026, 9, 22),
