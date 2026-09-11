@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import Depends, Header, HTTPException, status
 
-from packages.saas.auth import APIKeyAuthenticator, Principal, Role, APIKeyRecord
+from packages.saas.auth import APIKeyAuthenticator, Principal
+from packages.saas.repositories import APIKeyRepository
 
 from .config import settings
+from .dependencies import get_connection
 
 
 def _build_authenticator() -> APIKeyAuthenticator:
-    """Build the configured verification boundary without ever accepting plaintext secrets."""
+    """Build the optional deterministic configuration boundary for local development."""
+    from packages.saas.auth import APIKeyRecord, Role
+
     records: dict[str, APIKeyRecord] = {}
     for raw_record in settings.api_key_records.split(";"):
         raw_record = raw_record.strip()
@@ -32,9 +38,21 @@ def _build_authenticator() -> APIKeyAuthenticator:
 _AUTHENTICATOR = _build_authenticator()
 
 
+def _authenticate(key_id: str, secret: str, connection: Any) -> Principal:
+    """Authenticate against PostgreSQL when available, retaining config-backed local tests."""
+    if settings.api_key_records.strip():
+        return _AUTHENTICATOR.authenticate(key_id, secret)
+
+    record = APIKeyRepository(connection).get(key_id)
+    if record is None or not record.active:
+        raise PermissionError("invalid API key")
+    return APIKeyAuthenticator({key_id: record}).authenticate(key_id, secret)
+
+
 def get_principal(
     api_key_id: str | None = Header(default=None, alias="X-API-Key-ID"),
     api_key_secret: str | None = Header(default=None, alias="X-API-Key-Secret"),
+    connection: Any = Depends(get_connection),
 ) -> Principal:
     """Authenticate every protected request and fail closed on missing/invalid credentials."""
     if not api_key_id or not api_key_secret:
@@ -44,7 +62,7 @@ def get_principal(
             headers={"WWW-Authenticate": "API-Key"},
         )
     try:
-        return _AUTHENTICATOR.authenticate(api_key_id, api_key_secret)
+        return _authenticate(api_key_id, api_key_secret, connection)
     except (PermissionError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,6 +73,7 @@ def get_principal(
 
 def require_permission(permission: str):
     """Return a FastAPI dependency enforcing a role permission after authentication."""
+
     def dependency(principal: Principal = Depends(get_principal)) -> Principal:
         if not principal.can(permission):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="permission denied")
