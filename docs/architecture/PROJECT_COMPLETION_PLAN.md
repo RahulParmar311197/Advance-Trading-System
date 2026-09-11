@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 broker interface, deterministic paper broker, order manager, execution simulator, reconciliation, and a disabled-by-default live adapter boundary are implemented with unit tests. The integrated live-adapter revision passed authoritative Python CI and web lint/build. Next dependency is execution monitoring; live connectivity remains intentionally provider-transport-injected and cannot activate by default.
+M10 broker interface, deterministic paper broker, order manager, execution simulator, reconciliation, disabled-by-default live adapter, and fail-closed execution monitoring are implemented with unit tests. The live-adapter revision passed authoritative Python CI and web lint/build. The monitoring revision is awaiting authoritative CI verification. Next dependency is kill-switch integration after monitoring verification.
 
 ## Milestones
 
@@ -134,7 +134,7 @@ M10 broker interface, deterministic paper broker, order manager, execution simul
 - [x] Execution simulator — deterministic candle-based market/limit/stop fill model with explicit slippage, gap handling for stops, strict symbol/timestamp/OHLC validation, and no generated market data; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
 - [x] Reconciliation — deterministic comparison of expected versus broker-observed order state, detecting missing/unexpected orders, status differences, and fill differences; duplicate IDs fail closed; unit tests and authoritative Python/web CI verification passed on revision `9eb5c0e6`
 - [x] Live adapter behind feature flag — explicit `LiveBroker` transport boundary with disabled-by-default configuration, fail-closed submission when disabled, and explicit transport requirement when enabled; unit tests and authoritative Python/web CI verification passed on revision `aef9e5d8`
-- [ ] Execution monitoring
+- [ ] Execution monitoring — deterministic stale-order/reconciliation health assessment with fail-closed new-order gate; implementation and unit tests committed, authoritative CI verification pending
 - [ ] Kill switch integration
 
 ### M11 Production/SaaS
