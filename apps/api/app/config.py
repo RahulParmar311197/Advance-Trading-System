@@ -13,6 +13,7 @@ class Settings(BaseModel):
         default=int(os.getenv("DATABASE_CONNECT_TIMEOUT_SECONDS", "5")),
         gt=0,
     )
+    redis_url: str | None = os.getenv("REDIS_URL")
     code_version: str = os.getenv("CODE_VERSION", "api-0.1.0")
 
 
