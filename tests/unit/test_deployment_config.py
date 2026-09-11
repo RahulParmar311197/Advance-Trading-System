@@ -39,9 +39,27 @@ def test_production_configuration_rejects_non_production_environment() -> None:
         load_production_settings(environment)
 
 
-def test_production_configuration_rejects_malformed_service_urls() -> None:
+@pytest.mark.parametrize(
+    ("name", "value"),
+    [
+        ("DATABASE_URL", "redis://user:secret@db:5432/ats"),
+        ("DATABASE_URL", "https://db.example/ats"),
+        ("REDIS_URL", "postgresql://redis:secret@redis:6379/0"),
+        ("REDIS_URL", "https://redis.example/0"),
+    ],
+)
+def test_production_configuration_rejects_wrong_service_url_scheme(name: str, value: str) -> None:
     environment = _valid_env()
-    environment["DATABASE_URL"] = "not-a-url"
+    environment[name] = value
 
-    with pytest.raises(DeploymentConfigurationError, match="DATABASE_URL"):
+    with pytest.raises(DeploymentConfigurationError, match=name):
         load_production_settings(environment)
+
+
+def test_production_configuration_accepts_tls_redis() -> None:
+    environment = _valid_env()
+    environment["REDIS_URL"] = "rediss://redis.example:6380/0"
+
+    settings = load_production_settings(environment)
+
+    assert settings.redis_url.startswith("rediss://")
