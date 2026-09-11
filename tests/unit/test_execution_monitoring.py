@@ -82,6 +82,26 @@ def test_reconciliation_failure_blocks_new_orders() -> None:
     assert report.unresolved_reconciliation
 
 
+def test_recovery_requires_a_clean_reconciliation_before_unblocking() -> None:
+    monitor = ExecutionMonitor(timedelta(minutes=5))
+    expected = make_order("A", OrderStatus.FILLED, NOW)
+    mismatched = make_order(
+        "A",
+        OrderStatus.FILLED,
+        NOW,
+        filled_quantity=Decimal("1"),
+        average_fill_price=Decimal("25001"),
+    )
+    blocked = monitor.assess([], now=NOW, reconciliation=reconcile_orders([expected], [mismatched]))
+    assert blocked.health is ExecutionHealth.BLOCKED
+    assert not blocked.can_submit_new_orders
+
+    reconciled = reconcile_orders([expected], [expected])
+    recovered = monitor.assess([], now=NOW, reconciliation=reconciled)
+    assert recovered.health is ExecutionHealth.HEALTHY
+    assert recovered.can_submit_new_orders
+
+
 def test_naive_now_and_invalid_timeout_fail_closed() -> None:
     with pytest.raises(ValueError, match="positive"):
         ExecutionMonitor(timedelta(0))
