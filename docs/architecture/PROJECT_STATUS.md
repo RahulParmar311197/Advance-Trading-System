@@ -31,9 +31,10 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Combined research verification: a test-only synthetic fixture exercises out-of-sample, walk-forward, and stress-test evaluators together; the integrated test revision passed Python/Compose CI on run `34583446968` / job `103212090259`.
 - Provider-supplied CSV market-data preparation: strict timezone-aware OHLCV parsing, explicit column mapping, requested symbol/timeframe/window filtering, and fail-closed malformed-row handling; no gap filling or fabricated observations.
 - Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows, reject naive query timestamps, and reject empty windows, with integration/unit coverage.
+- Deployment hardening: production `DATABASE_URL` and `REDIS_URL` now accept only schemes supported by their respective clients (`postgres`/`postgresql`, `redis`/`rediss`), with explicit wrong-scheme rejection and TLS Redis coverage.
 
 ## Verification
-- Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd` and is awaiting its post-change CI run.
+- Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd` and the subsequent documentation commits are awaiting their post-change CI run.
 - Error tracking Python CI passed on run `34577482109` / job `103193146616`.
 - Data-quality monitoring CI passed on run `34578034504` / job `103194909226`.
 - Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
@@ -58,4 +59,4 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 4. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-The next unblocked engineering dependency is operational hardening around the production acceptance boundary; production billing remains blocked until an explicitly selected/authorized provider or real internal contract is supplied, and real Indian historical-data integration remains blocked until authorized real data access is supplied. The strict CSV adapter provides a non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
+Continue operational hardening at the production acceptance boundary. Billing provider integration remains blocked until an explicitly selected/authorized provider or real internal contract is supplied, and real Indian historical-data integration remains blocked until authorized real data access is supplied. The strict CSV adapter provides a non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
