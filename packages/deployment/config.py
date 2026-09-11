@@ -45,8 +45,12 @@ def load_production_settings(environ: dict[str, str] | None = None) -> Deploymen
 
     return DeploymentSettings(
         environment=environment,
-        database_url=_required_url("DATABASE_URL", env.get("DATABASE_URL"), frozenset({"postgresql", "postgres"})),
-        redis_url=_required_url("REDIS_URL", env.get("REDIS_URL"), frozenset({"redis", "rediss"})),
+        database_url=_required_url(
+            "DATABASE_URL", env.get("DATABASE_URL"), frozenset({"postgresql", "postgres"})
+        ),
+        redis_url=_required_url(
+            "REDIS_URL", env.get("REDIS_URL"), frozenset({"redis", "rediss"})
+        ),
         code_version=code_version,
         queue_name=queue_name,
     )
