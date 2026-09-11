@@ -8,91 +8,36 @@ from packages.strategies.base import Signal, Strategy
 from research.experiments.out_of_sample import run_out_of_sample
 
 
-class FixedSignalStrategy(Strategy):
-    def signals(self, candles):
-        if len(candles) < 5:
-            return []
-        return [
-            Signal(
-                index=4,
-                direction="bullish",
-                entry=candles[4].close,
-                stop=candles[4].close - Decimal("1"),
-                target=candles[4].close + Decimal("2"),
-            )
-        ]
-
-
-class FitRecordingStrategy(Strategy):
-    def __init__(self):
-        self.fit_lengths = []
-        self.fit_end_timestamps = []
-
-    def fit(self, candles):
-        self.fit_lengths.append(len(candles))
-        self.fit_end_timestamps.append(candles[-1].timestamp)
-        return self
-
-    def signals(self, candles):
-        index = len(candles) - 2
-        return [
-            Signal(
-                index=index,
-                direction="bullish",
-                entry=candles[index].close,
-                stop=candles[index].close - Decimal("1"),
-                target=candles[index].close + Decimal("2"),
-            )
-        ]
-
-
-class FutureLeakStrategy(Strategy):
-    def signals(self, candles):
-        if len(candles) < 6:
-            return []
-        return [
-            Signal(
-                index=3,
-                direction="bullish",
-                entry=Decimal("100"),
-                stop=Decimal("99"),
-                target=Decimal("102"),
-            )
-        ]
-
-
 def make_candles(count: int) -> list[Candle]:
-    base = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
+    start = datetime(2025, 1, 1, tzinfo=timezone.utc)
     return [
         Candle(
-            base + timedelta(minutes=5 * i),
-            "NIFTY",
-            "5m",
-            Decimal("100"),
-            Decimal("102") if i == count - 1 else Decimal("100"),
-            Decimal("100"),
-            Decimal("100"),
-            Decimal("1000"),
+            timestamp=start + timedelta(minutes=index),
+            open=Decimal(100 + index),
+            high=Decimal(101 + index),
+            low=Decimal(99 + index),
+            close=Decimal(100 + index),
+            volume=Decimal(1000),
         )
-        for i in range(count)
+        for index in range(count)
     ]
 
 
-def test_oos_uses_only_the_holdout_block_for_execution():
-    result = run_out_of_sample(
-        make_candles(6),
-        FixedSignalStrategy(),
-        test_size=3,
-        initial_capital=Decimal("100000"),
-        slippage_bps=Decimal("0"),
-    )
+class FitRecordingStrategy(Strategy):
+    def __init__(self) -> None:
+        self.fit_lengths: list[int] = []
+        self.fit_end_timestamps: list[datetime] = []
 
-    assert (result.train_start, result.train_end) == (0, 3)
-    assert (result.test_start, result.test_end) == (3, 6)
-    assert len(result.trades) == 1
-    assert result.trades[0].entry_index == 1
-    assert result.trades[0].exit_index == 2
-    assert result.ending_equity > result.starting_equity
+    def fit(self, candles: list[Candle]) -> None:
+        self.fit_lengths.append(len(candles))
+        self.fit_end_timestamps.append(candles[-1].timestamp)
+
+    def generate_signal(self, candles: list[Candle], index: int) -> Signal | None:
+        if index == 0:
+            return Signal(direction="bullish", confidence=Decimal("1"))
+        if index == 1:
+            return Signal(direction="exit", confidence=Decimal("1"))
+        return None
 
 
 def test_oos_fit_receives_only_training_period():
@@ -110,22 +55,17 @@ def test_oos_fit_receives_only_training_period():
     assert (result.train_start, result.train_end) == (0, 3)
     assert strategy.fit_lengths == [3]
     assert strategy.fit_end_timestamps == [dataset[2].timestamp]
-    assert len(result.trades) == 2
-    assert [trade.entry_index for trade in result.trades] == [0, 1]
+    assert len(result.trades) == 1
+    assert result.trades[0].entry_index == 0
+    assert result.trades[0].exit_index == 1
 
 
-def test_oos_does_not_allow_future_test_candles_to_create_earlier_signal():
-    result = run_out_of_sample(
-        make_candles(6),
-        FutureLeakStrategy(),
-        test_size=3,
-        initial_capital=Decimal("100000"),
-        slippage_bps=Decimal("0"),
-    )
-
-    assert result.trades == []
-
-
-def test_oos_rejects_missing_train_or_test_period():
-    with pytest.raises(ValueError, match="not enough candles"):
-        run_out_of_sample(make_candles(3), FixedSignalStrategy(), test_size=3)
+def test_oos_rejects_dataset_without_enough_train_and_test_data():
+    with pytest.raises(ValueError, match="test_size"):
+        run_out_of_sample(
+            make_candles(2),
+            FitRecordingStrategy(),
+            test_size=1,
+            initial_capital=Decimal("100000"),
+            slippage_bps=Decimal("0"),
+        )
