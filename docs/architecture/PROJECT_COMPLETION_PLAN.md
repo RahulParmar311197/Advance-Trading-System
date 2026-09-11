@@ -18,7 +18,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Alerts — readiness health transitions, delivery outcomes, de-duplication/recovery behavior, and direct transition tests
 - [x] Error tracking
 - [x] Data-quality monitoring — immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage
-- [x] Deployment — provider-neutral production Compose topology, fail-closed production configuration validation, health-gated startup, CI Compose validation, and deployment/rollback runbook; no cloud provider is claimed
+- [x] Deployment — provider-neutral production Compose topology, fail-closed production configuration validation, service-specific database/Redis URL scheme validation, health-gated startup, CI Compose validation, and deployment/rollback runbook; no cloud provider is claimed
 - [ ] Billing hooks — normalized billing-event contract, PostgreSQL persistence, and idempotency tests are complete; authenticated provider adapter is blocked until an explicitly selected/authorized provider or real internal billing contract is supplied
 
 ### M12 Hardening
