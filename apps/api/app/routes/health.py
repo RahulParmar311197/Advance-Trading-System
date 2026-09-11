@@ -56,6 +56,8 @@ def readiness(response: Response, connection=Depends(get_connection)):
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
     body = report.as_dict()
+    if not settings.redis_url:
+        body["components"]["database"]["status"] = "unknown"
     if alert is not None and delivery is not None:
         body["alert"] = {
             "id": alert.alert_id,
