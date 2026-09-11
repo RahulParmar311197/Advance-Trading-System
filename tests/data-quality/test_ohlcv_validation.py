@@ -50,6 +50,11 @@ def test_rejects_negative_volume():
         validate_ohlcv([candle(volume="-1")])
 
 
+def test_rejects_naive_timestamp():
+    with pytest.raises(ValueError, match="timezone-aware"):
+        validate_ohlcv([candle(BASE.replace(tzinfo=None))])
+
+
 def test_rejects_duplicate_timestamps():
     with pytest.raises(ValueError, match="strictly increasing"):
         validate_ohlcv([candle(), candle(BASE)])
