@@ -45,16 +45,17 @@ From the repository root:
 docker compose -f infra/deployment/docker-compose.production.yml --env-file .env.production up -d --build
 ```
 
-The production Compose file requires database/Redis URLs and credentials instead of embedding the development credentials used by the local development stack. PostgreSQL and Redis are not published to the host. API startup waits for healthy database/Redis services; the web service waits for a healthy API.
+The production Compose file requires database/Redis URLs and credentials instead of embedding the development credentials used by the local development stack. PostgreSQL and Redis are not published to the host. API startup waits for healthy database/Redis services; the API healthcheck then requires PostgreSQL, Redis, and queue readiness before the web service can start.
 
 ## Operational checks
 
 ```bash
 docker compose -f infra/deployment/docker-compose.production.yml ps
 curl -fsS http://localhost:8000/health
+curl -fsS http://localhost:8000/health/ready
 ```
 
-A healthy API is necessary but not sufficient for trading readiness: use the application's readiness endpoint and execution/risk controls before enabling any operational workflow. Live broker mode remains disabled by default elsewhere in the system.
+`/health` is a liveness check. `/health/ready` is the deployment readiness check and must report healthy PostgreSQL, Redis, and queue dependencies. Live broker mode remains disabled by default elsewhere in the system.
 
 ## Rollback
 
