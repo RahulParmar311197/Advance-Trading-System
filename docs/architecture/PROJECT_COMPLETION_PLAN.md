@@ -41,6 +41,11 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Stress-test verification on the integrated revision — CI run `34582877990` passed; tests verify scenario-specific slippage degradation, risk-driven sizing/equity behavior, and invalid stress-parameter rejection.
 - [x] Combined research verification — the same synthetic test-only dataset exercises out-of-sample, walk-forward, and stress-test evaluators together; Python/Compose CI passed on run `34583446968` / job `103212090259`.
 
+## Real-data integration preparation
+- [x] Strict provider-supplied CSV OHLCV adapter — timezone-aware parsing, explicit column mapping, symbol/timeframe/window filtering, and fail-closed handling of malformed rows; no gap filling or fabricated observations.
+- [x] CSV adapter unit coverage for filtering, column mapping, malformed schema/timestamps, and preservation of missing observations.
+- [ ] Authorized real Indian historical-data provider — blocked until provider credentials/authorization and its documented response contract are supplied.
+
 ## Remaining blockers
 1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
