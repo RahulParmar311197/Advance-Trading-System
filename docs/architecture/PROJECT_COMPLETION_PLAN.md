@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, and CI-verified operational monitoring/readiness checks. Next dependency is alerts.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, CI-verified operational monitoring/readiness checks, and operational alerts on readiness state transitions. Next dependency is error tracking.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -158,10 +158,10 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Persistent user/organization/API-key repositories — parameterized PostgreSQL create/get/revoke boundaries with unit coverage
 - [x] Route-level resource scoping for organization-owned resources — experiment manifests/results/comparison/report queries require the authenticated organization and fail closed for missing scope; Python CI verified on run `34572595333` / job `103177768789`
 - [x] Redis/cache — namespaced JSON Redis adapter, bounded TTL, optional API dependency, SMC-event read-through cache, local Redis service, and unit coverage; Python CI verified on run `34572595333` / job `103177768789`
-- [x] Queue/workers — FIFO Redis queue with recoverable in-flight claims, acknowledgement/retry/backoff semantics, runnable worker process, Docker worker service, and real PostgreSQL-persisted backtest handler; Python CI verified on run `34573241100` / job `103179806342`, with at-least-once retry correction verified by the subsequent CI trigger
+- [x] Queue/workers — FIFO Redis queue with recoverable in-flight claims, acknowledgement/retry/backoff semantics, runnable worker process, Docker worker service, and real PostgreSQL-persisted backtest job handler; Python CI verified on run `34573241100` / job `103179806342`, with at-least-once retry correction verified by the subsequent CI trigger
 - [x] Scheduled jobs — separate scheduler service with validated interval schedules, explicit JSON payloads, Redis enqueue boundary, missed-interval storm protection, Redis outage recovery, Docker service, and unit coverage; corrected FIFO test fixture and verified by Python CI run `34573808689` / job `103181638930`
 - [x] Monitoring — liveness endpoint plus PostgreSQL/Redis/queue readiness reporting, configurable queue selection, fail-closed 503 behavior for missing/degraded dependencies, documentation and integration/unit coverage; Python CI verified on run `34576206357` / job `103189115857`
-- [ ] Alerts
+- [x] Alerts — readiness health-transition alerts through the application logging boundary, explicit delivery outcomes, transition de-duplication/recovery signaling, documentation and unit/integration coverage; Python CI run `34577246471` / job `103192407607` and Web run `34577246516` / job `103192407480` passed
 - [ ] Error tracking
 - [ ] Data-quality monitoring
 - [ ] Deployment
