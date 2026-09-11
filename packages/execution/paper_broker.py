@@ -16,6 +16,7 @@ class PaperFill:
     symbol: str
     price: Decimal
     timestamp: datetime
+    quantity: Decimal | None = None
 
     def __post_init__(self) -> None:
         if not self.symbol.strip():
@@ -24,6 +25,8 @@ class PaperFill:
             raise ValueError("price must be positive")
         if self.timestamp.tzinfo is None:
             raise ValueError("timestamp must be timezone-aware")
+        if self.quantity is not None and self.quantity <= 0:
+            raise ValueError("fill quantity must be positive")
 
 
 class PaperBroker(Broker):
@@ -71,24 +74,43 @@ class PaperBroker(Broker):
             raise KeyError(f"unknown order: {order_id}") from exc
 
     def process_fill(self, order_id: str, fill: PaperFill) -> Order:
-        """Apply one explicit observed price to an eligible paper order."""
+        """Apply one explicit observed price and quantity to an eligible order."""
         order = self.get_order(order_id)
-        if order.status is not OrderStatus.ACCEPTED:
+        if order.status not in {OrderStatus.ACCEPTED, OrderStatus.PARTIALLY_FILLED}:
             raise ValueError(f"order is not fillable in state: {order.status.value}")
         if fill.symbol != order.request.symbol:
             raise ValueError("fill symbol does not match order symbol")
         if not self._triggered(order.request, fill.price):
             return order
-        filled = Order(
+
+        remaining = order.request.quantity - order.filled_quantity
+        fill_quantity = remaining if fill.quantity is None else fill.quantity
+        if fill_quantity > remaining:
+            raise ValueError("fill quantity exceeds remaining order quantity")
+        if fill_quantity <= 0:
+            raise ValueError("fill quantity must be positive")
+
+        total_filled = order.filled_quantity + fill_quantity
+        weighted_value = Decimal("0")
+        if order.filled_quantity and order.average_fill_price is not None:
+            weighted_value += order.filled_quantity * order.average_fill_price
+        weighted_value += fill_quantity * fill.price
+        average_price = weighted_value / total_filled
+        status = (
+            OrderStatus.FILLED
+            if total_filled == order.request.quantity
+            else OrderStatus.PARTIALLY_FILLED
+        )
+        updated = Order(
             order_id=order.order_id,
             request=order.request,
-            status=OrderStatus.FILLED,
-            filled_quantity=order.request.quantity,
-            average_fill_price=fill.price,
+            status=status,
+            filled_quantity=total_filled,
+            average_fill_price=average_price,
             submitted_at=order.submitted_at,
         )
-        self._orders[order_id] = filled
-        return filled
+        self._orders[order_id] = updated
+        return updated
 
     def process_observation(
         self,
