@@ -18,12 +18,13 @@ class DeploymentSettings:
     queue_name: str
 
 
-def _required_url(name: str, value: str | None) -> str:
+def _required_url(name: str, value: str | None, schemes: frozenset[str]) -> str:
     if not value:
         raise DeploymentConfigurationError(f"{name} is required")
     parsed = urlparse(value)
-    if not parsed.scheme or not parsed.netloc:
-        raise DeploymentConfigurationError(f"{name} must be an absolute URL")
+    if parsed.scheme not in schemes or not parsed.netloc:
+        allowed = ", ".join(sorted(schemes))
+        raise DeploymentConfigurationError(f"{name} must be an absolute URL using {allowed}")
     return value
 
 
@@ -44,8 +45,8 @@ def load_production_settings(environ: dict[str, str] | None = None) -> Deploymen
 
     return DeploymentSettings(
         environment=environment,
-        database_url=_required_url("DATABASE_URL", env.get("DATABASE_URL")),
-        redis_url=_required_url("REDIS_URL", env.get("REDIS_URL")),
+        database_url=_required_url("DATABASE_URL", env.get("DATABASE_URL"), frozenset({"postgresql", "postgres"})),
+        redis_url=_required_url("REDIS_URL", env.get("REDIS_URL"), frozenset({"redis", "rediss"})),
         code_version=code_version,
         queue_name=queue_name,
     )
