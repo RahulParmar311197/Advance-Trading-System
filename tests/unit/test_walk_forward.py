@@ -24,7 +24,8 @@ def candles(count: int) -> list[Candle]:
 
 
 class FitRecordingStrategy(Strategy):
-    def __init__(self) -> None:
+    def __init__(self, train_size: int) -> None:
+        self.train_size = train_size
         self.fit_lengths: list[int] = []
         self.fit_end_timestamps: list[datetime] = []
 
@@ -34,25 +35,25 @@ class FitRecordingStrategy(Strategy):
         return self
 
     def signals(self, candles: list[Candle]) -> list[Signal]:
-        # Emit only when exactly one test candle has been appended to the
-        # training context. The evaluator must not expose later test candles.
-        if len(candles) in (5, 4):
-            price = candles[-1].close
-            return [
-                Signal(
-                    index=len(candles) - 1,
-                    direction="bullish",
-                    entry=price,
-                    stop=price - Decimal("1"),
-                    target=price + Decimal("1"),
-                )
-            ]
-        return []
+        # Emit exactly once per window: when the current test candle is the
+        # first candle appended to the training context.
+        if len(candles) != self.train_size + 1:
+            return []
+        price = candles[-1].close
+        return [
+            Signal(
+                index=len(candles) - 1,
+                direction="bullish",
+                entry=price,
+                stop=price - Decimal("1"),
+                target=price + Decimal("1"),
+            )
+        ]
 
 
 def test_walk_forward_fit_receives_only_each_window_train_block():
     dataset = candles(10)
-    strategy = FitRecordingStrategy()
+    strategy = FitRecordingStrategy(train_size=4)
 
     result = run_walk_forward(
         dataset,
@@ -71,7 +72,7 @@ def test_walk_forward_fit_receives_only_each_window_train_block():
 
 def test_walk_forward_executes_only_out_of_sample_test_blocks():
     dataset = candles(6)
-    strategy = FitRecordingStrategy()
+    strategy = FitRecordingStrategy(train_size=3)
 
     result = run_walk_forward(
         dataset,
