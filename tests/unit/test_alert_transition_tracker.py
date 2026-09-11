@@ -1,8 +1,4 @@
-from packages.monitoring.alerts import (
-    AlertTransitionTracker,
-    AlertDelivery,
-    Alert,
-)
+from packages.monitoring.alerts import Alert, AlertDelivery, AlertTransitionTracker
 from packages.monitoring.health import ComponentHealth, HealthReport
 
 
