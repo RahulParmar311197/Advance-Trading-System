@@ -10,11 +10,20 @@ from packages.execution.reconciliation import reconcile_orders
 NOW = datetime(2026, 1, 2, 10, 0, tzinfo=timezone.utc)
 
 
-def make_order(order_id: str, status: OrderStatus, submitted_at: datetime | None) -> Order:
+def make_order(
+    order_id: str,
+    status: OrderStatus,
+    submitted_at: datetime | None,
+    *,
+    filled_quantity: Decimal = Decimal("0"),
+    average_fill_price: Decimal | None = None,
+) -> Order:
     return Order(
         order_id=order_id,
         request=OrderRequest("NIFTY", OrderSide.BUY, Decimal("1")),
         status=status,
+        filled_quantity=filled_quantity,
+        average_fill_price=average_fill_price,
         submitted_at=submitted_at,
     )
 
@@ -34,8 +43,20 @@ def test_stale_and_missing_timestamps_block_new_orders() -> None:
     report = monitor.assess(
         [
             make_order("STALE", OrderStatus.ACCEPTED, NOW - timedelta(minutes=5)),
-            make_order("UNKNOWN", OrderStatus.PARTIALLY_FILLED, None),
-            make_order("FILLED", OrderStatus.FILLED, None),
+            make_order(
+                "UNKNOWN",
+                OrderStatus.PARTIALLY_FILLED,
+                None,
+                filled_quantity=Decimal("0.5"),
+                average_fill_price=Decimal("25000"),
+            ),
+            make_order(
+                "FILLED",
+                OrderStatus.FILLED,
+                None,
+                filled_quantity=Decimal("1"),
+                average_fill_price=Decimal("25000"),
+            ),
         ],
         now=NOW,
     )
@@ -48,7 +69,13 @@ def test_stale_and_missing_timestamps_block_new_orders() -> None:
 def test_reconciliation_failure_blocks_new_orders() -> None:
     monitor = ExecutionMonitor(timedelta(minutes=5))
     expected = make_order("A", OrderStatus.ACCEPTED, NOW)
-    observed = make_order("A", OrderStatus.FILLED, NOW)
+    observed = make_order(
+        "A",
+        OrderStatus.FILLED,
+        NOW,
+        filled_quantity=Decimal("1"),
+        average_fill_price=Decimal("25000"),
+    )
     reconciliation = reconcile_orders([expected], [observed])
     report = monitor.assess([], now=NOW, reconciliation=reconciliation)
     assert report.health is ExecutionHealth.BLOCKED
