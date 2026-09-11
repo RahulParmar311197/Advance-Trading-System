@@ -30,6 +30,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Stress-test verification: the integrated stress-test revision is covered by scenario-specific slippage/risk behavior and invalid-parameter tests; Python/Compose CI passed on run `34582877990` / job `103210285835`.
 - Combined research verification: a test-only synthetic fixture exercises out-of-sample, walk-forward, and stress-test evaluators together; the integrated test revision passed Python/Compose CI on run `34583446968` / job `103212090259`.
 - Provider-supplied CSV market-data preparation: strict timezone-aware OHLCV CSV parsing, explicit column mapping, requested symbol/timeframe/window filtering, and fail-closed malformed-row handling; no gap filling or fabricated observations.
+- Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows and reject naive query timestamps, with integration coverage.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision.
@@ -40,7 +41,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Corrected causal OOS/walk-forward fixtures passed the full Python/Compose CI on run `34582674053` / job `103209631487`; Web lint/build passed on run `34582674057` / job `103209631515`.
 - Stress-test verification passed the full Python/Compose CI on run `34582877990` / job `103210285835`.
 - Combined research verification passed the full Python/Compose CI on run `34583446968` / job `103212090259`; Web lint/build passed on run `34583446913` / job `103212089982`.
-- The CSV provider implementation and tests were added on the current revision; its full CI verification is pending the post-change workflow run.
+- The CSV provider implementation and tests passed full Python/Compose CI on run `34584113636` / job `103214214002`; Web lint/build passed on run `34584113590` / job `103214213577`.
+- The current follow-up market-data API hardening revision is awaiting its post-change CI run.
 - The first causal-research fixture revision failed because its synthetic test strategy emitted a second entry signal; the fixture was corrected rather than weakening the research implementation.
 - The first combined-research fixture revision likewise emitted multiple holdout trades; it was corrected to exercise one deterministic test trade per evaluator without weakening production research code.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
