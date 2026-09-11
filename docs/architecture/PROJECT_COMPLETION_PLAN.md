@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-The M9 AI research-agent dependency chain is implemented incrementally. Deterministic walk-forward, strategy-comparison, risk-analysis, factual report, and experiment-memory components now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next continuation task is authoritative CI verification; after green, continue with integration/hardening work rather than inventing another M9 placeholder.
+The corrected M9 AI research-agent revision has passed the authoritative Python and web CI jobs on runs `34565942337` and `34565942410`. M10 execution has now started with a real broker-neutral order contract in `packages/execution/broker.py` and unit coverage. Authoritative CI verification of that new execution revision is pending. The next continuation task is to verify the broker-interface revision; after green, implement the paper broker against the same contract.
 
 ## Milestones
 
@@ -107,28 +107,28 @@ The M9 AI research-agent dependency chain is implemented incrementally. Determin
 - [x] Regime classifier — structured primary, trend, and volatility labels with deterministic tests; authoritative Python CI verification pass on run `34340996500`
 - [x] Transitions — deterministic primary-regime transition detection with tests; authoritative Python CI verification pass on run `34340996500`
 - [x] Dataset builder — deterministic candle-window feature/label rows with tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Logistic baseline — dependency-free deterministic one-vs-rest classifier with explicit configuration and tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Logistic baseline — dependency-free deterministic one-vs-rest logistic classifier with explicit configuration and tests; authoritative Python CI verification pass on run `34340996500`
 - [x] Random Forest — dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, unit tests; authoritative Python CI verification pass on run `34338335095`
 - [x] Gradient boosting — deterministic one-vs-rest squared-error boosting over regression stumps with explicit estimator count/learning rate, feature validation and tests; authoritative Python CI verification pass on run `34340996500`
 - [x] Out-of-sample model validation — final holdout excluded from training, with deterministic holdout predictions/accuracy and tests; authoritative Python CI verification pass on run `34340996500`
 - [x] Model versioning — content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; authoritative Python CI verification pass on run `34340996500`
 
 ### M9 AI research agent
-- [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification pending
-- [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification pending
-- [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification pending
-- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification passed on the preceding M9 revision
+- [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification passed on run `34565942337`
 - [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`
-- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; authoritative verification of the corrected revision is pending
-- [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification pending
-- [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; CI verification pending
-- [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; CI verification pending
-- [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; CI verification pending
-- [x] Report tool — factual Markdown report generated solely from supplied strategy-comparison results, with explicit limitations and unit tests; CI verification pending
-- [x] Experiment memory — immutable experiment lessons with fail-closed validation, deterministic token-overlap recall, stable tie-breaking, and unit tests; CI verification pending
+- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Report tool — factual Markdown report generated solely from supplied strategy-comparison results, with explicit limitations and unit tests; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Experiment memory — immutable experiment lessons with fail-closed validation, deterministic token-overlap recall, stable tie-breaking, and unit tests; authoritative CI verification passed on corrected head via run `34565942337`
 
 ### M10 Paper/live execution
-- [ ] Broker interface
+- [ ] Broker interface — implemented in `packages/execution/broker.py` with validated order/fill-state contracts and unit tests; authoritative CI verification pending
 - [ ] Paper broker
 - [ ] Order manager
 - [ ] Execution simulator
