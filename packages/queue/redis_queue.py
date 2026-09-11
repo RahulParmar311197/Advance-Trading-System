@@ -8,6 +8,7 @@ from uuid import uuid4
 
 
 class QueueClient(Protocol):
+    def lpush(self, key: str, value: str) -> Any: ...
     def rpush(self, key: str, value: str) -> Any: ...
     def brpoplpush(self, source: str, destination: str, timeout: int = 0) -> Any: ...
     def lrem(self, key: str, count: int, value: str) -> Any: ...
@@ -46,7 +47,7 @@ class Job:
 
 
 class JobQueue:
-    """FIFO Redis list queue with a recoverable in-flight list."""
+    """FIFO Redis queue with an in-flight list and explicit acknowledgement."""
 
     def __init__(self, client: QueueClient, *, namespace: str = "ats:jobs") -> None:
         if not namespace.strip():
@@ -65,7 +66,9 @@ class JobQueue:
     def enqueue(self, queue: str, name: str, payload: dict[str, Any], *, job_id: str | None = None) -> Job:
         job = Job(job_id or uuid4().hex, name, dict(payload))
         try:
-            self._client.rpush(self.key(queue), job.encode())
+            # LPUSH + BRPOPLPUSH gives FIFO order while moving the claimed job
+            # atomically into the in-flight list.
+            self._client.lpush(self.key(queue), job.encode())
         except (OSError, TypeError, ValueError) as exc:
             raise QueueError("redis enqueue failed") from exc
         return job
