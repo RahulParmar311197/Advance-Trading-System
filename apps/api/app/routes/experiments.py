@@ -170,14 +170,16 @@ def rerun_experiment(experiment_id: str, principal: Principal = Depends(require_
 
     request = _request_from_manifest(manifest)
     runner = ExperimentRunner(repository)
+    executed: dict[str, Any] = {}
 
     def execute(stored_manifest: ExperimentManifest) -> tuple[dict[str, Any], list[dict[str, Any]]]:
         result, data_version = _run_request(request, connection)
         if data_version != stored_manifest.data_version:
             raise HTTPException(409, "stored data version is no longer available for the requested range")
+        executed["result"] = result
         return _json_safe(result["metrics"]), _json_safe(result["trades"])
 
     run_result = runner.rerun(experiment_id, principal.organization_id, execute)
-    result, _ = _run_request(request, connection)
+    result = executed["result"]
     return {"experiment_id": experiment_id, "replayed": True,
             "result": {**result, "metrics": run_result.metrics, "trades": run_result.trades}}
