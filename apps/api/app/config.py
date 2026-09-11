@@ -14,6 +14,7 @@ class Settings(BaseModel):
         gt=0,
     )
     redis_url: str | None = os.getenv("REDIS_URL")
+    queue_name: str = os.getenv("QUEUE_NAME", "default")
     code_version: str = os.getenv("CODE_VERSION", "api-0.1.0")
 
 
