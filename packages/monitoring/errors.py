@@ -32,9 +32,10 @@ class LoggingErrorTracker:
             path=str(getattr(request, "url", "unknown")),
         )
         try:
-            self._logger.exception(
+            self._logger.error(
                 "unhandled_exception: %s",
                 event.message,
+                exc_info=(type(exc), exc, exc.__traceback__),
                 extra={
                     "error_type": event.error_type,
                     "error_message": event.message,
