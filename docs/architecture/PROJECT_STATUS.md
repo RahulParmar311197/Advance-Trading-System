@@ -46,10 +46,11 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M10 live broker boundary: `LiveBroker` reuses the stable broker contract, requires an explicit injected transport when enabled, and is disabled by default; unit tests prove the default path cannot submit live orders; authoritative Python/web CI verification passed on revision `aef9e5d8`.
 - M10 execution monitoring: deterministic stale-order/missing-timestamp and reconciliation-health assessment with a fail-closed new-order gate; unit tests and corrected fixtures; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
 - M10 kill-switch integration: OrderManager enforces the risk kill switch for new submissions while preserving cancellation/status access; unit tests; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
-- M12 partial-fill hardening: PaperFill accepts explicit partial quantities; PaperBroker accumulates fills with weighted average price and rejects overfills; unit tests passed in authoritative Python CI run `34567661391`.
-- M12 rejected-order hardening: OrderManager preserves broker rejection state and fails closed for fill/cancel operations; dedicated tests passed in authoritative Python CI run `34567661391`.
-- M12 broker-failure contract: typed `BrokerError` defines venue/application failure semantics, and OrderManager propagates failures without inventing order state; dedicated tests are committed and authoritative CI verification is pending.
-- Web lint and dashboard build passed on integrated revision `14533c19`; the build workflow completed successfully after lint.
+- M12 partial-fill hardening: PaperFill accepts explicit partial quantities; PaperBroker accumulates fills with weighted average price and rejects overfills; authoritative Python CI passed on run `34567661391`.
+- M12 rejected-order hardening: OrderManager preserves broker rejection state and fails closed for fill/cancel operations; authoritative Python CI passed on run `34567661391`.
+- M12 broker-failure hardening: typed `BrokerError` defines venue/application failure semantics and OrderManager propagates failures without inventing order state; authoritative Python CI passed on run `34567836083`.
+- M12 network/database failure handling: LiveBroker normalizes transport connection/timeout/socket failures to `BrokerError`; FastAPI translates PostgreSQL operational failures to HTTP 503 without fabricating successful/empty results. Tests are committed and authoritative CI verification is pending for the latest integrated revision.
+- Web lint and dashboard build passed on integrated revision `14533c19`.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
@@ -61,6 +62,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Live adapter revision `aef9e5d8a53edcd081f5dc4a8c5b364f8ad9c0c4` passed authoritative Python job `103161257166` / run `34567066295` and web build/lint job `103161257161` / run `34567066283`.
 - Monitoring/kill-switch correction at head `c93e7acb30b79e1bb3285ba650c5dfa09401675a` passed authoritative Python CI run `34567439892`.
 - Integrated hardening revision `14533c198cc9feba997edb123441e4e859907b99` passed authoritative Python CI run `34567661391`; dashboard lint and build also passed in Web run `34567661459`.
+- Broker-failure revision `75aaa5205ff42160bdc9401dae075fe674f9397a` passed authoritative Python CI run `34567836083`.
 - Private isolated partial-fill checks passed 3/3 for accumulation, weighted average price, and overfill rejection.
 - Private isolated broker-failure check passed 1/1 for fail-closed propagation.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
@@ -68,12 +70,12 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Verify the broker-failure hardening revision in authoritative CI.
+1. Verify the latest network/database hardening revision in authoritative CI.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Run the full-stack acceptance journey with supplied/real market data.
 4. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-5. Add hardening coverage for bad/missing/duplicate market data, database/network failures, API timeouts, and recovery paths.
+5. Add hardening coverage for API timeouts and recovery paths after network/database verification.
 6. Continue M11 production/SaaS controls after execution hardening.
 
 ## Next dependency
-Verify the broker-failure hardening revision in authoritative CI. If green, continue M12 with API-timeout/recovery and database/network failure paths, keeping all failures fail-closed and preserving known broker state.
+Verify the latest network/database hardening revision in authoritative CI. If green, implement API-timeout and recovery/runbook tests, then continue remaining M12 data-quality hardening before M11 production/SaaS controls.
