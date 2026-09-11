@@ -1,9 +1,12 @@
-from packages.queue.redis_queue import Job, JobQueue, QueueError
+from packages.queue.redis_queue import JobQueue, QueueError
 
 
 class FakeRedis:
     def __init__(self):
         self.lists = {}
+
+    def lpush(self, key, value):
+        self.lists.setdefault(key, []).insert(0, value)
 
     def rpush(self, key, value):
         self.lists.setdefault(key, []).append(value)
