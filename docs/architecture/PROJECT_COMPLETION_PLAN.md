@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 broker interface has passed authoritative Python/web CI. The deterministic paper broker is implemented and unit-tested, but authoritative CI verification of this revision is pending. The next continuation task is CI verification; after green, continue with the order manager.
+M10 broker interface, deterministic paper broker, order manager, and execution simulator are implemented with unit tests. The integrated revision passed authoritative Python CI and web lint/build. Next dependency is reconciliation; do not mark it complete until implementation, tests, and authoritative CI pass.
 
 ## Milestones
 
@@ -129,9 +129,9 @@ M10 broker interface has passed authoritative Python/web CI. The deterministic p
 
 ### M10 Paper/live execution
 - [x] Broker interface — validated broker-neutral order contract and abstract submit/cancel/query boundary; authoritative Python/web CI verification passed on head `e1eae697`
-- [ ] Paper broker — deterministic paper execution driven only by explicitly supplied market observations; unit tests committed; authoritative CI verification pending
-- [ ] Order manager
-- [ ] Execution simulator
+- [x] Paper broker — deterministic paper execution driven only by explicitly supplied market observations, including market/limit/stop lifecycle, cancel/query, and simulator integration; unit tests and authoritative Python/web CI verification passed on run `34566804336` / `34566804337`
+- [x] Order manager — thin broker application boundary for submit/cancel/status and fail-closed fill requirement; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
+- [x] Execution simulator — deterministic candle-based market/limit/stop fill model with explicit slippage, gap handling for stops, strict symbol/timestamp/OHLC validation, and no generated market data; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
 - [ ] Reconciliation
 - [ ] Live adapter behind feature flag
 - [ ] Execution monitoring
