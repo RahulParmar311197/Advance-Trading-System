@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
-from uuid import uuid4
 from typing import Any, Protocol
+from uuid import uuid4
 
 
 class QueueClient(Protocol):
     def rpush(self, key: str, value: str) -> Any: ...
-    def blpop(self, keys: str | list[str], timeout: int = 0) -> Any: ...
+    def brpoplpush(self, source: str, destination: str, timeout: int = 0) -> Any: ...
+    def lrem(self, key: str, count: int, value: str) -> Any: ...
 
 
 class QueueError(RuntimeError):
@@ -45,12 +46,7 @@ class Job:
 
 
 class JobQueue:
-    """FIFO Redis list queue with explicit retry semantics.
-
-    A claimed job is only removed from Redis when ``ack`` is called. Failed
-    handlers can therefore be re-enqueued explicitly with an incremented
-    attempt count; malformed jobs are rejected rather than silently executed.
-    """
+    """FIFO Redis list queue with a recoverable in-flight list."""
 
     def __init__(self, client: QueueClient, *, namespace: str = "ats:jobs") -> None:
         if not namespace.strip():
@@ -62,6 +58,9 @@ class JobQueue:
         if not queue.strip():
             raise ValueError("queue must not be empty")
         return f"{self._namespace}:{queue.strip()}"
+
+    def processing_key(self, queue: str) -> str:
+        return f"{self.key(queue)}:processing"
 
     def enqueue(self, queue: str, name: str, payload: dict[str, Any], *, job_id: str | None = None) -> Job:
         job = Job(job_id or uuid4().hex, name, dict(payload))
@@ -75,18 +74,28 @@ class JobQueue:
         if timeout_seconds < 0:
             raise ValueError("timeout_seconds must be >= 0")
         try:
-            item = self._client.blpop(self.key(queue), timeout=timeout_seconds)
+            raw = self._client.brpoplpush(self.key(queue), self.processing_key(queue), timeout_seconds)
         except (OSError, TypeError, ValueError) as exc:
             raise QueueError("redis claim failed") from exc
-        if item is None:
-            return None
-        _, raw = item
-        return Job.decode(raw)
+        return None if raw is None else Job.decode(raw)
+
+    def ack(self, queue: str, job: Job) -> None:
+        try:
+            removed = self._client.lrem(self.processing_key(queue), 1, job.encode())
+        except (OSError, TypeError, ValueError) as exc:
+            raise QueueError("redis acknowledgement failed") from exc
+        if removed != 1:
+            raise QueueError("job was not present in processing queue")
 
     def retry(self, queue: str, job: Job) -> Job:
         retried = Job(job.id, job.name, job.payload, job.attempts + 1)
         try:
+            removed = self._client.lrem(self.processing_key(queue), 1, job.encode())
+            if removed != 1:
+                raise QueueError("job was not present in processing queue")
             self._client.rpush(self.key(queue), retried.encode())
+        except QueueError:
+            raise
         except (OSError, TypeError, ValueError) as exc:
             raise QueueError("redis retry failed") from exc
         return retried
