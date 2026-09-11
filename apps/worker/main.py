@@ -4,6 +4,7 @@ import os
 
 import redis
 
+from apps.worker.jobs.backtest import run_backtest_job
 from packages.queue.redis_queue import JobQueue, QueueError
 from packages.queue.worker import Worker
 
@@ -13,7 +14,7 @@ def build_worker() -> tuple[Worker, str]:
     queue_name = os.getenv("QUEUE_NAME", "default")
     max_attempts = int(os.getenv("QUEUE_MAX_ATTEMPTS", "3"))
     client = redis.Redis.from_url(redis_url, decode_responses=False)
-    return Worker(JobQueue(client), {} , max_attempts=max_attempts), queue_name
+    return Worker(JobQueue(client), {"backtest.run": run_backtest_job}, max_attempts=max_attempts), queue_name
 
 
 def main() -> None:
@@ -24,8 +25,7 @@ def main() -> None:
         except QueueError as exc:
             raise SystemExit(f"worker stopped: {exc}") from exc
         except Exception:
-            # Job handlers own their retry policy; an unhandled job failure
-            # should not be converted into a successful acknowledgement.
+            # The queue has already retained/requeued retryable failures.
             continue
 
 
