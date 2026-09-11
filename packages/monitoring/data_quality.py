@@ -39,7 +39,7 @@ def assess_candles(
     timeframe: str,
     checked_at: datetime,
 ) -> DataQualityReport:
-    """Validate a persisted candle window and report missing session candles."""
+    """Validate a candle window and report missing session candles."""
     if not candles:
         raise ValueError("cannot assess an empty candle window")
     if checked_at.tzinfo is None or checked_at.utcoffset() is None:
