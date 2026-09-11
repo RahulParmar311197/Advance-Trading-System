@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from packages.instruments.trading_calendar import is_market_session, is_trading_day
