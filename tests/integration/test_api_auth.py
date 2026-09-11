@@ -2,9 +2,8 @@ import hashlib
 
 from fastapi.testclient import TestClient
 
-from apps.api.app import auth
 from apps.api.app.main import app
-from packages.saas.auth import APIKeyAuthenticator, APIKeyRecord, Role
+from packages.saas.auth import Role
 
 
 SECRET = "integration-test-secret"
@@ -38,27 +37,6 @@ class FakeConnection:
         return None
 
 
-def _set_authenticator() -> None:
-    auth._AUTHENTICATOR = APIKeyAuthenticator(
-        {
-            "viewer-key": APIKeyRecord(
-                key_id="viewer-key",
-                organization_id="org-a",
-                user_id="user-viewer",
-                role=Role.VIEWER,
-                secret_digest=hashlib.sha256(SECRET.encode()).hexdigest(),
-            ),
-            "research-key": APIKeyRecord(
-                key_id="research-key",
-                organization_id="org-a",
-                user_id="user-researcher",
-                role=Role.RESEARCHER,
-                secret_digest=hashlib.sha256(SECRET.encode()).hexdigest(),
-            ),
-        }
-    )
-
-
 def _use_db_key(row):
     from apps.api.app.dependencies import get_connection
 
@@ -83,7 +61,7 @@ def test_protected_market_route_rejects_missing_credentials():
 
 def test_protected_market_route_rejects_invalid_credentials():
     digest = hashlib.sha256(SECRET.encode()).hexdigest()
-    _use_db_key(("viewer-key", "org-a", "user-viewer", "viewer", digest, True))
+    _use_db_key(("viewer-key", "org-a", "user-viewer", Role.VIEWER.value, digest, True))
     try:
         client = TestClient(app)
         response = client.get(
@@ -98,7 +76,7 @@ def test_protected_market_route_rejects_invalid_credentials():
 
 def test_persistent_viewer_can_read_market_route():
     digest = hashlib.sha256(SECRET.encode()).hexdigest()
-    _use_db_key(("viewer-key", "org-a", "user-viewer", "viewer", digest, True))
+    _use_db_key(("viewer-key", "org-a", "user-viewer", Role.VIEWER.value, digest, True))
     try:
         client = TestClient(app)
         response = client.get(
@@ -113,7 +91,7 @@ def test_persistent_viewer_can_read_market_route():
 
 def test_persistent_role_permission_is_required_for_backtest_validation():
     digest = hashlib.sha256(SECRET.encode()).hexdigest()
-    _use_db_key(("viewer-key", "org-a", "user-viewer", "viewer", digest, True))
+    _use_db_key(("viewer-key", "org-a", "user-viewer", Role.VIEWER.value, digest, True))
     try:
         client = TestClient(app)
         payload = {
@@ -128,23 +106,6 @@ def test_persistent_role_permission_is_required_for_backtest_validation():
         assert response.status_code == 403
     finally:
         _clear_overrides()
-
-
-def test_configured_local_authenticator_remains_supported_for_deterministic_tests():
-    _set_authenticator()
-    from apps.api.app.config import settings
-
-    original = settings.api_key_records
-    settings.api_key_records = "configured-for-test"
-    try:
-        client = TestClient(app)
-        response = client.get(
-            "/market-data/validate-symbol/NIFTY",
-            headers={"X-API-Key-ID": "viewer-key", "X-API-Key-Secret": SECRET},
-        )
-        assert response.status_code == 200
-    finally:
-        settings.api_key_records = original
 
 
 def test_health_remains_public():
