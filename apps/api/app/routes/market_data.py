@@ -31,7 +31,7 @@ def _load_candles(connection: Any, symbol: str, timeframe: str, start: datetime,
         cursor.execute(
             """SELECT timestamp, open, high, low, close, volume
                FROM candles
-               WHERE symbol=%s AND timeframe=%s AND timestamp BETWEEN %s AND %s
+               WHERE symbol=%s AND timeframe=%s AND timestamp >= %s AND timestamp < %s
                ORDER BY timestamp
                LIMIT %s""",
             (symbol, timeframe, start, end, limit),
