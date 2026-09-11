@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Response, status
 import redis
+from fastapi import APIRouter, Depends, Response, status
 
 from packages.monitoring.health import build_report, check_database, check_queue_depth, check_redis
 
@@ -19,9 +19,20 @@ def health():
 
 @router.get("/health/ready")
 def readiness(response: Response, connection=Depends(get_connection)):
-    """Readiness endpoint covering PostgreSQL and Redis dependencies."""
+    """Readiness endpoint covering required PostgreSQL and Redis dependencies."""
+    if not settings.redis_url:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {
+            "status": "degraded",
+            "components": {
+                "database": {"status": "unknown", "detail": "not checked"},
+                "redis": {"status": "error", "detail": "REDIS_URL is not configured"},
+                "queue": {"status": "error", "detail": "REDIS_URL is not configured"},
+            },
+        }
+
     client = redis.Redis.from_url(settings.redis_url, decode_responses=False)
-    queue_key = "ats:jobs:default"
+    queue_key = f"ats:jobs:{settings.queue_name}"
     report = build_report(
         (
             lambda: check_database(connection),
