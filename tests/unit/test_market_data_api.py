@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -34,13 +34,14 @@ class Connection:
 
 def test_candles_endpoint_reads_ordered_rows_from_repository_schema() -> None:
     timestamp = datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc)
+    end = timestamp + timedelta(minutes=5)
     connection = Connection([(timestamp, Decimal("100"), Decimal("102"), Decimal("99"), Decimal("101"), Decimal("1000"))])
 
     result = candles(
         symbol="NIFTY",
         timeframe="5m",
         start=timestamp,
-        end=timestamp,
+        end=end,
         limit=100,
         connection=connection,
     )
@@ -48,11 +49,17 @@ def test_candles_endpoint_reads_ordered_rows_from_repository_schema() -> None:
     assert len(result) == 1
     assert result[0].symbol == "NIFTY"
     assert result[0].close == Decimal("101")
-    assert connection.cursor_instance.executed[1] == ("NIFTY", "5m", timestamp, timestamp, 100)
+    assert connection.cursor_instance.executed[1] == ("NIFTY", "5m", timestamp, end, 100)
 
 
 def test_candles_endpoint_rejects_reversed_range() -> None:
     start = datetime(2026, 1, 1, 10, tzinfo=timezone.utc)
     end = datetime(2026, 1, 1, 9, tzinfo=timezone.utc)
-    with pytest.raises(Exception, match="start must be <= end"):
+    with pytest.raises(Exception, match="end must be after start"):
         candles("NIFTY", "5m", start, end, 100, Connection([]))
+
+
+def test_candles_endpoint_rejects_empty_range() -> None:
+    timestamp = datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc)
+    with pytest.raises(Exception, match="end must be after start"):
+        candles("NIFTY", "5m", timestamp, timestamp, 100, Connection([]))
