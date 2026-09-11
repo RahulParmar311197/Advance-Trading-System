@@ -3,15 +3,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from packages.execution.broker import Broker, Order, OrderRequest, OrderStatus
+from packages.risk.kill_switch import KillSwitch
 
 
 @dataclass(frozen=True, slots=True)
 class OrderManager:
-    """Application boundary for broker order submission and lifecycle queries."""
+    """Application boundary for broker orders and fail-closed submission controls."""
 
     broker: Broker
+    kill_switch: KillSwitch | None = None
 
     def submit(self, request: OrderRequest) -> Order:
+        if self.kill_switch is not None and not self.kill_switch.allow_new_trade():
+            raise RuntimeError("kill switch is active; new order submission blocked")
         return self.broker.submit_order(request)
 
     def cancel(self, order_id: str) -> Order:
