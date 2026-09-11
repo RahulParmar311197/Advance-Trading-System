@@ -20,11 +20,13 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M11 Redis/cache: namespaced JSON Redis adapter with bounded TTL, optional API dependency, SMC-event read-through caching, local Redis service, and unit coverage. Cache failure is non-authoritative and falls back to PostgreSQL-derived computation.
 - M11 queue/workers: FIFO Redis queue with recoverable in-flight claims, acknowledgement/retry/backoff semantics, runnable worker process, Docker worker service, and a real PostgreSQL-persisted backtest job handler.
 - M11 scheduled jobs: separate interval scheduler service with validated explicit job configuration, Redis enqueue boundary, missed-interval storm protection, Redis outage recovery, Docker service, and unit coverage.
+- M11 monitoring implementation: liveness plus PostgreSQL/Redis/queue readiness reporting with HTTP 503 on degraded dependencies and unit coverage; authoritative CI verification is pending.
 
 ## Verification
 - Full Python CI passed on M11 security/resource-scoping/cache revision `4dbb426c450fe606886d04848e4bd0c680d827ee` (run `34572595333`, job `103177768789`): 312 tests passed.
 - Full Python CI passed on queue/worker revision `4834fbf28ad9296d2346b058e9d2f12bb05b4cf2` (run `34573241100`, job `103179806342`); the subsequent at-least-once retry correction was also exercised by the succeeding CI trigger.
-- Scheduled-job implementation has been committed and is awaiting its authoritative CI run on the current integrated revision.
+- Scheduled-job verification initially failed because its fake Redis fixture did not match the queue's LPUSH FIFO contract; the fixture was corrected. The failed run was `34573715352` / job `103181325458` (322 passed, 2 failed). A replacement run for the fix is in progress.
+- Monitoring implementation is included in the current replacement CI run and remains unmarked until that run passes.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -37,4 +39,4 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Monitoring is the next M11 dependency after scheduled jobs. It should expose service/queue/database health and operational state without turning transient failures into false trading success. Preserve the real-provider and full-stack acceptance blockers as explicit gates.
+Monitoring is the current M11 verification gate. Once green, continue with alerts. Preserve the real-provider and full-stack acceptance blockers as explicit gates.
