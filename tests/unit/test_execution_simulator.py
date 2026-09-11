@@ -74,21 +74,29 @@ def test_stop_sell_models_gap_and_slippage() -> None:
     assert fill.price == Decimal("94.05")
 
 
-def test_observation_and_request_symbol_must_match() -> None:
+def test_observation_rejects_naive_timestamp() -> None:
     with pytest.raises(ValueError, match="timezone-aware"):
-        ExecutionObservation(candle(open="100", high="101", low="99", close="100").__class__(
-            timestamp=datetime(2026, 1, 2, 9, 15),
-            symbol="NIFTY",
-            timeframe="5m",
-            open=Decimal("100"),
-            high=Decimal("101"),
-            low=Decimal("99"),
-            close=Decimal("100"),
-            volume=Decimal("100"),
-        ))
+        ExecutionObservation(
+            Candle(
+                timestamp=datetime(2026, 1, 2, 9, 15),
+                symbol="NIFTY",
+                timeframe="5m",
+                open=Decimal("100"),
+                high=Decimal("101"),
+                low=Decimal("99"),
+                close=Decimal("100"),
+                volume=Decimal("100"),
+            )
+        )
+
+
+def test_observation_and_request_symbol_must_match() -> None:
     request = OrderRequest("BANKNIFTY", OrderSide.BUY, Decimal("1"))
     with pytest.raises(ValueError, match="does not match"):
-        simulate_fill(request, ExecutionObservation(candle(open="100", high="101", low="99", close="100")))
+        simulate_fill(
+            request,
+            ExecutionObservation(candle(open="100", high="101", low="99", close="100")),
+        )
 
 
 def test_invalid_slippage_is_rejected() -> None:
@@ -99,3 +107,17 @@ def test_invalid_slippage_is_rejected() -> None:
             ExecutionObservation(candle(open="100", high="101", low="99", close="100")),
             slippage_bps=Decimal("-1"),
         )
+
+
+def test_paper_broker_can_apply_simulated_observation() -> None:
+    from packages.execution.paper_broker import PaperBroker
+
+    broker = PaperBroker()
+    order = broker.submit_order(OrderRequest("NIFTY", OrderSide.BUY, Decimal("1")))
+    filled = broker.process_observation(
+        order.order_id,
+        ExecutionObservation(candle(open="100", high="101", low="99", close="100")),
+        slippage_bps=Decimal("10"),
+    )
+    assert filled.status.value == "filled"
+    assert filled.average_fill_price == Decimal("100.1")
