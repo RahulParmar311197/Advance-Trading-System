@@ -18,7 +18,8 @@ def test_order_manager_blocks_new_submissions_when_kill_switch_active() -> None:
     with pytest.raises(RuntimeError, match="kill switch is active"):
         manager.submit(request)
 
-    assert broker.orders == ()
+    with pytest.raises(KeyError, match="unknown order"):
+        broker.get_order("PAPER-00000001")
 
 
 def test_order_manager_allows_submission_after_kill_switch_deactivation() -> None:
