@@ -15,7 +15,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Queue/workers
 - [x] Scheduled jobs
 - [x] Monitoring
-- [x] Alerts
+- [x] Alerts — readiness health transitions, delivery outcomes, de-duplication/recovery behavior, and direct transition tests
 - [x] Error tracking
 - [x] Data-quality monitoring — immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage
 - [x] Deployment — provider-neutral production Compose topology, fail-closed production configuration validation, health-gated startup, CI Compose validation, and deployment/rollback runbook; no cloud provider is claimed
