@@ -29,8 +29,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Causal OOS/walk-forward research verification: training-only fitting and causal holdout signal generation are covered by unit tests and full CI.
 - Stress-test verification: the integrated stress-test revision is covered by scenario-specific slippage/risk behavior and invalid-parameter tests; Python/Compose CI passed on run `34582877990` / job `103210285835`.
 - Combined research verification: a test-only synthetic fixture exercises out-of-sample, walk-forward, and stress-test evaluators together; the integrated test revision passed Python/Compose CI on run `34583446968` / job `103212090259`.
-- Provider-supplied CSV market-data preparation: strict timezone-aware OHLCV CSV parsing, explicit column mapping, requested symbol/timeframe/window filtering, and fail-closed malformed-row handling; no gap filling or fabricated observations.
-- Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows and reject naive query timestamps, with integration coverage.
+- Provider-supplied CSV market-data preparation: strict timezone-aware OHLCV parsing, explicit column mapping, requested symbol/timeframe/window filtering, and fail-closed malformed-row handling; no gap filling or fabricated observations.
+- Market-data API hardening: candle and SMC queries use half-open `[start, end)` windows, reject naive query timestamps, and reject empty windows, with integration/unit coverage.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision.
@@ -42,7 +42,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Stress-test verification passed the full Python/Compose CI on run `34582877990` / job `103210285835`.
 - Combined research verification passed the full Python/Compose CI on run `34583446968` / job `103212090259`; Web lint/build passed on run `34583446913` / job `103212089982`.
 - The CSV provider implementation and tests passed full Python/Compose CI on run `34584113636` / job `103214214002`; Web lint/build passed on run `34584113590` / job `103214213577`.
-- The current follow-up market-data API hardening revision is awaiting its post-change CI run.
+- The first API-window-hardening revision failed because an existing unit fixture used an empty interval; the fixture was corrected to exercise a real half-open candle window, and an explicit empty-window rejection test was added.
+- The corrected API-window-hardening tests passed full Python/Compose CI on run `34585734250` / job `103219387353`.
+- The Web workflow for the preceding API-window-hardening revision passed lint/build on run `34585098388` / job `103217358543`; the current revision changes Python tests/docs only and does not alter Web sources.
 - The first causal-research fixture revision failed because its synthetic test strategy emitted a second entry signal; the fixture was corrected rather than weakening the research implementation.
 - The first combined-research fixture revision likewise emitted multiple holdout trades; it was corrected to exercise one deterministic test trade per evaluator without weakening production research code.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
@@ -56,4 +58,4 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 4. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-The final combined research verification is implemented and CI-verified. The next unblocked engineering dependency is the production billing provider/internal contract boundary; real Indian historical-data integration and the full-stack acceptance journey remain blocked until authorized real data access is supplied. The strict CSV adapter provides a non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
+The next unblocked engineering dependency is operational hardening around the production acceptance boundary; production billing remains blocked until an explicitly selected/authorized provider or real internal contract is supplied, and real Indian historical-data integration remains blocked until authorized real data access is supplied. The strict CSV adapter provides a non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
