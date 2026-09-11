@@ -34,3 +34,22 @@ jobs:
           pip install -e . pytest httpx2
       - name: Run tests
         run: python -m pytest -q
+      - name: Validate production Compose configuration
+        env:
+          POSTGRES_DB: ats
+          POSTGRES_USER: ats
+          POSTGRES_PASSWORD: ci-only-password
+          DATABASE_URL: postgresql://ats:ci-only-password@db:5432/ats
+          REDIS_URL: redis://redis:6379/0
+          QUEUE_NAME: default
+          CODE_VERSION: ci-${{ github.sha }}
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: docker compose -f infra/deployment/docker-compose.production.yml config --quiet
+      - name: Validate production environment boundary
+        env:
+          ENVIRONMENT: production
+          DATABASE_URL: postgresql://ats:ci-only-password@db:5432/ats
+          REDIS_URL: redis://redis:6379/0
+          QUEUE_NAME: default
+          CODE_VERSION: ci-${{ github.sha }}
+        run: python scripts/validate_deployment.py
