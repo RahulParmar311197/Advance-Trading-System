@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 broker interface, deterministic paper broker, order manager, and execution simulator are implemented with unit tests. The integrated revision passed authoritative Python CI and web lint/build. Next dependency is reconciliation; do not mark it complete until implementation, tests, and authoritative CI pass.
+M10 broker interface, deterministic paper broker, order manager, execution simulator, and reconciliation are implemented with unit tests. The integrated revisions passed authoritative Python CI and web lint/build. Next dependency is the live broker adapter, which must remain behind a feature flag and must not become the default execution path.
 
 ## Milestones
 
@@ -59,7 +59,7 @@ M10 broker interface, deterministic paper broker, order manager, and execution s
 - [x] Parameter capture
 - [x] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
 - [x] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
-- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
+- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same candles and strategy, with unit tests; CI verification pending
 - [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; API integration and JSON-safe output added
 - [x] Research report generation — factual Markdown report generated from persisted comparison results; API and dashboard integration added
 - [x] Portfolio exposure aggregation — deterministic symbol-level absolute notional exposure
@@ -132,7 +132,7 @@ M10 broker interface, deterministic paper broker, order manager, and execution s
 - [x] Paper broker — deterministic paper execution driven only by explicitly supplied market observations, including market/limit/stop lifecycle, cancel/query, and simulator integration; unit tests and authoritative Python/web CI verification passed on run `34566804336` / `34566804337`
 - [x] Order manager — thin broker application boundary for submit/cancel/status and fail-closed fill requirement; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
 - [x] Execution simulator — deterministic candle-based market/limit/stop fill model with explicit slippage, gap handling for stops, strict symbol/timestamp/OHLC validation, and no generated market data; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
-- [ ] Reconciliation
+- [x] Reconciliation — deterministic comparison of expected versus broker-observed order state, detecting missing/unexpected orders, status differences, and fill differences; duplicate IDs fail closed; unit tests and authoritative Python/web CI verification passed on revision `9eb5c0e6`
 - [ ] Live adapter behind feature flag
 - [ ] Execution monitoring
 - [ ] Kill switch integration
