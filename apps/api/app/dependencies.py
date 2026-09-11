@@ -22,6 +22,23 @@ def get_connection() -> Generator[psycopg.Connection, None, None]:
         connection.close()
 
 
+def get_readiness_connection() -> Generator[tuple[psycopg.Connection | None, str | None], None, None]:
+    """Yield a bounded PostgreSQL readiness connection without raising into the HTTP layer."""
+    try:
+        connection = psycopg.connect(
+            settings.database_url,
+            connect_timeout=settings.database_connect_timeout_seconds,
+        )
+    except Exception:
+        yield None, "PostgreSQL connection failed"
+        return
+
+    try:
+        yield connection, None
+    finally:
+        connection.close()
+
+
 def get_cache() -> RedisCache | None:
     """Return the configured Redis cache; development without Redis remains runnable."""
     if not settings.redis_url:
