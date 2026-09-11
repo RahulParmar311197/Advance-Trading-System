@@ -22,3 +22,9 @@ No external email, SMS, chat, or webhook credentials are required by this bounda
 Unhandled API exceptions are normalized into `ErrorEvent` records containing exception type, message, HTTP method, and request path, then sent through the application logging boundary with the traceback attached. Database operational failures retain their fail-closed HTTP 503 response; unexpected failures return HTTP 500 without changing the original failure into a successful result.
 
 The error tracker is deliberately local and credential-free. A future external error-tracking transport can replace the logging implementation without changing exception handling contracts.
+
+## Data-quality monitoring
+
+`assess_candles()` validates a concrete OHLCV window using the canonical market-data validation rules and reports expected session candles missing from that window. It does not infer exchange holidays and does not invent observations. Invalid OHLCV windows are reported as degraded with the validation error.
+
+The returned `DataQualityReport` is immutable and JSON-safe through `as_dict()`. Callers can use `healthy` as the fail-closed signal before research or execution consumes a dataset.
