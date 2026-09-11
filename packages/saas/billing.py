@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Protocol
+from typing import Any, Protocol
 
 
 class BillingContractError(ValueError):
@@ -45,6 +45,80 @@ class InMemoryBillingEventSink:
 
     def get(self, event_id: str) -> BillingEvent | None:
         return self._events.get(event_id)
+
+
+class PostgreSQLBillingEventSink:
+    """Persist normalized billing events in PostgreSQL with idempotent semantics.
+
+    The sink receives only :class:`BillingEvent` instances. Provider credentials,
+    webhook signatures, and raw provider payloads must be handled by the
+    provider adapter before this boundary is called.
+    """
+
+    def __init__(self, connection: Any) -> None:
+        self._connection = connection
+
+    def record(self, event: BillingEvent) -> None:
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """INSERT INTO billing_events
+                   (event_id, organization_id, event_type, occurred_at,
+                    provider_reference, status)
+                   VALUES (%s, %s, %s, %s, %s, %s)
+                   ON CONFLICT (event_id) DO NOTHING""",
+                (
+                    event.event_id,
+                    event.organization_id,
+                    event.event_type,
+                    event.occurred_at,
+                    event.provider_reference,
+                    event.status,
+                ),
+            )
+            cursor.execute(
+                """SELECT event_id, organization_id, event_type, occurred_at,
+                          provider_reference, status
+                   FROM billing_events
+                   WHERE event_id=%s""",
+                (event.event_id,),
+            )
+            row = cursor.fetchone()
+        self._connection.commit()
+
+        if row is None:
+            raise BillingContractError("billing event could not be persisted")
+
+        stored = BillingEvent(
+            event_id=str(row[0]),
+            organization_id=str(row[1]),
+            event_type=str(row[2]),
+            occurred_at=row[3],
+            provider_reference=str(row[4]),
+            status=str(row[5]),
+        )
+        if stored != event:
+            raise BillingContractError("event_id already exists with different payload")
+
+    def get(self, event_id: str) -> BillingEvent | None:
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                """SELECT event_id, organization_id, event_type, occurred_at,
+                          provider_reference, status
+                   FROM billing_events
+                   WHERE event_id=%s""",
+                (event_id,),
+            )
+            row = cursor.fetchone()
+        if row is None:
+            return None
+        return BillingEvent(
+            event_id=str(row[0]),
+            organization_id=str(row[1]),
+            event_type=str(row[2]),
+            occurred_at=row[3],
+            provider_reference=str(row[4]),
+            status=str(row[5]),
+        )
 
 
 class BillingService:
