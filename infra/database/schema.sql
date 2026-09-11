@@ -54,3 +54,14 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS audit_logs_organization_created_idx ON audit_logs(organization_id, created_at DESC);
+CREATE TABLE IF NOT EXISTS billing_events (
+    event_id TEXT PRIMARY KEY,
+    organization_id TEXT NOT NULL REFERENCES organizations(organization_id),
+    event_type TEXT NOT NULL,
+    occurred_at TIMESTAMPTZ NOT NULL,
+    provider_reference TEXT NOT NULL,
+    status TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS billing_events_organization_occurred_idx
+    ON billing_events(organization_id, occurred_at DESC);
