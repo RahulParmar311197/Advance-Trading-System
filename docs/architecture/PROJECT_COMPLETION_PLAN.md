@@ -34,7 +34,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Rejected-order tests
 - [x] API timeout tests
 - [x] Recovery/runbook tests
-- [x] API market-data window hardening — candle/SMC queries now use half-open `[start, end)` semantics and reject naive query timestamps, with integration coverage
+- [x] API market-data window hardening — candle/SMC queries use half-open `[start, end)` semantics, reject naive query timestamps, and reject empty windows, with integration coverage.
 
 ## Research verification
 - [x] Causal out-of-sample verification — CI run `34582674053` passed with the corrected fixture; the evaluator fits only the training block and generates holdout signals causally, exposing at most the current test candle.
