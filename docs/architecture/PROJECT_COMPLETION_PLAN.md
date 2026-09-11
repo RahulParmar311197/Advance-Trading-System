@@ -42,6 +42,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Causal walk-forward verification — the same CI run passed; each rolling window fits only its training block and evaluates signals only against its OOS test block without future test-candle exposure.
 - [x] Stress-test verification on the integrated revision — CI run `34582877990` passed; tests verify scenario-specific slippage degradation, risk-driven sizing/equity behavior, and invalid stress-parameter rejection.
 - [x] Combined research verification — the same synthetic test-only dataset exercises out-of-sample, walk-forward, and stress-test evaluators together; Python/Compose CI passed on run `34583446968` / job `103212090259`.
+- [x] Reproducible experiment runner — executes an injected deterministic experiment against its complete manifest, persists the manifest before results, supports rerunning from the stored manifest, and validates executor result shapes with unit coverage.
 
 ## Real-data integration preparation
 - [x] Strict provider-supplied CSV OHLCV adapter — timezone-aware parsing, explicit column mapping, symbol/timeframe/window filtering, and fail-closed handling of malformed rows; no gap filling or fabricated observations.
