@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from packages.queue.redis_queue import Job, JobQueue, QueueError
+from packages.queue.redis_queue import Job, JobQueue
 
 
 @dataclass(frozen=True, slots=True)
