@@ -46,6 +46,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 ## Real-data integration preparation
 - [x] Strict provider-supplied CSV OHLCV adapter — timezone-aware parsing, explicit column mapping, symbol/timeframe/window filtering, and fail-closed handling of malformed rows; no gap filling or fabricated observations.
 - [x] CSV adapter unit coverage for filtering, column mapping, malformed schema/timestamps, and preservation of missing observations.
+- [x] Provider-supplied CSV validation CLI — read-only canonical OHLCV validation and session-aware missing-candle reporting; no repair, gap filling, persistence, or provider authorization claim.
 - [ ] Authorized real Indian historical-data provider — blocked until provider credentials/authorization and its documented response contract are supplied.
 
 ## Remaining blockers
