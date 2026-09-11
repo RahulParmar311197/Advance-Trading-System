@@ -51,7 +51,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M12 broker-failure hardening: typed `BrokerError` defines venue/application failure semantics and OrderManager propagates failures without inventing order state; authoritative Python CI passed on run `34567836083`.
 - M12 network/database hardening: LiveBroker normalizes transport connection/timeout/socket failures to `BrokerError`; FastAPI translates PostgreSQL operational failures to HTTP 503; API database connections now use an explicit bounded connect timeout; data-quality and recovery tests are integrated.
 - M12 data-quality hardening: OHLCV range/volume/timestamp validation, session-aware missing-candle detection, and Indian market-session boundary tests are implemented. Duplicate-tick coverage remains intentionally blocked until a concrete tick/trade observation model exists.
-- Web lint and dashboard build passed on integrated revision `b47d6286`.
+- M11 authentication/authorization slice: digest-only API-key records, organization-scoped principals, role permission checks, fail-closed 401/403 responses, protected market-data/backtest/experiment routes, and CORS support for authentication headers. Integration tests are committed; Python CI verification is pending. Health remains public.
+- Web lint and dashboard build passed on the API-auth integration revision `c49e16af`.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
@@ -65,18 +66,20 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Integrated hardening revision `14533c198cc9feba997edb123441e4e859907b99` passed authoritative Python CI run `34567661391`; dashboard lint and build also passed in Web run `34567661459`.
 - Broker-failure revision `75aaa5205ff42160bdc9401dae075fe674f9397a` passed authoritative Python CI run `34567836083`.
 - Network/database hardening revision `b47d6286b3b6dc08f0608c2c5344f8883665e60d` passed authoritative Python CI run `34568498472` and Web run `34568498420`.
-- A subsequent API-timeout/recovery integration initially exposed one invalid test fixture; it was corrected before the current hardening revision.
+- Final data-quality correction revision `3e9e4ff15357d3b76107d5d0248cacfab4800bd5` passed authoritative Python CI run `34569917067`.
+- API authentication integration revision `c49e16caf4f6de7907b597bce17d2e1adfd26e99` passed Web lint/build run `34570543378`; Python verification of the auth tests is still pending.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Verify the current integrated hardening revision after the final data-quality changes in authoritative CI.
-2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-3. Run the full-stack acceptance journey with supplied/real market data.
-4. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
-6. Continue M11 production/SaaS controls after M12 hardening.
+1. Verify the M11 API authentication/authorization integration in authoritative Python CI.
+2. Implement persistent user/organization/API-key repositories and scope resource queries by organization.
+3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+4. Run the full-stack acceptance journey with supplied/real market data.
+5. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
+6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+7. Continue M11 Redis/queue/monitoring/alerts/deployment/billing controls after the security slice.
 
 ## Next dependency
-Verify the current integrated hardening revision in authoritative CI. If green, finish any remaining data-quality coverage that the existing data model can support, then begin M11 production/SaaS controls while keeping the real-provider and full-stack acceptance blockers explicit.
+Verify the current M11 API authentication/authorization slice in authoritative Python CI. If green, implement persistent organization/user/API-key repositories and organization-scoped resource access, then proceed to Redis/cache and queue infrastructure while keeping the real-provider and full-stack acceptance blockers explicit.
