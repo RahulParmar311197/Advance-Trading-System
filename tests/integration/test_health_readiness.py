@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from apps.api.app.config import settings
-from apps.api.app.dependencies import get_connection
+from apps.api.app.dependencies import get_readiness_connection
 from apps.api.app.main import app
 
 
@@ -36,7 +36,7 @@ class Redis:
 def test_readiness_reports_dependencies(monkeypatch):
     monkeypatch.setattr(settings, "redis_url", "redis://test")
     monkeypatch.setattr("apps.api.app.routes.health.redis.Redis.from_url", lambda *_args, **_kwargs: Redis())
-    app.dependency_overrides[get_connection] = lambda: Database()
+    app.dependency_overrides[get_readiness_connection] = lambda: (Database(), None)
     try:
         response = TestClient(app).get("/health/ready")
         assert response.status_code == 200
@@ -49,7 +49,7 @@ def test_readiness_reports_dependencies(monkeypatch):
 
 def test_readiness_fails_closed_without_redis(monkeypatch):
     monkeypatch.setattr(settings, "redis_url", None)
-    app.dependency_overrides[get_connection] = lambda: Database()
+    app.dependency_overrides[get_readiness_connection] = lambda: (Database(), None)
     try:
         response = TestClient(app).get("/health/ready")
         assert response.status_code == 503
@@ -72,7 +72,7 @@ def test_readiness_fails_closed_when_redis_client_configuration_raises(monkeypat
         "apps.api.app.routes.health.redis.Redis.from_url",
         raise_configuration_error,
     )
-    app.dependency_overrides[get_connection] = lambda: Database()
+    app.dependency_overrides[get_readiness_connection] = lambda: (Database(), None)
     try:
         response = TestClient(app).get("/health/ready")
         assert response.status_code == 503
@@ -84,5 +84,21 @@ def test_readiness_fails_closed_when_redis_client_configuration_raises(monkeypat
         )
         assert body["components"]["queue"]["status"] == "error"
         assert body["components"]["queue"]["detail"] == "Redis client unavailable"
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_readiness_fails_closed_when_database_connection_fails(monkeypatch):
+    monkeypatch.setattr(settings, "redis_url", "redis://test")
+    monkeypatch.setattr("apps.api.app.routes.health.redis.Redis.from_url", lambda *_args, **_kwargs: Redis())
+    app.dependency_overrides[get_readiness_connection] = lambda: (None, "PostgreSQL connection failed")
+    try:
+        response = TestClient(app).get("/health/ready")
+        assert response.status_code == 503
+        body = response.json()
+        assert body["components"]["database"]["status"] == "error"
+        assert body["components"]["database"]["detail"] == "PostgreSQL connection failed"
+        assert body["components"]["redis"]["status"] == "ok"
+        assert body["components"]["queue"]["detail"] == "depth=2"
     finally:
         app.dependency_overrides.clear()
