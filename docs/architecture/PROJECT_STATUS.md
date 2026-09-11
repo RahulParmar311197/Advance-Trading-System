@@ -34,19 +34,20 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 Random Forest baseline: dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, unit tests, and authoritative Python CI verification on run `34338335095`.
 - M8 deterministic training layer: explicit model-selection configuration and public training/prediction dispatch for supported baselines.
 - M8 Gradient Boosting baseline: deterministic one-vs-rest squared-error boosting over regression stumps, explicit estimator count/learning rate, immutable fitted stages, feature-width validation, implementation and unit tests; full integrated M8 CI verification passed on run `34340996500`.
-- M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and corrected deterministic tests; full integrated M8 CI verification passed on run `34340996500`.
+- M8 strict out-of-sample evaluator: final holdout excluded from training, with deterministic holdout predictions/accuracy and tests; full integrated M8 CI verification passed on run `34340996500`.
 - M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests; full integrated M8 CI verification passed on run `34340996500`.
-- M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests; full integrated M8 CI verification passed on run `34340996500`.
+- M8 deterministic model versioning implementation: content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; full integrated M8 CI verification passed on run `34340996500`.
 - M9 agent interface, planner, tool registry, historical-data tool, feature tool, SMC tool, backtest tool, walk-forward tool, strategy comparison tool, risk analysis tool, report tool, and experiment memory are implemented with deterministic validation and unit coverage.
-- M10 broker-neutral execution contract: validated order request, order status/fill state, and abstract submit/cancel/query interface in `packages/execution/broker.py`, with unit coverage; authoritative CI verification pending.
+- M10 broker-neutral execution contract: validated broker-neutral order contract and abstract submit/cancel/query boundary in `packages/execution/broker.py`, with authoritative CI verification on head `e1eae697`.
+- M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, no generated market data, and unit tests; authoritative CI verification pending.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
 - Feature-tool Python CI completed successfully on run `34344767506`.
-- CI run `34565820493` on the first M9-memory integration revision exposed six pre-existing/integration regressions: `build_equity_curve()` returns mapping records but `packages/ai_agent/backtest.py` indexed them positionally; the SMC fixture still did not produce an event. The run reported 223 passed and 7 failed.
-- Fixed the equity-curve access to use `point["index"]` and replaced the SMC fixture with an oscillating sequence that exercises actual swing/BOS/FVG behavior.
-- Corrected M9 head `f990a18bb6e53425ef30c969e5a17b52efb94874` passed the authoritative Python test job `34565942337` and web build/lint job `34565942410`.
+- Corrected M9 head `f990a18bb6e53425ef30c969e5a17b52efb94874` passed authoritative Python job `34565942337` and web build/lint job `34565942410`.
+- M10 broker-interface head `e1eae697b58ec3aeead48a6807235d837da86aaa` passed Python and web CI jobs `103158803979` and `103158804089`.
+- Paper broker unit tests were added; authoritative GitHub Actions verification is pending.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -55,8 +56,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification for the new M10 broker-interface revision.
-5. Implement the paper broker only after the broker contract revision is verified.
+4. Complete authoritative Python CI verification for the paper-broker revision.
+5. Implement the order manager after paper-broker verification.
 
 ## Next dependency
-Verify the M10 broker-interface revision in GitHub Actions. If green, implement the paper broker against the stable broker contract; if red, fix the actual failure before advancing.
+Verify the paper-broker revision in GitHub Actions. If green, implement the order manager; if red, fix the actual failure before advancing.
