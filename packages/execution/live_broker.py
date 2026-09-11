@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
-from packages.execution.broker import Broker, Order, OrderRequest
+from packages.execution.broker import Broker, BrokerError, Order, OrderRequest
 
 
 class LiveBrokerTransport(Protocol):
@@ -24,12 +24,7 @@ class LiveBrokerConfig:
 
 
 class LiveBroker(Broker):
-    """Broker adapter that cannot reach a live venue while disabled.
-
-    The adapter deliberately contains no broker-specific network logic. A real
-    venue transport must be injected explicitly and remain responsible for
-    authentication, request serialization, and returning observed broker state.
-    """
+    """Broker adapter with explicit live gating and network-failure translation."""
 
     def __init__(self, transport: LiveBrokerTransport | None = None, config: LiveBrokerConfig | None = None) -> None:
         self._transport = transport
@@ -38,13 +33,22 @@ class LiveBroker(Broker):
             raise ValueError("enabled live broker requires an explicit transport")
 
     def submit_order(self, request: OrderRequest) -> Order:
-        return self._require_transport().submit_order(request)
+        try:
+            return self._require_transport().submit_order(request)
+        except (ConnectionError, TimeoutError, OSError) as exc:
+            raise BrokerError("live broker transport unavailable during submission") from exc
 
     def cancel_order(self, order_id: str) -> Order:
-        return self._require_transport().cancel_order(order_id)
+        try:
+            return self._require_transport().cancel_order(order_id)
+        except (ConnectionError, TimeoutError, OSError) as exc:
+            raise BrokerError("live broker transport unavailable during cancellation") from exc
 
     def get_order(self, order_id: str) -> Order:
-        return self._require_transport().get_order(order_id)
+        try:
+            return self._require_transport().get_order(order_id)
+        except (ConnectionError, TimeoutError, OSError) as exc:
+            raise BrokerError("live broker transport unavailable during status query") from exc
 
     def _require_transport(self) -> LiveBrokerTransport:
         if not self._config.enabled:
