@@ -4,7 +4,17 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 broker interface, deterministic paper broker, order manager, execution simulator, reconciliation, disabled-by-default live adapter, and fail-closed execution monitoring are implemented with unit tests. The live-adapter revision passed authoritative Python CI and web lint/build. The monitoring revision is awaiting authoritative CI verification. Next dependency is kill-switch integration after monitoring verification.
+M10 broker interface, deterministic paper broker, order manager, execution simulator, reconciliation, disabled-by-default live adapter, and fail-closed execution monitoring are implemented with unit tests. Live-adapter CI passed; the latest monitoring/kill-switch integration revision is awaiting authoritative CI verification. Next dependency is to verify that revision, then continue M10 hardening/production execution controls.
+
+### M10 Paper/live execution — current state
+- Broker interface: complete and CI verified.
+- Paper broker: complete and CI verified.
+- Order manager: complete and CI verified in integrated revision; now additionally gates new submissions through the optional risk kill switch.
+- Execution simulator: complete and CI verified.
+- Reconciliation: complete and CI verified.
+- Live adapter: complete, disabled by default, CI verified.
+- Execution monitoring: implementation and unit tests complete; latest authoritative CI verification pending.
+- Kill-switch integration: implementation and unit tests complete; latest authoritative CI verification pending.
 
 ## Milestones
 
@@ -59,7 +69,7 @@ M10 broker interface, deterministic paper broker, order manager, execution simul
 - [x] Parameter capture
 - [x] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
 - [x] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
-- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same candles and strategy, with unit tests; CI verification pending
+- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
 - [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; API integration and JSON-safe output added
 - [x] Research report generation — factual Markdown report generated from persisted comparison results; API and dashboard integration added
 - [x] Portfolio exposure aggregation — deterministic symbol-level absolute notional exposure
@@ -83,59 +93,59 @@ M10 broker interface, deterministic paper broker, order manager, execution simul
 - [ ] Full-stack acceptance with supplied/real market data
 
 ### M6 Options
-- [x] Chain model — validated immutable option contracts and chain grouping with strike/call/put accessors
-- [x] Greeks — dependency-free European Black-Scholes Greeks with input validation and parity tests
-- [x] IV — deterministic Black-Scholes price inversion by bisection with no-arbitrage validation and unit tests
-- [x] OI/OI change — deterministic calculation from supplied option-chain snapshots; missing and duplicate observations fail closed
-- [x] PCR — deterministic put/call open-interest ratio from supplied option-chain observations; missing OI and zero call OI fail closed, with unit tests and Python CI verification
-- [x] Term structure — deterministic ordering of supplied implied-volatility observations by expiry; empty and duplicate observations fail closed, with unit tests and Python CI verification
-- [x] Volatility surface — deterministic ordering of supplied implied-volatility observations by expiry and strike; implementation and unit tests committed, authoritative CI verification pass on full-suite head
-- [x] Payoff analysis — deterministic expiry P&L for supplied option legs; implementation and unit tests committed, authoritative CI verification pass on full-suite head
+- [x] Chain model
+- [x] Greeks
+- [x] IV
+- [x] OI/OI change
+- [x] PCR
+- [x] Term structure
+- [x] Volatility surface
+- [x] Payoff analysis
 
 ### M7 Microstructure
-- [x] Spread — deterministic bid/ask spread and relative-spread implementation and unit tests; authoritative Python CI verification pass
-- [x] Depth — deterministic validated level-2 bid/ask snapshot, best levels, visible total depth, and bounded depth queries; implementation and unit tests; authoritative Python CI verification pass
-- [x] Imbalance — deterministic normalized bid/ask and supplied-depth quantity imbalance; implementation and unit tests; authoritative Python CI verification pass
-- [x] Trade flow — deterministic signed executed-volume and normalized buy/sell flow imbalance using explicitly supplied trade sides; implementation and unit tests; authoritative Python CI verification pass
-- [x] Trade intensity — deterministic supplied-trade count per explicitly supplied observation window; targeted checks and authoritative Python CI verification pass on run `34333070096`
-- [x] Price impact — deterministic signed notional, quantity-weighted execution VWAP, and implementation-shortfall analytics from supplied trade prints; tests and authoritative Python CI verification pass on run `34333070096`
-- [x] Liquidity/resiliency — deterministic visible-depth and quoted-spread liquidity snapshot plus depth/spread recovery ratios from explicitly supplied initial, stressed, and recovered observations; unit tests and authoritative Python CI verification pass on run `34333173992`
+- [x] Spread
+- [x] Depth
+- [x] Imbalance
+- [x] Trade flow
+- [x] Trade intensity
+- [x] Price impact
+- [x] Liquidity/resiliency
 
 ### M8 Regime/ML
-- [x] Regime features — deterministic period return, mean absolute return, OLS close-price slope, path efficiency, and average volume implementation with unit tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Regime detector — deterministic transparent threshold classifier over supplied regime features; explicit caller-supplied thresholds, validation, and unit tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Regime classifier — structured primary, trend, and volatility labels with deterministic tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Transitions — deterministic primary-regime transition detection with tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Dataset builder — deterministic candle-window feature/label rows with tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Logistic baseline — dependency-free deterministic one-vs-rest logistic classifier with explicit configuration and tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Random Forest — dependency-free deterministic bootstrap decision-tree ensemble with explicit seed/configuration, feature subsampling, immutable fitted trees, unit tests; authoritative Python CI verification pass on run `34338335095`
-- [x] Gradient boosting — deterministic one-vs-rest squared-error boosting over regression stumps with explicit estimator count/learning rate, feature validation and tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Out-of-sample model validation — final holdout excluded from training, with deterministic holdout predictions/accuracy and tests; authoritative Python CI verification pass on run `34340996500`
-- [x] Model versioning — content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; authoritative Python CI verification pass on run `34340996500`
+- [x] Regime features
+- [x] Regime detector
+- [x] Regime classifier
+- [x] Transitions
+- [x] Dataset builder
+- [x] Logistic baseline
+- [x] Random Forest
+- [x] Gradient boosting
+- [x] Out-of-sample model validation
+- [x] Model versioning
 
 ### M9 AI research agent
-- [x] Agent interface — explicit research request/response contracts and deterministic non-executing implementation with tests; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Research planner — deterministic validated research workflow with tests; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Tool registry — deterministic named callable registry with validation, duplicate protection, lexical discovery, and explicit invocation; tests committed; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Historical data tool — validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary; returns only supplied provider rows and fails closed on invalid request/data; unit tests added; authoritative CI verification passed on run `34565942337`
-- [x] Feature tool — deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, with immutable request/result contracts and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`
-- [x] SMC tool — deterministic orchestration of existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract; fail-closed candle/config validation and unit tests committed; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Backtest tool — deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Walk-forward tool — deterministic rolling in-sample/out-of-sample windows over supplied validated candles, reusing the existing registered strategy and cost/slippage-aware backtest boundary; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Report tool — factual Markdown report generated solely from supplied strategy-comparison results, with explicit limitations and unit tests; authoritative CI verification passed on corrected head via run `34565942337`
-- [x] Experiment memory — immutable experiment lessons with fail-closed validation, deterministic token-overlap recall, stable tie-breaking, and unit tests; authoritative CI verification passed on corrected head via run `34565942337`
+- [x] Agent interface
+- [x] Research planner
+- [x] Tool registry
+- [x] Historical data tool
+- [x] Feature tool
+- [x] SMC tool
+- [x] Backtest tool
+- [x] Walk-forward tool
+- [x] Strategy comparison tool
+- [x] Risk analysis tool
+- [x] Report tool
+- [x] Experiment memory
 
 ### M10 Paper/live execution
-- [x] Broker interface — validated broker-neutral order contract and abstract submit/cancel/query boundary; authoritative Python/web CI verification passed on head `e1eae697`
-- [x] Paper broker — deterministic paper execution driven only by explicitly supplied market observations, including market/limit/stop lifecycle, cancel/query, and simulator integration; unit tests and authoritative Python/web CI verification passed on run `34566804336` / `34566804337`
-- [x] Order manager — thin broker application boundary for submit/cancel/status and fail-closed fill requirement; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
-- [x] Execution simulator — deterministic candle-based market/limit/stop fill model with explicit slippage, gap handling for stops, strict symbol/timestamp/OHLC validation, and no generated market data; unit tests and authoritative Python/web CI verification passed in integrated revision `e37d39a8`
-- [x] Reconciliation — deterministic comparison of expected versus broker-observed order state, detecting missing/unexpected orders, status differences, and fill differences; duplicate IDs fail closed; unit tests and authoritative Python/web CI verification passed on revision `9eb5c0e6`
-- [x] Live adapter behind feature flag — explicit `LiveBroker` transport boundary with disabled-by-default configuration, fail-closed submission when disabled, and explicit transport requirement when enabled; unit tests and authoritative Python/web CI verification passed on revision `aef9e5d8`
-- [ ] Execution monitoring — deterministic stale-order/reconciliation health assessment with fail-closed new-order gate; implementation and unit tests committed, authoritative CI verification pending
-- [ ] Kill switch integration
+- [x] Broker interface
+- [x] Paper broker
+- [x] Order manager
+- [x] Execution simulator
+- [x] Reconciliation
+- [x] Live adapter behind feature flag
+- [ ] Execution monitoring — implementation and unit tests complete; authoritative CI pending
+- [ ] Kill switch integration — OrderManager blocks new submissions while active while preserving existing-order cancellation/status; implementation and unit tests complete; authoritative CI pending
 
 ### M11 Production/SaaS
 - [ ] Authentication
