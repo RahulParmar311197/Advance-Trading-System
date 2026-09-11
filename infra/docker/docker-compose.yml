@@ -7,13 +7,32 @@ services:
       POSTGRES_PASSWORD: ats
     ports: ["5432:5432"]
     volumes: [db_data:/var/lib/postgresql/data, ../../database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro]
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   api:
     build:
       context: ../..
       dockerfile: infra/docker/Dockerfile.api
     environment:
       DATABASE_URL: postgresql://ats:ats@db:5432/ats
+      REDIS_URL: redis://redis:6379/0
     ports: ["8000:8000"]
-    depends_on: [db]
+    depends_on: [db, redis]
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    command: ["python", "-m", "apps.worker.main"]
+    environment:
+      DATABASE_URL: postgresql://ats:ats@db:5432/ats
+      REDIS_URL: redis://redis:6379/0
+      QUEUE_NAME: default
+    depends_on: [db, redis]
 volumes:
   db_data:
