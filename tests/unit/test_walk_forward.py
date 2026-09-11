@@ -21,6 +21,31 @@ class FixedSignalStrategy(Strategy):
         ]
 
 
+class FitRecordingStrategy(Strategy):
+    def __init__(self):
+        self.fit_lengths = []
+        self.fit_end_timestamps = []
+
+    def fit(self, candles):
+        self.fit_lengths.append(len(candles))
+        self.fit_end_timestamps.append(candles[-1].timestamp)
+        return self
+
+    def signals(self, candles):
+        if not candles:
+            return []
+        index = len(candles) - 1
+        return [
+            Signal(
+                index=index,
+                direction="bullish",
+                entry=candles[index].close,
+                stop=candles[index].close - Decimal("1"),
+                target=candles[index].close + Decimal("2"),
+            )
+        ]
+
+
 def candles(count: int) -> list[Candle]:
     base = datetime(2026, 1, 2, 9, 15, tzinfo=timezone.utc)
     return [
@@ -67,3 +92,22 @@ def test_walk_forward_executes_only_out_of_sample_test_blocks():
     assert len(result.trades) == 1
     assert result.trades[0].entry_index == 1
     assert result.trades[0].exit_index == 2
+
+
+def test_walk_forward_fit_receives_only_each_window_train_block():
+    dataset = candles(10)
+    strategy = FitRecordingStrategy()
+
+    result = run_walk_forward(
+        dataset,
+        strategy,
+        train_size=4,
+        test_size=2,
+        initial_capital=Decimal("100000"),
+        slippage_bps=Decimal("0"),
+    )
+
+    assert len(result.windows) == 3
+    assert strategy.fit_lengths == [4, 4, 4]
+    assert strategy.fit_end_timestamps == [dataset[3].timestamp, dataset[5].timestamp, dataset[7].timestamp]
+    assert all(window["trade_count"] == 1 for window in result.windows)
