@@ -91,12 +91,13 @@ class JobQueue:
             raise QueueError("job was not present in processing queue")
 
     def retry(self, queue: str, job: Job) -> Job:
+        """Requeue before removing the in-flight copy for at-least-once delivery."""
         retried = Job(job.id, job.name, job.payload, job.attempts + 1)
         try:
+            self._client.rpush(self.key(queue), retried.encode())
             removed = self._client.lrem(self.processing_key(queue), 1, job.encode())
             if removed != 1:
                 raise QueueError("job was not present in processing queue")
-            self._client.rpush(self.key(queue), retried.encode())
         except QueueError:
             raise
         except (OSError, TypeError, ValueError) as exc:
