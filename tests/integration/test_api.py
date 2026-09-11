@@ -1,3 +1,8 @@
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import psycopg
+
+
 def test_api_module_imports():
     from apps.api.app.main import app
 
@@ -18,3 +23,16 @@ def test_api_allows_local_dashboard_origin():
     assert "http://localhost:3000" in middleware.kwargs["allow_origins"]
     assert "GET" in middleware.kwargs["allow_methods"]
     assert "POST" in middleware.kwargs["allow_methods"]
+
+
+def test_database_operational_failure_returns_fail_closed_503():
+    from apps.api.app.main import handle_database_unavailable
+
+    request = Request({"type": "http", "method": "GET", "path": "/health", "headers": []})
+    response = __import__("asyncio").run(
+        handle_database_unavailable(request, psycopg.OperationalError("connection refused"))
+    )
+
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 503
+    assert response.body == b'{"detail":"database unavailable","error":"OperationalError"}'
