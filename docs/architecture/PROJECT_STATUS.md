@@ -25,25 +25,24 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M11 error tracking: normalized exception events with HTTP request context and traceback-aware application logging, fail-closed database-error handling, and generic 500 handling without leaking exception text.
 - M11 data-quality monitoring: immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage.
 - M11 deployment: provider-neutral production Compose topology with explicit secrets/configuration, dependency health gates, restart policies, internal database/Redis networking, production configuration validation, CI Compose validation, and an operational deployment/rollback runbook.
-- M11 billing contract boundary: normalized timezone-aware billing events with organization ownership, idempotent event recording semantics, and explicit separation between provider authentication and application ingestion. No payment provider is selected or simulated.
+- M11 billing contract boundary: normalized timezone-aware billing events with organization ownership, idempotent event recording semantics, explicit separation between provider authentication and application ingestion, and a PostgreSQL persistence sink. No payment provider is selected or simulated.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision.
 - Error tracking Python CI passed on run `34577482109` / job `103193146616`.
 - Data-quality monitoring CI passed on run `34578034504` / job `103194909226`.
 - Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
-- Billing contract tests have been added; CI verification is pending on the current revision.
+- Billing PostgreSQL persistence and contract tests passed on CI run `34580507357` / run number `484`; Web lint/build passed on run `34580507412` / run number `420`.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Verify billing contract tests in CI.
-2. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
-3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-4. Complete the full-stack acceptance journey with supplied/real market data.
-5. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
-6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
+2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+3. Complete the full-stack acceptance journey with supplied/real market data.
+4. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
+5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Billing hooks have a real internal event boundary and tests, but cannot be marked complete until CI passes and a production billing provider or authorized internal billing contract is supplied. After that, implement the authenticated provider adapter without fabricating provider behavior or credentials.
+Billing persistence and contract verification are complete. A production billing adapter remains blocked until an explicitly selected/authorized provider or real internal billing contract is supplied. In parallel, the next unblocked engineering dependency is verification of the existing walk-forward, out-of-sample, and stress-test implementations on the current integrated revision without fabricating market data or results.
