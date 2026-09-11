@@ -32,9 +32,7 @@ class FitRecordingStrategy(Strategy):
         return self
 
     def signals(self, candles):
-        if len(candles) < 2:
-            return []
-        index = len(candles) - 2
+        index = len(candles) - 1
         return [
             Signal(
                 index=index,
