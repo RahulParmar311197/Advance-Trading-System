@@ -11,6 +11,8 @@ def candles(count: int) -> list[Candle]:
     return [
         Candle(
             timestamp=start + timedelta(minutes=index),
+            symbol="NIFTY",
+            timeframe="5m",
             open=Decimal(100 + index),
             high=Decimal(101 + index),
             low=Decimal(99 + index),
@@ -26,16 +28,26 @@ class FitRecordingStrategy(Strategy):
         self.fit_lengths: list[int] = []
         self.fit_end_timestamps: list[datetime] = []
 
-    def fit(self, candles: list[Candle]) -> None:
+    def fit(self, candles: list[Candle]) -> Strategy:
         self.fit_lengths.append(len(candles))
         self.fit_end_timestamps.append(candles[-1].timestamp)
+        return self
 
-    def generate_signal(self, candles: list[Candle], index: int) -> Signal | None:
-        if index == 0:
-            return Signal(direction="bullish", confidence=Decimal("1"))
-        if index == 1:
-            return Signal(direction="exit", confidence=Decimal("1"))
-        return None
+    def signals(self, candles: list[Candle]) -> list[Signal]:
+        # Emit only when exactly one test candle has been appended to the
+        # training context. The evaluator must not expose later test candles.
+        if len(candles) in (5, 4):
+            price = candles[-1].close
+            return [
+                Signal(
+                    index=len(candles) - 1,
+                    direction="bullish",
+                    entry=price,
+                    stop=price - Decimal("1"),
+                    target=price + Decimal("1"),
+                )
+            ]
+        return []
 
 
 def test_walk_forward_fit_receives_only_each_window_train_block():
