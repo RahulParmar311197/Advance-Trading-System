@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 import psycopg
 
@@ -79,6 +79,20 @@ def test_market_data_queries_use_half_open_time_window():
     assert "timestamp < %s" in connection.cursor_instance.query
     assert "BETWEEN" not in connection.cursor_instance.query
     assert connection.cursor_instance.params == ("NIFTY", "5m", start, end, 100)
+
+
+def test_market_data_window_rejects_naive_start():
+    from apps.api.app.routes.market_data import _validate_window
+
+    with __import__("pytest").raises(HTTPException, match="start must be timezone-aware"):
+        _validate_window(datetime(2026, 1, 1, 9, 15), datetime(2026, 1, 1, 9, 20, tzinfo=timezone.utc))
+
+
+def test_market_data_window_rejects_naive_end():
+    from apps.api.app.routes.market_data import _validate_window
+
+    with __import__("pytest").raises(HTTPException, match="end must be timezone-aware"):
+        _validate_window(datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc), datetime(2026, 1, 1, 9, 20))
 
 
 def test_database_operational_failure_returns_fail_closed_503():
