@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has a real organization-scoped API-key verification boundary, digest-only configuration, role authorization, protected API routes, and database schema for organizations, users, API keys, and audit logs. The protected API surface uses `X-API-Key-ID` and `X-API-Key-Secret`; health remains public. Next dependency is persistent user/organization/API-key repositories and route-level resource scoping.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has a real organization-scoped API-key verification boundary, digest-only configuration, role authorization, protected API routes, and database schema for organizations, users, API keys, and audit logs. Web lint/build passed after the API-route changes; Python verification of the new auth integration is pending. Next dependency after that verification is persistent user/organization/API-key repositories and route-level resource scoping.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -153,7 +153,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Organizations — database schema introduced
 - [x] API keys — database schema introduced; secrets stored as digests in the persistence model
 - [x] Audit logs — append-only event construction and persistence boundary
-- [x] Integrate authentication into API routes — market-data routes require `read`; backtest/experiment routes require `research`; health remains public
+- [ ] Integrate authentication into API routes — implementation and tests committed; Python CI verification pending
 - [ ] Persistent user/organization/API-key repositories
 - [ ] Redis/cache
 - [ ] Queue/workers
