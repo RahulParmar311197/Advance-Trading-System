@@ -43,6 +43,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M10 order manager: thin broker application boundary for submit/cancel/status and fail-closed fill requirement, with unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
 - M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict symbol/timestamp/OHLC validation, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
 - M10 reconciliation: deterministic expected-versus-observed order-state comparison covering missing/unexpected orders, status differences, fill quantity/price differences, and duplicate-ID fail-closed validation; unit tests; authoritative Python/web CI verification passed on revision `9eb5c0e6`.
+- M10 live broker boundary: `LiveBroker` reuses the stable broker contract, requires an explicit injected transport when enabled, and is disabled by default; unit tests prove the default path cannot submit live orders; authoritative Python/web CI verification passed on revision `aef9e5d8`.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -52,6 +53,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M10 broker-interface head `e1eae697b58ec3aeead48a6807235d837da86aaa` passed Python and web CI jobs `103158803979` and `103158804089`.
 - Integrated M10 revision `e37d39a839ed1a8581cf47d2e3ef85c271e29b68` passed authoritative Python job `103160497826` / run `34566804336` and web build/lint job `103160497747` / run `34566804337`.
 - Reconciliation revision `9eb5c0e632158f5cf7a64d27782e7050095e859b` passed authoritative Python job `103160912873` / run `34566947165` and web build/lint job `103160912729` / run `34566947121`.
+- Live adapter revision `aef9e5d8a53edcd081f5dc4a8c5b364f8ad9c0c4` passed authoritative Python job `103161257166` / run `34567066295` and web build/lint job `103161257161` / run `34567066283`.
 - A private isolated execution-simulator test run passed 1/1, while repository-wide authoritative results are the GitHub Actions runs above.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
@@ -61,8 +63,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-4. Add live adapter only behind a feature flag after paper validation.
-5. Add execution monitoring and kill-switch integration.
+4. Add execution monitoring and kill-switch integration.
+5. Add hardening coverage for partial fills, rejected orders, broker/database/network failures, and recovery paths.
 
 ## Next dependency
-Implement the live broker adapter boundary behind a disabled-by-default feature flag. It must reuse the stable `Broker` contract, require explicit configuration/credentials, fail closed when disabled or incomplete, and include tests that prove the default path cannot submit live orders.
+Implement execution monitoring around broker-observed order lifecycle and reconciliation outcomes. Define immutable execution events/health state, detect stale or unresolved orders and reconciliation failures, fail closed for new execution when monitoring is unhealthy, add unit/integration tests, then verify the integrated revision in CI before advancing to kill-switch integration.
