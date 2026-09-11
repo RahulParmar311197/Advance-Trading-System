@@ -34,7 +34,7 @@ class FitRecordingStrategy(Strategy):
         return self
 
     def signals(self, candles):
-        index = len(candles) - 2
+        index = len(candles) - 1
         return [
             Signal(
                 index=index,
@@ -111,7 +111,7 @@ def test_oos_fit_receives_only_training_period():
     assert strategy.fit_lengths == [3]
     assert strategy.fit_end_timestamps == [dataset[2].timestamp]
     assert len(result.trades) == 1
-    assert result.trades[0].entry_index == 1
+    assert result.trades[0].entry_index == 0
 
 
 def test_oos_does_not_allow_future_test_candles_to_create_earlier_signal():
