@@ -1,6 +1,11 @@
+from pathlib import Path
+
 import pytest
 
 from packages.deployment.config import DeploymentConfigurationError, load_production_settings
+
+
+COMPOSE_FILE = Path(__file__).parents[2] / "infra" / "deployment" / "docker-compose.production.yml"
 
 
 def _valid_env() -> dict[str, str]:
@@ -63,3 +68,10 @@ def test_production_configuration_accepts_tls_redis() -> None:
     settings = load_production_settings(environment)
 
     assert settings.redis_url.startswith("rediss://")
+
+
+def test_production_api_healthcheck_requires_dependency_readiness() -> None:
+    compose = COMPOSE_FILE.read_text(encoding="utf-8")
+
+    assert "urlopen('http://127.0.0.1:8000/health/ready', timeout=3)" in compose
+    assert "urlopen('http://127.0.0.1:8000/health', timeout=3)" not in compose
