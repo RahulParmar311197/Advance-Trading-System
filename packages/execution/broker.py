@@ -7,6 +7,10 @@ from decimal import Decimal
 from enum import StrEnum
 
 
+class BrokerError(RuntimeError):
+    """Recoverable broker/venue failure; callers must fail closed."""
+
+
 class OrderSide(StrEnum):
     BUY = "buy"
     SELL = "sell"
@@ -91,11 +95,13 @@ class Broker(ABC):
 
     Implementations must return the broker's observed order state and must not
     manufacture fills when the underlying execution venue did not provide one.
+    Broker failures should raise ``BrokerError`` so application layers can fail
+    closed without treating an unavailable venue as an executed order.
     """
 
     @abstractmethod
     def submit_order(self, request: OrderRequest) -> Order:
-        """Submit an order and return its current broker-observed state."""
+        """Submit an order and return the broker's observed state."""
         raise NotImplementedError
 
     @abstractmethod
