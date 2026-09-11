@@ -29,18 +29,29 @@ class FirstTestCandleStrategy(Strategy):
     """Deterministic test-only strategy shared by all research evaluators."""
 
     def signals(self, candles: list[Candle]) -> list[Signal]:
-        if len(candles) < 4:
-            return []
-        candle = candles[-1]
-        return [
-            Signal(
-                index=len(candles) - 1,
-                direction="bullish",
-                entry=candle.close,
-                stop=candle.close - Decimal("1"),
-                target=candle.close + Decimal("1"),
-            )
-        ]
+        if len(candles) == 4:
+            candle = candles[-1]
+            return [
+                Signal(
+                    index=3,
+                    direction="bullish",
+                    entry=candle.close,
+                    stop=candle.close - Decimal("1"),
+                    target=candle.close + Decimal("1"),
+                )
+            ]
+        if len(candles) == 6:
+            candle = candles[3]
+            return [
+                Signal(
+                    index=3,
+                    direction="bullish",
+                    entry=candle.close,
+                    stop=candle.close - Decimal("1"),
+                    target=candle.close + Decimal("1"),
+                )
+            ]
+        return []
 
 
 def test_research_verification_runs_oos_walk_forward_and_stress_together():
