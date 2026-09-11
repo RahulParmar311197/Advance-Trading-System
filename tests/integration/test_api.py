@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import psycopg
@@ -29,7 +31,7 @@ def test_database_operational_failure_returns_fail_closed_503():
     from apps.api.app.main import handle_database_unavailable
 
     request = Request({"type": "http", "method": "GET", "path": "/health", "headers": []})
-    response = __import__("asyncio").run(
+    response = asyncio.run(
         handle_database_unavailable(request, psycopg.OperationalError("connection refused"))
     )
 
