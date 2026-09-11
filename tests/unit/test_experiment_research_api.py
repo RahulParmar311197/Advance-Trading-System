@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -66,7 +65,8 @@ def test_report_and_comparison_use_principal_organization(monkeypatch):
     report = experiment_report(100, principal())
     assert report["format"] == "markdown"
     assert "# Research Comparison Report" in report["content"]
-    assert "EXP-1" in report["content"]
+    assert "EXP-2" in report["content"]
+    assert "Compared 2 experiment result(s)." in report["content"]
 
 
 def test_report_endpoint_returns_404_when_no_results(monkeypatch):
