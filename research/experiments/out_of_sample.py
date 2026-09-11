@@ -23,6 +23,35 @@ class OutOfSampleResult:
     ending_equity: Decimal
 
 
+def _causal_test_signals(
+    strategy: Strategy,
+    candles: list[Candle],
+    test_start: int,
+) -> list[Signal]:
+    """Generate holdout signals without exposing later holdout candles.
+
+    The strategy sees all training candles plus the current test candle, but
+    never a future test candle. This preserves causal out-of-sample evaluation
+    even when a strategy's ``signals`` implementation inspects its full input.
+    """
+    result: list[Signal] = []
+    for global_index in range(test_start, len(candles)):
+        context = candles[: global_index + 1]
+        for signal in strategy.signals(context):
+            if signal.index != global_index:
+                continue
+            result.append(
+                Signal(
+                    index=global_index - test_start,
+                    direction=signal.direction,
+                    entry=signal.entry,
+                    stop=signal.stop,
+                    target=signal.target,
+                )
+            )
+    return result
+
+
 def run_out_of_sample(
     candles: list[Candle],
     strategy: Strategy,
@@ -40,29 +69,16 @@ def run_out_of_sample(
 
     test_start = len(candles) - test_size
     train = candles[:test_start]
-    test = candles[test_start:]
 
     fit = getattr(strategy, "fit", None)
     fitted = strategy if fit is None else fit(train)
     if not isinstance(fitted, Strategy):
         raise TypeError("strategy.fit(train) must return a Strategy")
 
-    context = candles
-    signals = fitted.signals(context)
-    test_signals = [
-        Signal(
-            index=signal.index - test_start,
-            direction=signal.direction,
-            entry=signal.entry,
-            stop=signal.stop,
-            target=signal.target,
-        )
-        for signal in signals
-        if test_start <= signal.index < len(candles)
-    ]
+    test_signals = _causal_test_signals(fitted, candles, test_start)
 
     trades = run_backtest(
-        test,
+        candles[test_start:],
         test_signals,
         capital=initial_capital,
         risk_per_trade=risk_per_trade,
