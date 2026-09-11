@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-The corrected M9 AI research-agent revision has passed the authoritative Python and web CI jobs on runs `34565942337` and `34565942410`. M10 execution has now started with a real broker-neutral order contract in `packages/execution/broker.py` and unit coverage. Authoritative CI verification of that new execution revision is pending. The next continuation task is to verify the broker-interface revision; after green, implement the paper broker against the same contract.
+M10 broker interface has passed authoritative Python/web CI. The deterministic paper broker is implemented and unit-tested, but authoritative CI verification of this revision is pending. The next continuation task is CI verification; after green, continue with the order manager.
 
 ## Milestones
 
@@ -128,8 +128,8 @@ The corrected M9 AI research-agent revision has passed the authoritative Python 
 - [x] Experiment memory — immutable experiment lessons with fail-closed validation, deterministic token-overlap recall, stable tie-breaking, and unit tests; authoritative CI verification passed on corrected head via run `34565942337`
 
 ### M10 Paper/live execution
-- [ ] Broker interface — implemented in `packages/execution/broker.py` with validated order/fill-state contracts and unit tests; authoritative CI verification pending
-- [ ] Paper broker
+- [x] Broker interface — validated broker-neutral order contract and abstract submit/cancel/query boundary; authoritative Python/web CI verification passed on head `e1eae697`
+- [ ] Paper broker — deterministic paper execution driven only by explicitly supplied market observations; unit tests committed; authoritative CI verification pending
 - [ ] Order manager
 - [ ] Execution simulator
 - [ ] Reconciliation
