@@ -36,7 +36,18 @@ def _readiness_report(connection) -> HealthReport:
             )
         )
 
-    client = redis.Redis.from_url(settings.redis_url, decode_responses=False)
+    try:
+        client = redis.Redis.from_url(settings.redis_url, decode_responses=False)
+    except Exception as exc:
+        detail = f"Redis client configuration failed: {exc}"
+        return build_report(
+            (
+                lambda: check_database(connection),
+                lambda: ComponentHealth("redis", False, detail),
+                lambda: ComponentHealth("queue", False, "Redis client unavailable"),
+            )
+        )
+
     queue_key = f"ats:jobs:{settings.queue_name}"
     return build_report(
         (
