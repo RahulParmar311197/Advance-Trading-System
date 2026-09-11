@@ -14,7 +14,7 @@ from packages.monitoring.health import (
 )
 
 from ..config import settings
-from ..dependencies import get_connection
+from ..dependencies import get_readiness_connection
 
 router = APIRouter()
 _alert_tracker = AlertTransitionTracker(LoggingAlertNotifier())
@@ -26,7 +26,11 @@ def health():
     return {"status": "ok", "service": "advance-trading-system"}
 
 
-def _readiness_report(connection) -> HealthReport:
+def _readiness_report(
+    database: tuple[object | None, str | None],
+) -> HealthReport:
+    connection, database_error = database
+
     if not settings.redis_url:
         return HealthReport(
             (
@@ -36,13 +40,18 @@ def _readiness_report(connection) -> HealthReport:
             )
         )
 
+    if database_error is not None:
+        database_component = lambda: ComponentHealth("database", False, database_error)
+    else:
+        database_component = lambda: check_database(connection)
+
     try:
         client = redis.Redis.from_url(settings.redis_url, decode_responses=False)
     except Exception as exc:
         detail = f"Redis client configuration failed: {exc}"
         return build_report(
             (
-                lambda: check_database(connection),
+                database_component,
                 lambda: ComponentHealth("redis", False, detail),
                 lambda: ComponentHealth("queue", False, "Redis client unavailable"),
             )
@@ -51,7 +60,7 @@ def _readiness_report(connection) -> HealthReport:
     queue_key = f"ats:jobs:{settings.queue_name}"
     return build_report(
         (
-            lambda: check_database(connection),
+            database_component,
             lambda: check_redis(client),
             lambda: check_queue_depth(client, queue_key),
         )
@@ -59,9 +68,12 @@ def _readiness_report(connection) -> HealthReport:
 
 
 @router.get("/health/ready")
-def readiness(response: Response, connection=Depends(get_connection)):
+def readiness(
+    response: Response,
+    database=Depends(get_readiness_connection),
+):
     """Readiness endpoint covering PostgreSQL, Redis and queue dependencies."""
-    report = _readiness_report(connection)
+    report = _readiness_report(database)
     alert, delivery = _alert_tracker.observe(report)
     if not report.healthy:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
