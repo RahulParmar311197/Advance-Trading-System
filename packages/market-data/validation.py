@@ -10,6 +10,8 @@ from .models import Candle
 def validate_ohlcv(candles: list[Candle]) -> None:
     previous = None
     for c in candles:
+        if c.timestamp.tzinfo is None or c.timestamp.utcoffset() is None:
+            raise ValueError(f"timestamp must be timezone-aware at {c.timestamp}")
         if c.high < max(c.open, c.close) or c.low > min(c.open, c.close) or c.low > c.high:
             raise ValueError(f"invalid OHLC range at {c.timestamp}")
         if c.volume < 0:
