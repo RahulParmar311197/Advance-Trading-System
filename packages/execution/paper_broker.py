@@ -6,6 +6,7 @@ from decimal import Decimal
 from itertools import count
 
 from packages.execution.broker import Broker, Order, OrderRequest, OrderSide, OrderStatus, OrderType
+from packages.execution.execution_simulator import ExecutionObservation, simulate_fill
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,12 +90,31 @@ class PaperBroker(Broker):
         self._orders[order_id] = filled
         return filled
 
+    def process_observation(
+        self,
+        order_id: str,
+        observation: ExecutionObservation,
+        *,
+        slippage_bps: Decimal = Decimal("0"),
+    ) -> Order:
+        """Simulate and apply a fill from one explicitly supplied observation."""
+        order = self.get_order(order_id)
+        simulated = simulate_fill(order.request, observation, slippage_bps=slippage_bps)
+        if simulated is None:
+            return order
+        return self.process_fill(
+            order_id,
+            PaperFill(simulated.symbol, simulated.price, simulated.timestamp),
+        )
+
     @staticmethod
     def _triggered(request: OrderRequest, price: Decimal) -> bool:
         if request.order_type is OrderType.MARKET:
             return True
         if request.order_type is OrderType.LIMIT:
-            assert request.limit_price is not None
+            if request.limit_price is None:
+                raise ValueError("limit order is missing limit_price")
             return price <= request.limit_price if request.side is OrderSide.BUY else price >= request.limit_price
-        assert request.stop_price is not None
+        if request.stop_price is None:
+            raise ValueError("stop order is missing stop_price")
         return price >= request.stop_price if request.side is OrderSide.BUY else price <= request.stop_price
