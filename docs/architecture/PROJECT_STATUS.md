@@ -35,7 +35,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Readiness hardening: PostgreSQL readiness connection failures and Redis client-construction failures now fail closed as structured 503 readiness responses rather than escaping through the HTTP layer.
 
 ## Verification
-- Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd` and the subsequent documentation commits are awaiting their post-change CI run.
+- Alerts and web lint/build passed on the recorded M11 alert revision; direct transition/delivery unit coverage was added in commit `0822568d9a20a5e4c6c11444df4646e436bdb8bd`.
 - Error tracking Python CI passed on run `34577482109` / job `103193146616`.
 - Data-quality monitoring CI passed on run `34578034504` / job `103194909226`.
 - Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
@@ -49,11 +49,11 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - The Web workflow for the preceding API-window-hardening revision passed lint/build on run `34585098388` / job `103217358543`; the subsequent changes are Python tests/docs only and do not alter Web sources.
 - The first causal-research fixture revision failed because its synthetic test strategy emitted a second entry signal; the fixture was corrected rather than weakening the research implementation.
 - The first combined-research fixture revision likewise emitted multiple holdout trades; it was corrected to exercise one deterministic test trade per evaluator without weakening production research code.
+- The latest readiness and production deployment changes passed both authoritative workflows on commit `e97f09984afefdeacb6a855f02bd69f3d4876980`: Python/Compose CI run `34588714810` / run number `554` and Web lint/build run `34588714882` / run number `490`.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
-- Readiness hardening commits `1a60d63cf2de6f83f6775b2d2b5211816437081c`, `96d0e0b8ed22787eba0a7b3e12928d10c0205051`, `f1663acb21caa2b2af07a2925f2d4b3aae814706`, and `962b2d407cf80ce2d316f0e4b82db5829e99beb5` were followed by readiness fixture alignment commit `7dafeda32b5272c6b1f7fe3b212ed13d7a664db1`; CI verification remains pending for this test revision.
-- Production readiness health-gate changes are implemented in commits `1544ec5fcfca46126c7f81806149eec4ec9ecdd6` and `9e8a52b67dafa10fa19c389764f650977470a3cb`, with deployment documentation in `e52b614457d83488b79d406a3e44d888db94a855`; CI verification remains pending for these latest deployment changes.
+- No production billing provider or authorized Indian historical-data service has been supplied, so those external integrations remain intentionally unimplemented.
 
 ## Remaining blockers
 1. Select and authorize a production billing provider or supply the real internal billing contract, then implement an authenticated adapter.
@@ -62,4 +62,4 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 4. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Verify the latest readiness and production deployment changes in CI. After that, the next substantive work is blocked on externally supplied authorization/data: a production billing provider or real internal billing contract, and an authorized real Indian historical-data service. The strict CSV adapter remains the non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
+The internal readiness/deployment hardening is CI-verified. The next substantive dependency is externally supplied authorization/data: a production billing provider or real internal billing contract, and an authorized real Indian historical-data service. The strict CSV adapter remains the non-fabricating path for provider-supplied files but does not substitute for production provider authorization. Duplicate-tick testing remains blocked until a concrete tick/trade observation model exists.
