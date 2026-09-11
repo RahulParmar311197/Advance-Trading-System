@@ -46,6 +46,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 
 ## Instrument/market-data foundations
 - [x] Instrument expiry calendar primitive — configurable weekly expiry weekday, explicit holiday set, previous/next trading-day adjustment, inclusive range generation, and unit coverage; no exchange-specific expiry weekday is assumed.
+- [x] Option expiry calendar primitive — immutable, timezone-aware, provider-supplied expiry timestamps with sorted/duplicate validation, half-open range queries, and fail-closed lookup/query validation; no exchange expiry schedule is inferred.
 
 ## Real-data integration preparation
 - [x] Strict provider-supplied CSV OHLCV adapter — timezone-aware parsing, explicit column mapping, symbol/timeframe/window filtering, and fail-closed handling of malformed rows; no gap filling or fabricated observations.
