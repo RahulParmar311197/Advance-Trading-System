@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal
 
 from packages.execution.broker import OrderRequest, OrderSide, OrderType
@@ -13,7 +14,7 @@ class SimulatedFill:
 
     symbol: str
     price: Decimal
-    timestamp: object
+    timestamp: datetime
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,7 +64,8 @@ def simulate_fill(
         price = candle.open
         apply_slippage = True
     elif request.order_type is OrderType.LIMIT:
-        assert request.limit_price is not None
+        if request.limit_price is None:
+            raise ValueError("limit order is missing limit_price")
         if request.side is OrderSide.BUY and candle.low <= request.limit_price:
             price = request.limit_price
         elif request.side is OrderSide.SELL and candle.high >= request.limit_price:
@@ -71,7 +73,8 @@ def simulate_fill(
         else:
             price = None
     else:
-        assert request.stop_price is not None
+        if request.stop_price is None:
+            raise ValueError("stop order is missing stop_price")
         if request.side is OrderSide.BUY and candle.high >= request.stop_price:
             price = max(candle.open, request.stop_price)
             apply_slippage = True
