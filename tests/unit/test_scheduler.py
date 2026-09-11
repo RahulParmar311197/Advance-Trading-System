@@ -11,8 +11,8 @@ class FakeRedis:
     def __init__(self):
         self.values = []
 
-    def rpush(self, key, value):
-        self.values.append((key, value))
+    def lpush(self, key, value):
+        self.values.insert(0, (key, value))
 
 
 def test_schedule_configuration_is_validated():
