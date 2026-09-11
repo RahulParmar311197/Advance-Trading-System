@@ -16,3 +16,9 @@ Readiness state transitions are surfaced through the application logging boundar
 The notifier returns an explicit delivery result. A failed notification is reported as `delivery.status=failed` rather than being treated as successful delivery, while the readiness HTTP status remains determined by dependency health.
 
 No external email, SMS, chat, or webhook credentials are required by this boundary. A future transport can implement the `AlertNotifier` protocol without changing health evaluation.
+
+## Error tracking
+
+Unhandled API exceptions are normalized into `ErrorEvent` records containing exception type, message, HTTP method, and request path, then sent through the application logging boundary with the traceback attached. Database operational failures retain their fail-closed HTTP 503 response; unexpected failures return HTTP 500 without changing the original failure into a successful result.
+
+The error tracker is deliberately local and credential-free. A future external error-tracking transport can replace the logging implementation without changing exception handling contracts.
