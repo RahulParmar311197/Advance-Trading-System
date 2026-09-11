@@ -13,6 +13,8 @@ def make_candles(count: int) -> list[Candle]:
     return [
         Candle(
             timestamp=start + timedelta(minutes=index),
+            symbol="NIFTY",
+            timeframe="5m",
             open=Decimal(100 + index),
             high=Decimal(101 + index),
             low=Decimal(99 + index),
@@ -28,16 +30,27 @@ class FitRecordingStrategy(Strategy):
         self.fit_lengths: list[int] = []
         self.fit_end_timestamps: list[datetime] = []
 
-    def fit(self, candles: list[Candle]) -> None:
+    def fit(self, candles: list[Candle]) -> Strategy:
         self.fit_lengths.append(len(candles))
         self.fit_end_timestamps.append(candles[-1].timestamp)
+        return self
 
-    def generate_signal(self, candles: list[Candle], index: int) -> Signal | None:
-        if index == 0:
-            return Signal(direction="bullish", confidence=Decimal("1"))
-        if index == 1:
-            return Signal(direction="exit", confidence=Decimal("1"))
-        return None
+    def signals(self, candles: list[Candle]) -> list[Signal]:
+        # Emit only on the first candle presented to the holdout evaluator.
+        # This lets the test prove the evaluator translates a causal global
+        # index into the local backtest index without seeing future candles.
+        if len(candles) == 4:
+            price = candles[-1].close
+            return [
+                Signal(
+                    index=3,
+                    direction="bullish",
+                    entry=price,
+                    stop=price - Decimal("1"),
+                    target=price + Decimal("1"),
+                )
+            ]
+        return []
 
 
 def test_oos_fit_receives_only_training_period():
@@ -61,11 +74,11 @@ def test_oos_fit_receives_only_training_period():
 
 
 def test_oos_rejects_dataset_without_enough_train_and_test_data():
-    with pytest.raises(ValueError, match="test_size"):
+    with pytest.raises(ValueError, match="not enough candles"):
         run_out_of_sample(
             make_candles(2),
             FitRecordingStrategy(),
-            test_size=1,
+            test_size=2,
             initial_capital=Decimal("100000"),
             slippage_bps=Decimal("0"),
         )
