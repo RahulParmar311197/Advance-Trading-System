@@ -46,7 +46,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M10 live broker boundary: `LiveBroker` reuses the stable broker contract, requires an explicit injected transport when enabled, and is disabled by default; unit tests prove the default path cannot submit live orders; authoritative Python/web CI verification passed on revision `aef9e5d8`.
 - M10 execution monitoring: deterministic stale-order/missing-timestamp and reconciliation-health assessment with a fail-closed new-order gate; unit tests and corrected fixtures; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
 - M10 kill-switch integration: OrderManager enforces the risk kill switch for new submissions while preserving cancellation/status access; unit tests; authoritative full Python CI passed on run `34567439892` at head `c93e7acb`.
-- Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
+- M12 partial-fill hardening: PaperFill accepts explicit partial quantities; PaperBroker accumulates fills with weighted average price and rejects overfills; unit tests passed in authoritative Python CI run `34567661391`.
+- M12 rejected-order hardening: OrderManager preserves broker rejection state and fails closed for fill/cancel operations; dedicated tests passed in authoritative Python CI run `34567661391`.
+- Web lint and dashboard build passed on integrated revision `14533c19`; the build workflow completed successfully after lint.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
@@ -56,7 +58,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Integrated M10 revision `e37d39a839ed1a8581cf47d2e3ef85c271e29b68` passed authoritative Python job `103160497826` / run `34566804336` and web build/lint job `103160497747` / run `34566804337`.
 - Reconciliation revision `9eb5c0e632158f5cf7a64d27782e7050095e859b` passed authoritative Python job `103160912873` / run `34566947165` and web build/lint job `103160912729` / run `34566947121`.
 - Live adapter revision `aef9e5d8a53edcd081f5dc4a8c5b364f8ad9c0c4` passed authoritative Python job `103161257166` / run `34567066295` and web build/lint job `103161257161` / run `34567066283`.
-- Monitoring/kill-switch correction at head `c93e7acb30b79e1bb3285ba650c5dfa09401675a` passed authoritative Python CI run `34567439892`, including the full repository suite.
+- Monitoring/kill-switch correction at head `c93e7acb30b79e1bb3285ba650c5dfa09401675a` passed authoritative Python CI run `34567439892`.
+- Integrated hardening revision `14533c198cc9feba997edb123441e4e859907b99` passed authoritative Python CI run `34567661391`; dashboard lint and build also passed in Web run `34567661459`.
 - Private isolated partial-fill checks passed 3/3 for accumulation, weighted average price, and overfill rejection.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
@@ -66,8 +69,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-4. Add hardening coverage for bad/missing/duplicate market data, broker/database/network failures, rejected orders, API timeouts, recovery paths, and partial fills.
+4. Add hardening coverage for bad/missing/duplicate market data, broker/database/network failures, API timeouts, and recovery paths.
 5. Continue M11 production/SaaS controls after execution hardening.
 
 ## Next dependency
-Complete M12 partial-fill hardening by verifying the new explicit paper partial-fill lifecycle in authoritative CI, then continue with rejected-order and broker-failure hardening. Do not mark hardening items complete until their tests pass in the integrated repository.
+Complete M12 broker-failure hardening: define explicit broker failure behavior at the application boundary, add tests proving failures are fail-closed without mutating known order state, then verify the integrated revision in authoritative CI before advancing to network/database/API-timeout and recovery hardening.
