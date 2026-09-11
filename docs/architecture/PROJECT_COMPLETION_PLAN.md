@@ -36,18 +36,17 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Recovery/runbook tests
 
 ## Research verification
-- [ ] Causal out-of-sample verification — corrected test fixtures now assert training-only fitting and test-only trade evaluation; current CI verification pending.
-- [ ] Causal walk-forward verification — corrected test fixtures now assert each rolling train block is isolated from the corresponding OOS block; current CI verification pending.
+- [x] Causal out-of-sample verification — CI run `34582674053` passed with the corrected fixture; the evaluator fits only the training block and generates holdout signals causally, exposing at most the current test candle.
+- [x] Causal walk-forward verification — the same CI run passed; each rolling window fits only its training block and evaluates signals only against its OOS test block without future test-candle exposure.
 - [ ] Stress-test verification on the integrated revision.
 
 ## Remaining blockers
-1. Verify the corrected causal OOS/walk-forward revision in GitHub Actions.
-2. Verify the existing stress-test implementation on the integrated revision.
-3. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
-4. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-5. Complete the full-stack acceptance journey with supplied/real market data.
-6. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
-7. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Verify the existing stress-test implementation on the integrated revision.
+2. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
+3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+4. Complete the full-stack acceptance journey with supplied/real market data.
+5. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
+6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Critical acceptance test
 A fresh developer must be able to start the stack, load sample NIFTY data, open the dashboard, see 5m candles and SMC events, run the Liquidity MSS FVG backtest, see realistic metrics, and reproduce the experiment from its recorded metadata.
