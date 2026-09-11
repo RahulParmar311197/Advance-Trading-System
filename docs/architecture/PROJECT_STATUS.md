@@ -27,6 +27,7 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M11 deployment: provider-neutral production Compose topology with explicit secrets/configuration, dependency health gates, restart policies, internal database/Redis networking, production configuration validation, CI Compose validation, and an operational deployment/rollback runbook.
 - M11 billing contract boundary: normalized timezone-aware billing events with organization ownership, idempotent event recording semantics, explicit separation between provider authentication and application ingestion, and a PostgreSQL persistence sink. No payment provider is selected or simulated.
 - Causal OOS/walk-forward research verification: training-only fitting and causal holdout signal generation are covered by unit tests and full CI.
+- Stress-test verification: the integrated stress-test revision is covered by scenario-specific slippage/risk behavior and invalid-parameter tests; Python/Compose CI passed on run `34582877990` / job `103210285835`.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision.
@@ -35,18 +36,18 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
 - Billing PostgreSQL persistence and contract tests passed on CI run `34580507357` / run number `484`; Web lint/build passed on run `34580507412` / run number `420`.
 - Corrected causal OOS/walk-forward fixtures passed the full Python/Compose CI on run `34582674053` / job `103209631487`; Web lint/build passed on run `34582674057` / job `103209631515`.
+- Stress-test verification passed the full Python/Compose CI on run `34582877990` / job `103210285835`.
 - The first causal-research fixture revision failed because its synthetic test strategy emitted a second entry signal; the fixture was corrected rather than weakening the research implementation.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Verify the existing stress-test implementation on the current integrated revision.
-2. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
-3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-4. Complete the full-stack acceptance journey with supplied/real market data.
-5. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
-6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
+2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+3. Complete the full-stack acceptance journey with supplied/real market data.
+4. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
+5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Causal OOS/walk-forward verification is complete and CI-verified. The next unblocked engineering dependency is stress-test verification on the current integrated revision, followed by the final combined research verification. Billing provider integration and real Indian historical-data integration remain blocked until their required external contracts/authorization are supplied.
+The stress-test implementation is now CI-verified on the integrated revision. The next unblocked engineering dependency is the final combined research verification on a single integrated revision. Billing provider integration and real Indian historical-data integration remain blocked until their required external contracts/authorization are supplied.
