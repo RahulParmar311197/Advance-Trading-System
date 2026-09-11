@@ -38,31 +38,24 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 strict out-of-sample evaluator: final holdout is excluded from training and accuracy is calculated only from holdout predictions; implementation and corrected deterministic tests; full integrated M8 CI verification passed on run `34340996500`.
 - M8 inference boundary: explicit fitted-model prediction contract, immutable inference result, batch shape validation, and fail-closed delegation to fitted model prediction; unit tests; full integrated M8 CI verification passed on run `34340996500`.
 - M8 deterministic model versioning implementation: content-addressed version identity includes model class, fitted parameters, exact labeled feature dataset, and explicit training configuration; immutable version record and unit tests; full integrated M8 CI verification passed on run `34340996500`.
-- M9 agent interface: explicit research request/response contracts plus a deterministic research-agent implementation that proposes validation, feature, OOS backtest, and baseline-comparison steps without executing trades or inventing data; unit tests committed.
-- M9 research planner: immutable deterministic research plan over validation, feature, backtest, OOS evaluation, comparison, and reporting steps; unit tests committed.
-- M9 tool registry: deterministic named callable registry with explicit registration, duplicate-name rejection, lexical discovery, and explicit invocation; unit tests committed.
-- M9 historical-data tool: validated provider-backed OHLCV retrieval through the existing ingestion/normalization boundary, preserving provider-supplied rows without synthesis; explicit request/result contracts and fail-closed request/data validation; unit tests committed and authoritative CI verification passed on the preceding M9 revision.
-- M9 feature tool: deterministic EMA/ATR/VWAP calculation over explicitly supplied validated candles, immutable request/result contracts, candle-aligned output, and fail-closed validation; unit tests committed; authoritative Python CI verification passed on run `34344767506`.
-- M9 SMC tool: deterministic orchestration of the existing swing/BOS/MSS/liquidity/FVG detectors over explicitly supplied candles, returning the common structured event contract with fail-closed validation; implementation and unit tests committed. Initial CI caught an invalid monotonic fixture; the fixture was corrected to exercise real swings and a new authoritative run is pending.
-- M9 backtest tool: deterministic execution of a registered strategy through the existing cost/slippage-aware backtest engine, returning trades, metrics, and realized equity from explicitly supplied candles; request validation and unit tests committed. Authoritative CI verification is pending.
+- M9 agent interface, planner, tool registry, historical-data tool, feature tool, SMC tool, backtest tool, walk-forward tool, strategy comparison tool, risk analysis tool, and report tool are implemented with deterministic validation and unit coverage.
+- M9 experiment memory: immutable experiment lessons, deterministic token-overlap recall, stable tie-breaking, duplicate-ID rejection, serialization, and unit coverage.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
 - Python CI run `34340996500` completed successfully; full M8 model/research suite passed with 193 tests.
-- The preceding M9 historical-data revision completed its Python and Web CI successfully before feature-tool implementation.
 - Feature-tool Python CI completed successfully on run `34344767506`.
-- SMC CI run `34346897787` failed with one fixture assertion: the test data was monotonic and therefore produced no swing detections. The implementation itself reached the detector pipeline; the test fixture was corrected in commit `cc67e11b` to include actual local highs/lows.
-- Current branch also contains the Backtest Tool and its tests; authoritative CI for the corrected SMC plus Backtest Tool revision is pending.
-- Local isolated execution is not the authoritative full-suite verification; GitHub Actions is authoritative because this environment is not a Git checkout and outbound GitHub DNS is unavailable from the container.
-- No dedicated Python lint/type-check configuration is currently present in `pyproject.toml`.
+- CI run `34565820493` on the first M9-memory integration revision exposed six pre-existing/integration regressions: `build_equity_curve()` returns mapping records but `packages/ai_agent/backtest.py` indexed them positionally; the SMC fixture still did not produce an event. The run reported 223 passed and 7 failed.
+- Fixed the equity-curve access to use `point["index"]` and replaced the SMC fixture with an oscillating sequence that exercises actual swing/BOS/FVG behavior. A new authoritative CI run for the corrected head is pending.
+- The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
+- No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification for the corrected M9 SMC and Backtest Tool revision.
-5. Continue M9 concrete research tools after verification.
+4. Complete authoritative Python CI verification for the corrected M9 revision.
 
 ## Next dependency
-Complete authoritative Python CI verification for the current SMC + Backtest Tool revision. If green, implement the Walk-forward tool. If CI finds a failure, fix the actual failure before advancing.
+Complete authoritative Python CI verification for the corrected M9 head. If green, continue with integration/hardening work; if CI finds a failure, fix the actual failure before advancing.
