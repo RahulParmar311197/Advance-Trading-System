@@ -38,15 +38,14 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 ## Research verification
 - [x] Causal out-of-sample verification — CI run `34582674053` passed with the corrected fixture; the evaluator fits only the training block and generates holdout signals causally, exposing at most the current test candle.
 - [x] Causal walk-forward verification — the same CI run passed; each rolling window fits only its training block and evaluates signals only against its OOS test block without future test-candle exposure.
-- [ ] Stress-test verification on the integrated revision.
+- [x] Stress-test verification on the integrated revision — CI run `34582877990` passed; tests verify scenario-specific slippage degradation, risk-driven sizing/equity behavior, and invalid stress-parameter rejection.
 
 ## Remaining blockers
-1. Verify the existing stress-test implementation on the integrated revision.
-2. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
-3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-4. Complete the full-stack acceptance journey with supplied/real market data.
-5. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
-6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
+2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+3. Complete the full-stack acceptance journey with supplied/real market data.
+4. Verify walk-forward, out-of-sample, and stress-test implementations together on the final integrated revision.
+5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Critical acceptance test
 A fresh developer must be able to start the stack, load sample NIFTY data, open the dashboard, see 5m candles and SMC events, run the Liquidity MSS FVG backtest, see realistic metrics, and reproduce the experiment from its recorded metadata.
