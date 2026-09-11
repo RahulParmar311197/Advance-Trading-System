@@ -67,17 +67,22 @@ def _fit_strategy(strategy: Strategy, train: list[Candle]) -> Strategy:
 
 def _oos_signals(
     strategy: Strategy,
-    context: list[Candle],
+    candles: list[Candle],
+    train_start: int,
     test_start: int,
     test_end: int,
 ) -> list[Signal]:
-    signals = strategy.signals(context)
+    """Generate test signals causally, never exposing future test candles."""
     result: list[Signal] = []
-    for signal in signals:
-        if test_start <= signal.index < test_end:
+    for global_index in range(test_start, test_end):
+        context = candles[train_start : global_index + 1]
+        for signal in strategy.signals(context):
+            relative_index = global_index - train_start
+            if signal.index != relative_index:
+                continue
             result.append(
                 Signal(
-                    index=signal.index - test_start,
+                    index=global_index - test_start,
                     direction=signal.direction,
                     entry=signal.entry,
                     stop=signal.stop,
@@ -111,8 +116,13 @@ def run_walk_forward(
         train = candles[window.train_start : window.train_end]
         test = candles[window.test_start : window.test_end]
         fitted = _fit_strategy(strategy, train)
-        context = candles[window.train_start : window.test_end]
-        signals = _oos_signals(fitted, context, train_size, train_size + len(test))
+        signals = _oos_signals(
+            fitted,
+            candles,
+            window.train_start,
+            window.test_start,
+            window.test_end,
+        )
         trades = run_backtest(
             test,
             signals,
