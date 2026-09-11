@@ -7,8 +7,9 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from apps.api.app.auth import require_permission
-from apps.api.app.dependencies import get_connection
+from apps.api.app.dependencies import get_cache, get_connection
 from apps.api.app.schemas import CandleResponse
+from packages.cache.redis_cache import CacheError, RedisCache
 from packages.instruments.symbol_map import canonical_symbol
 from packages.market_data.models import Candle
 from packages.smc.bos import detect_bos
@@ -83,6 +84,7 @@ def smc_events(
     end: datetime = Query(...),
     limit: int = Query(default=5000, ge=1, le=50000),
     connection: Any = Depends(get_connection),
+    cache: RedisCache | None = Depends(get_cache),
 ) -> list[dict[str, Any]]:
     try:
         symbol = canonical_symbol(symbol)
@@ -90,6 +92,17 @@ def smc_events(
         raise HTTPException(400, str(exc)) from exc
     if start > end:
         raise HTTPException(400, "start must be <= end")
+
+    cache_key = cache.key("smc-events", symbol=symbol, timeframe=timeframe,
+                          start=start.isoformat(), end=end.isoformat(), limit=limit) if cache else None
+    if cache and cache_key:
+        try:
+            cached = cache.get_json(cache_key)
+            if isinstance(cached, list):
+                return cached
+        except CacheError:
+            pass
+
     data = _load_candles(connection, symbol, timeframe, start, end, limit)
     swings = detect_swings(data)
     events = all_smc_events(
@@ -99,4 +112,10 @@ def smc_events(
         liquidity=detect_liquidity_sweeps(data, swings),
         fvg=detect_fvg(data),
     )
-    return [event.as_dict() for event in events]
+    result = [event.as_dict() for event in events]
+    if cache and cache_key:
+        try:
+            cache.set_json(cache_key, result, ttl_seconds=300)
+        except CacheError:
+            pass
+    return result
