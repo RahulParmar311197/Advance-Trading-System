@@ -46,7 +46,8 @@ def _next_session_start(timestamp: datetime) -> datetime:
 def _next_expected(timestamp: datetime, delta: timedelta) -> datetime:
     candidate = timestamp + delta
     local = candidate.astimezone(IST)
-    if local.time() > MARKET_CLOSE:
+    # 15:30 is the session boundary, not the start of another intraday bar.
+    if local.time() >= MARKET_CLOSE:
         return _next_session_start(timestamp)
     if not is_market_session(candidate):
         if local.time() < MARKET_OPEN:
