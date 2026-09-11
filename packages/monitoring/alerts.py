@@ -39,12 +39,13 @@ class LoggingAlertNotifier:
     def notify(self, alert: Alert) -> AlertDelivery:
         try:
             self._logger.error(
-                "operational_alert",
+                "operational_alert: %s",
+                alert.message,
                 extra={
                     "alert_id": alert.alert_id,
-                    "severity": alert.severity,
-                    "status": alert.status,
-                    "message": alert.message,
+                    "alert_severity": alert.severity,
+                    "alert_status": alert.status,
+                    "alert_message": alert.message,
                 },
             )
         except Exception as exc:
