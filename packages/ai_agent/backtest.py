@@ -61,7 +61,7 @@ def run_backtest_tool(
     )
     metrics = summarize(list(trades), request.capital)
     equity_curve = tuple(
-        (point[0], point["equity"])
+        (point["index"], point["equity"])
         for point in build_equity_curve(list(trades), request.capital)
     )
     return BacktestResult(
