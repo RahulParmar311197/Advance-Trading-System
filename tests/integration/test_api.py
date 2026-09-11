@@ -38,3 +38,15 @@ def test_database_operational_failure_returns_fail_closed_503():
     assert isinstance(response, JSONResponse)
     assert response.status_code == 503
     assert response.body == b'{"detail":"database unavailable","error":"OperationalError"}'
+
+
+def test_database_timeout_returns_same_fail_closed_response():
+    from apps.api.app.main import handle_database_unavailable
+
+    request = Request({"type": "http", "method": "GET", "path": "/health", "headers": []})
+    response = asyncio.run(
+        handle_database_unavailable(request, psycopg.OperationalError("connection timed out"))
+    )
+
+    assert response.status_code == 503
+    assert response.body == b'{"detail":"database unavailable","error":"OperationalError"}'
