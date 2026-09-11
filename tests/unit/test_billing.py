@@ -2,7 +2,12 @@ from datetime import datetime, timezone
 
 import pytest
 
-from packages.saas.billing import BillingContractError, BillingEvent, BillingService, InMemoryBillingEventSink
+from packages.saas.billing import (
+    BillingContractError,
+    BillingEvent,
+    BillingService,
+    InMemoryBillingEventSink,
+)
 
 
 def event(event_id: str = "evt_1") -> BillingEvent:
@@ -44,15 +49,16 @@ def test_billing_service_rejects_reused_event_id_with_different_payload() -> Non
     service = BillingService(sink)
     service.ingest(event())
 
+    conflicting = BillingEvent(
+        event_id="evt_1",
+        organization_id="org_2",
+        event_type="subscription.updated",
+        occurred_at=event().occurred_at,
+        provider_reference="provider_ref_2",
+        status="active",
+    )
     with pytest.raises(BillingContractError, match="different payload"):
-        service.ingest(event("evt_1").__class__(
-            event_id="evt_1",
-            organization_id="org_2",
-            event_type="subscription.updated",
-            occurred_at=event().occurred_at,
-            provider_reference="provider_ref_2",
-            status="active",
-        ))
+        service.ingest(conflicting)
 
 
 def test_billing_event_requires_identity_fields() -> None:
