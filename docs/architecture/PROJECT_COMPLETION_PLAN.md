@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening includes explicit paper partial fills, rejected-order behavior, and typed `BrokerError` fail-closed handling. Network/database failure handling, bounded database connection timeout, session-aware missing-candle detection, timestamp validation, and recovery-state tests are implemented. The latest authoritative CI for the current branch is being used to verify the integrated hardening. Next dependency is duplicate-tick coverage where a real tick model exists, followed by remaining production/SaaS controls.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS has now started with a real organization-scoped API-key authentication/authorization boundary and database schema for organizations, users, API keys, and audit logs. Next dependency is authoritative CI verification of the current M11 security slice, followed by integration of authentication into API routes and persistent key/audit repositories.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -69,7 +69,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 execut
 - [x] Parameter capture
 - [x] Walk-forward — rolling train/test window engine implemented with OOS execution and tests; CI verification pending
 - [x] Out-of-sample — explicit final holdout evaluator implemented with train-only fitting, holdout-only execution and tests; CI verification pending
-- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same strategy/data, with unit tests; CI verification pending
+- [x] Stress tests — deterministic scenario runner varies explicit slippage and risk assumptions against the same candles and strategy, with unit tests; CI verification pending
 - [x] Strategy comparison — deterministic comparison of reproducible experiment metrics, ranked by return then drawdown; API integration and JSON-safe output added
 - [x] Research report generation — factual Markdown report generated from persisted comparison results; API and dashboard integration added
 - [x] Portfolio exposure aggregation — deterministic symbol-level absolute notional exposure
@@ -148,11 +148,13 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 execut
 - [x] Kill switch integration
 
 ### M11 Production/SaaS
-- [ ] Authentication
-- [ ] Authorization
-- [ ] Organizations
-- [ ] API keys
-- [ ] Audit logs
+- [x] Authentication/credential verification boundary — organization-scoped API-key digest verification and fail-closed invalid/inactive handling
+- [x] Authorization boundary — role permissions plus organization isolation
+- [x] Organizations — database schema introduced
+- [x] API keys — database schema introduced; secrets stored as digests in the persistence model
+- [x] Audit logs — append-only event construction and persistence boundary
+- [ ] Integrate authentication into API routes
+- [ ] Persistent user/organization/API-key repositories
 - [ ] Redis/cache
 - [ ] Queue/workers
 - [ ] Scheduled jobs
