@@ -24,24 +24,23 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M11 alerts: readiness health-transition alerts through the application logging boundary with explicit delivery outcomes and transition de-duplication/recovery signaling.
 - M11 error tracking: normalized exception events with HTTP request context and traceback-aware application logging, fail-closed database-error handling, and generic 500 handling without leaking exception text.
 - M11 data-quality monitoring: immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage.
-- M11 deployment implementation: provider-neutral production Compose topology with explicit secrets/configuration, dependency health gates, restart policies, internal database/Redis networking, production configuration validation, CI Compose validation, and an operational deployment/rollback runbook. Production platform/TLS/secret-manager choices remain intentionally unclaimed.
+- M11 deployment: provider-neutral production Compose topology with explicit secrets/configuration, dependency health gates, restart policies, internal database/Redis networking, production configuration validation, CI Compose validation, and an operational deployment/rollback runbook. Production platform/TLS/secret-manager choices remain intentionally unclaimed.
 
 ## Verification
 - Alerts and web lint/build passed on the recorded M11 alert revision.
 - Error tracking Python CI passed on run `34577482109` / job `103193146616`.
 - Data-quality monitoring CI passed on run `34578034504` / job `103194909226`.
-- Deployment implementation CI is currently running on commit `e3e21bab8382e8ac9a4b120d5034ba28f1369b49`; it must pass before deployment is marked complete.
+- Deployment implementation passed Python/Compose CI on run `34578717765` / job `103197072683`.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
 
 ## Remaining blockers
-1. Verify the current deployment implementation in CI.
-2. Complete M11 billing hooks.
-3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-4. Complete the full-stack acceptance journey with supplied/real market data.
-5. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
-6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Complete M11 billing hooks.
+2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+3. Complete the full-stack acceptance journey with supplied/real market data.
+4. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
+5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Next dependency
-Deployment is implemented and awaiting CI verification. If verification passes, billing hooks are the next M11 dependency. Billing must use an explicitly selected/authorized provider or a real internal billing contract; do not fabricate payment events, credentials, or provider behavior.
+M11 deployment is CI-verified and complete. Billing hooks are the next dependency. Billing must use an explicitly selected/authorized provider or a real internal billing contract; do not fabricate payment events, credentials, or provider behavior.
