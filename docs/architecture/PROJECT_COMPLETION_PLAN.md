@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS has a real organization-scoped API-key verification boundary, digest-only persistent API-key metadata, role authorization, protected API routes, PostgreSQL repositories, organization-scoped experiment queries, and a Redis-backed derived-data cache. Route-scoping and Redis/cache tests are implemented; authoritative Python CI verification is still pending on the current revision. Next dependency after verification is queue/workers.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, and a Redis-backed derived-data cache. The current security/scoping/cache slice is Python-CI verified. Next dependency is queue/workers.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -156,8 +156,8 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Audit logs — append-only event construction and persistence boundary
 - [x] Integrate authentication into API routes — persistent API-key lookup, fail-closed 401 handling, role-based 403 handling, protected market-data/backtest/experiment routes, and integration tests
 - [x] Persistent user/organization/API-key repositories — parameterized PostgreSQL create/get/revoke boundaries with unit coverage
-- [ ] Route-level resource scoping for organization-owned resources — implemented for experiment manifests/results/comparison/report queries with fail-closed organization arguments and tests; CI verification pending
-- [ ] Redis/cache — implemented as a namespaced JSON Redis adapter, optional API dependency, SMC-event read-through cache, local Redis service, and unit tests; CI verification pending
+- [x] Route-level resource scoping for organization-owned resources — experiment manifests/results/comparison/report queries require the authenticated organization and fail closed for missing scope; Python CI verified on run `34572595333` / job `103177768789`
+- [x] Redis/cache — namespaced JSON Redis adapter, bounded TTL, optional API dependency, SMC-event read-through cache, local Redis service, and unit coverage; Python CI verified on run `34572595333` / job `103177768789`
 - [ ] Queue/workers
 - [ ] Scheduled jobs
 - [ ] Monitoring
