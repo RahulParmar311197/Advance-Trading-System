@@ -96,6 +96,18 @@ def test_market_data_window_rejects_naive_end():
         _validate_window(datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc), datetime(2026, 1, 1, 9, 20))
 
 
+def test_market_data_window_rejects_empty_or_reversed_range():
+    from apps.api.app.routes.market_data import _validate_window
+
+    start = datetime(2026, 1, 1, 9, 15, tzinfo=timezone.utc)
+
+    with pytest.raises(HTTPException, match="end must be after start"):
+        _validate_window(start, start)
+
+    with pytest.raises(HTTPException, match="end must be after start"):
+        _validate_window(start, datetime(2026, 1, 1, 9, 10, tzinfo=timezone.utc))
+
+
 def test_database_operational_failure_returns_fail_closed_503():
     from apps.api.app.main import handle_database_unavailable
 
