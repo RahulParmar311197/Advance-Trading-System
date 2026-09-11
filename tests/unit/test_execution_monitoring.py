@@ -84,7 +84,13 @@ def test_reconciliation_failure_blocks_new_orders() -> None:
 
 def test_recovery_requires_a_clean_reconciliation_before_unblocking() -> None:
     monitor = ExecutionMonitor(timedelta(minutes=5))
-    expected = make_order("A", OrderStatus.FILLED, NOW)
+    expected = make_order(
+        "A",
+        OrderStatus.FILLED,
+        NOW,
+        filled_quantity=Decimal("1"),
+        average_fill_price=Decimal("25000"),
+    )
     mismatched = make_order(
         "A",
         OrderStatus.FILLED,
