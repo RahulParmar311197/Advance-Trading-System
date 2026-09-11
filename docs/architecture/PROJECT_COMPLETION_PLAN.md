@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-The M9 AI research-agent dependency chain is being implemented incrementally. The deterministic walk-forward, strategy-comparison, risk-analysis, and factual report tools now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next unfinished M9 dependency is experiment memory.
+The M9 AI research-agent dependency chain is implemented incrementally. Deterministic walk-forward, strategy-comparison, risk-analysis, factual report, and experiment-memory components now have implementations and unit coverage. CI verification remains pending until GitHub Actions reports a successful run for the current head. The next continuation task is authoritative CI verification; after green, continue with integration/hardening work rather than inventing another M9 placeholder.
 
 ## Milestones
 
@@ -125,7 +125,7 @@ The M9 AI research-agent dependency chain is being implemented incrementally. Th
 - [x] Strategy comparison tool — deterministic comparison of explicitly registered strategies over identical supplied candles, ranked by total return, drawdown, then name; unit tests added; CI verification pending
 - [x] Risk analysis tool — deterministic analysis of realized drawdown, worst trade loss, loss streak, position notional, and cost fraction against explicit caller-supplied thresholds; unit tests added; CI verification pending
 - [x] Report tool — factual Markdown report generated solely from supplied strategy-comparison results, with explicit limitations and unit tests; CI verification pending
-- [ ] Experiment memory
+- [x] Experiment memory — immutable experiment lessons with fail-closed validation, deterministic token-overlap recall, stable tie-breaking, and unit tests; CI verification pending
 
 ### M10 Paper/live execution
 - [ ] Broker interface
