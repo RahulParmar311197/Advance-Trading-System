@@ -20,6 +20,7 @@ from packages.strategies.registry import get_strategy
 from research.experiments.comparison import compare_results
 from research.experiments.manifest import ExperimentManifest
 from research.experiments.repository import ExperimentRepository
+from research.experiments.runner import ExperimentRunner
 from research.reports.generator import generate_report
 
 router = APIRouter(
@@ -76,6 +77,26 @@ def _manifest_for(request: BacktestRequest, data_version: str, experiment_id: st
         transaction_costs={"commission_rate": str(Decimal("0.0003"))},
         slippage={"bps": str(request.slippage_bps)}, random_seed=None,
     )
+
+
+def _request_from_manifest(manifest: ExperimentManifest) -> BacktestRequest:
+    parameters = manifest.parameters
+    try:
+        symbol = manifest.universe[0]
+        return BacktestRequest(
+            symbol=symbol,
+            timeframe=manifest.timeframe,
+            start=manifest.start_date,
+            end=manifest.end_date,
+            strategy=manifest.strategy_version.rsplit(":v", 1)[0],
+            initial_capital=Decimal(parameters["initial_capital"]),
+            risk_per_trade=Decimal(parameters["risk_per_trade"]),
+            reward_risk=Decimal(parameters["reward_risk"]),
+            slippage_bps=Decimal(parameters["slippage_bps"]),
+            limit=int(parameters["limit"]),
+        )
+    except (IndexError, KeyError, TypeError, ValueError) as exc:
+        raise HTTPException(500, "stored experiment manifest is invalid") from exc
 
 
 def _comparison_rows(repository: ExperimentRepository, organization_id: str, limit: int) -> list[dict[str, Any]]:
@@ -146,13 +167,17 @@ def rerun_experiment(experiment_id: str, principal: Principal = Depends(require_
     manifest = repository.get_manifest(experiment_id, principal.organization_id)
     if manifest is None:
         raise HTTPException(404, "experiment not found")
-    parameters = manifest.parameters
-    request = BacktestRequest(symbol=manifest.universe[0], timeframe=manifest.timeframe, start=manifest.start_date,
-        end=manifest.end_date, strategy=manifest.strategy_version.rsplit(":v", 1)[0],
-        initial_capital=Decimal(parameters["initial_capital"]), risk_per_trade=Decimal(parameters["risk_per_trade"]),
-        reward_risk=Decimal(parameters["reward_risk"]), slippage_bps=Decimal(parameters["slippage_bps"]), limit=int(parameters["limit"]))
-    result, data_version = _run_request(request, connection)
-    if data_version != manifest.data_version:
-        raise HTTPException(409, "stored data version is no longer available for the requested range")
-    repository.save_results(experiment_id, principal.organization_id, _json_safe(result["metrics"]), _json_safe(result["trades"]))
-    return {"experiment_id": experiment_id, "replayed": True, "result": result}
+
+    request = _request_from_manifest(manifest)
+    runner = ExperimentRunner(repository)
+
+    def execute(stored_manifest: ExperimentManifest) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        result, data_version = _run_request(request, connection)
+        if data_version != stored_manifest.data_version:
+            raise HTTPException(409, "stored data version is no longer available for the requested range")
+        return _json_safe(result["metrics"]), _json_safe(result["trades"])
+
+    run_result = runner.rerun(experiment_id, principal.organization_id, execute)
+    result, _ = _run_request(request, connection)
+    return {"experiment_id": experiment_id, "replayed": True,
+            "result": {**result, "metrics": run_result.metrics, "trades": run_result.trades}}
