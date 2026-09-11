@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, CI-verified operational monitoring/readiness checks, operational alert transitions, credential-free error tracking, and candle-window data-quality assessment with unit coverage. Next dependency is deployment.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, CI-verified operational monitoring/readiness checks, operational alert transitions, credential-free error tracking, candle-window data-quality assessment with unit coverage, and a provider-neutral production Compose deployment with fail-closed configuration validation and runbook. Deployment CI verification is the immediate gate; billing hooks follow.
 
 ### M11 Production/SaaS
 - [x] Authentication/credential verification boundary
@@ -18,7 +18,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Alerts
 - [x] Error tracking
 - [x] Data-quality monitoring — immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage
-- [ ] Deployment
+- [ ] Deployment — implementation complete; awaiting CI verification on the current revision
 - [ ] Billing hooks
 
 ### M12 Hardening
@@ -36,11 +36,12 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Recovery/runbook tests
 
 ## Remaining blockers
-1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
-2. Complete the full-stack acceptance journey with supplied/real market data.
-3. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
-4. Complete M11 deployment and billing hooks.
-5. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
+1. Verify the current deployment implementation in CI.
+2. Complete M11 billing hooks using an explicitly selected/authorized provider or real internal billing contract.
+3. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
+4. Complete the full-stack acceptance journey with supplied/real market data.
+5. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
+6. Add duplicate-tick tests only after a concrete tick/trade observation model is introduced.
 
 ## Critical acceptance test
 A fresh developer must be able to start the stack, load sample NIFTY data, open the dashboard, see 5m candles and SMC events, run the Liquidity MSS FVG backtest, see realistic metrics, and reproduce the experiment from its recorded metadata.
