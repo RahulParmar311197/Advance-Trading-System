@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening includes explicit paper partial fills, rejected-order behavior, and typed `BrokerError` fail-closed handling. The broker-failure contract has passed authoritative CI. Network/database failure handling is now implemented with tests and is awaiting authoritative CI verification. Next dependency is API-timeout/recovery hardening after this verification.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 execution hardening includes explicit paper partial fills, rejected-order behavior, and typed `BrokerError` fail-closed handling. Network/database failure handling, bounded database connection timeout, session-aware missing-candle detection, timestamp validation, and recovery-state tests are implemented. The latest authoritative CI for the current branch is being used to verify the integrated hardening. Next dependency is duplicate-tick coverage where a real tick model exists, followed by remaining production/SaaS controls.
 
 ### M10 Paper/live execution — current state
 - Broker interface: complete and CI verified.
@@ -164,18 +164,18 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 execut
 - [ ] Billing hooks
 
 ### M12 Hardening
-- [ ] Bad-data tests
-- [ ] Missing-candle tests
-- [ ] Duplicate-tick tests
-- [ ] Timestamp tests
-- [ ] Market-closure tests
-- [ ] Network failure tests — live broker translates connection/timeout/socket failures to typed `BrokerError`; tests committed, authoritative CI pending
-- [ ] Database failure tests — API translates PostgreSQL operational failures to fail-closed HTTP 503; integration test committed, authoritative CI pending
+- [x] Bad-data tests — OHLC range, negative volume, duplicate/out-of-order timestamps, and timezone-awareness coverage
+- [x] Missing-candle tests — session-aware expected-candle detection without reporting overnight/weekend gaps
+- [ ] Duplicate-tick tests — blocked until a concrete tick/trade observation model is introduced; do not fabricate one
+- [x] Timestamp tests — candle validation rejects naive timestamps
+- [x] Market-closure tests — Indian weekday/session boundaries and timezone conversion
+- [x] Network failure tests — live broker translates connection/timeout/socket failures to typed `BrokerError`; authoritative Python CI verified previously
+- [x] Database failure tests — API translates PostgreSQL operational failures to fail-closed HTTP 503; bounded connection timeout added
 - [x] Broker failure tests — typed `BrokerError` contract and OrderManager fail-closed propagation; authoritative Python CI verified on run `34567836083`
 - [x] Partial-fill tests — explicit paper partial-fill accumulation, weighted average price, and overfill rejection; authoritative Python CI verified on integrated revision `14533c19`
 - [x] Rejected-order tests — rejected broker state propagates through OrderManager and fail-closed fill/cancel behavior; authoritative Python CI verified on integrated revision `14533c19`
-- [ ] API timeout tests
-- [ ] Recovery/runbook tests
+- [x] API timeout tests — database connection timeout is bounded and timeout failures return HTTP 503
+- [x] Recovery/runbook tests — execution remains blocked for unresolved reconciliation and becomes healthy only after clean reconciliation
 
 ## Critical acceptance test
 A fresh developer must be able to start the stack, load sample NIFTY data, open the dashboard, see 5m candles and SMC events, run the Liquidity MSS FVG backtest, see realistic metrics, and reproduce the experiment from its recorded metadata.
