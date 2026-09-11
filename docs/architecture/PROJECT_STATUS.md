@@ -39,7 +39,9 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M8 deterministic model versioning implementation: content-addressed fitted-model identity including exact dataset, training configuration and model parameters; deterministic provenance tests; full integrated M8 CI verification passed on run `34340996500`.
 - M9 agent interface, planner, tool registry, historical-data tool, feature tool, SMC tool, backtest tool, walk-forward tool, strategy comparison tool, risk analysis tool, report tool, and experiment memory are implemented with deterministic validation and unit coverage.
 - M10 broker-neutral execution contract: validated broker-neutral order contract and abstract submit/cancel/query boundary in `packages/execution/broker.py`, with authoritative CI verification on head `e1eae697`.
-- M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, no generated market data, and unit tests; authoritative CI verification pending.
+- M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, simulator integration, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
+- M10 order manager: thin broker application boundary for submit/cancel/status and fail-closed fill requirement, with unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
+- M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict OHLC/timestamp/symbol validation, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -47,7 +49,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Feature-tool Python CI completed successfully on run `34344767506`.
 - Corrected M9 head `f990a18bb6e53425ef30c969e5a17b52efb94874` passed authoritative Python job `34565942337` and web build/lint job `34565942410`.
 - M10 broker-interface head `e1eae697b58ec3aeead48a6807235d837da86aaa` passed Python and web CI jobs `103158803979` and `103158804089`.
-- Paper broker unit tests were added; authoritative GitHub Actions verification is pending.
+- Integrated M10 revision `e37d39a839ed1a8581cf47d2e3ef85c271e29b68` passed authoritative Python job `103160497826` / run `34566804336` and web build/lint job `103160497747` / run `34566804337`.
+- A private isolated execution-simulator test run passed 1/1, while the repository-wide authoritative result is the GitHub Actions run above.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -55,9 +58,10 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 ## Remaining blockers
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
-3. Verify the research-validation implementations in CI on their current integrated revision.
-4. Complete authoritative Python CI verification for the paper-broker revision.
-5. Implement the order manager after paper-broker verification.
+3. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
+4. Implement reconciliation against broker-observed orders/fills.
+5. Add live adapter only behind a feature flag after paper validation.
+6. Add execution monitoring and kill-switch integration.
 
 ## Next dependency
-Verify the paper-broker revision in GitHub Actions. If green, implement the order manager; if red, fix the actual failure before advancing.
+Implement reconciliation: define broker-observed versus locally expected order/fill state, detect mismatches deterministically, fail closed on unresolved discrepancies, add unit/integration tests, then verify the integrated revision in CI before advancing.
