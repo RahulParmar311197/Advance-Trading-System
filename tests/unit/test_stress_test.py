@@ -23,11 +23,14 @@ def test_stress_test_runs_same_strategy_under_multiple_scenarios():
     results = run_stress_test(candles(), FixedTargetStrategy(), [
         StressScenario("base", Decimal("0"), Decimal("0.005")),
         StressScenario("high_slippage", Decimal("100"), Decimal("0.005")),
+        StressScenario("higher_risk", Decimal("0"), Decimal("0.01")),
     ])
-    assert [r.scenario.name for r in results] == ["base", "high_slippage"]
+    assert [r.scenario.name for r in results] == ["base", "high_slippage", "higher_risk"]
     assert all(len(r.trades) == 1 for r in results)
     assert results[0].ending_equity > results[1].ending_equity
     assert results[0].metrics["total_return"] > results[1].metrics["total_return"]
+    assert results[2].trades[0].quantity > results[0].trades[0].quantity
+    assert results[2].ending_equity > results[0].ending_equity
 
 
 def test_stress_test_rejects_invalid_scenarios():
@@ -37,3 +40,10 @@ def test_stress_test_rejects_invalid_scenarios():
         assert "risk_per_trade" in str(exc)
     else:
         raise AssertionError("invalid stress scenario was accepted")
+
+    try:
+        run_stress_test(candles(), FixedTargetStrategy(), [StressScenario("invalid_slippage", Decimal("-1"), Decimal("0.005"))])
+    except ValueError as exc:
+        assert "slippage_bps" in str(exc)
+    else:
+        raise AssertionError("negative slippage was accepted")
