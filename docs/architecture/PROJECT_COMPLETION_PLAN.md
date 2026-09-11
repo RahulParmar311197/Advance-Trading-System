@@ -4,7 +4,7 @@
 Turn the architecture in the project source into a continuously runnable Indian quantitative trading research platform, then extend it to paper/live execution and SaaS.
 
 ## Current continuation state
-M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, CI-verified operational monitoring/readiness checks, operational alert transitions, credential-free error tracking, candle-window data-quality assessment with unit coverage, and a provider-neutral production Compose deployment with fail-closed configuration validation and runbook. Deployment is CI-verified; billing hooks follow.
+M10 execution monitoring and kill-switch integration are CI-verified. M12 hardening is implemented; duplicate-tick testing remains intentionally blocked because the repository has no concrete tick/trade observation model. M11 production/SaaS now has organization-scoped API-key authentication, role authorization, persistent organization/user/API-key repositories, organization-scoped experiment resources, Redis caching, a recoverable Redis-backed job queue/worker, an interval scheduler that enqueues explicit recurring work, CI-verified operational monitoring/readiness checks, operational alert transitions, credential-free error tracking, candle-window data-quality assessment with unit coverage, a provider-neutral production Compose deployment with fail-closed configuration validation and runbook, and a persistent provider-neutral billing-event boundary. Deployment and billing persistence are CI-verified; a production provider adapter remains blocked pending authorization.
 
 ### M11 Production/SaaS
 - [x] Authentication/credential verification boundary
@@ -19,7 +19,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Error tracking
 - [x] Data-quality monitoring — immutable candle-window assessment built on canonical OHLCV validation and session-aware missing-candle detection, with unit coverage
 - [x] Deployment — provider-neutral production Compose topology, fail-closed production configuration validation, health-gated startup, CI Compose validation, and deployment/rollback runbook; no cloud provider is claimed
-- [ ] Billing hooks
+- [ ] Billing hooks — normalized billing-event contract, PostgreSQL persistence, and idempotency tests are complete; authenticated provider adapter is blocked until an explicitly selected/authorized provider or real internal billing contract is supplied
 
 ### M12 Hardening
 - [x] Bad-data tests
@@ -36,7 +36,7 @@ M10 execution monitoring and kill-switch integration are CI-verified. M12 harden
 - [x] Recovery/runbook tests
 
 ## Remaining blockers
-1. Complete M11 billing hooks using an explicitly selected/authorized provider or real internal billing contract.
+1. Select and authorize a production billing provider or supply the real internal billing contract, then implement its authenticated adapter.
 2. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 3. Complete the full-stack acceptance journey with supplied/real market data.
 4. Verify walk-forward, out-of-sample, and stress-test implementations on the current integrated revision where checklist CI verification remains pending.
