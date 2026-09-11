@@ -41,7 +41,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - M10 broker-neutral execution contract: validated broker-neutral order contract and abstract submit/cancel/query boundary in `packages/execution/broker.py`, with authoritative CI verification on head `e1eae697`.
 - M10 deterministic paper broker: explicit-observation-driven market/limit/stop order handling, cancel/query lifecycle, simulator integration, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
 - M10 order manager: thin broker application boundary for submit/cancel/status and fail-closed fill requirement, with unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
-- M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict OHLC/timestamp/symbol validation, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
+- M10 execution simulator: deterministic candle-based market/limit/stop fill model with explicit slippage and stop-gap handling, strict symbol/timestamp/OHLC validation, no generated market data, and unit tests; authoritative Python/web CI verification passed on integrated revision `e37d39a8`.
+- M10 reconciliation: deterministic expected-versus-observed order-state comparison covering missing/unexpected orders, status differences, fill quantity/price differences, and duplicate-ID fail-closed validation; unit tests; authoritative Python/web CI verification passed on revision `9eb5c0e6`.
 - Web lint configuration and patched supported Next.js dependency; workflow invokes ESLint directly.
 
 ## Verification
@@ -50,7 +51,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 - Corrected M9 head `f990a18bb6e53425ef30c969e5a17b52efb94874` passed authoritative Python job `34565942337` and web build/lint job `34565942410`.
 - M10 broker-interface head `e1eae697b58ec3aeead48a6807235d837da86aaa` passed Python and web CI jobs `103158803979` and `103158804089`.
 - Integrated M10 revision `e37d39a839ed1a8581cf47d2e3ef85c271e29b68` passed authoritative Python job `103160497826` / run `34566804336` and web build/lint job `103160497747` / run `34566804337`.
-- A private isolated execution-simulator test run passed 1/1, while the repository-wide authoritative result is the GitHub Actions run above.
+- Reconciliation revision `9eb5c0e632158f5cf7a64d27782e7050095e859b` passed authoritative Python job `103160912873` / run `34566947165` and web build/lint job `103160912729` / run `34566947121`.
+- A private isolated execution-simulator test run passed 1/1, while repository-wide authoritative results are the GitHub Actions runs above.
 - The local container cannot clone the repository because outbound GitHub DNS is unavailable; GitHub Actions is therefore the authoritative full-suite test environment.
 - No dedicated Python lint/type-check configuration is present in `pyproject.toml`; Web lint is configured separately.
 - No real market-data credentials are committed and no fabricated market data/performance is used.
@@ -59,9 +61,8 @@ The repository has a runnable Python/FastAPI foundation, deterministic research 
 1. Configure an authorized real Indian historical-data service and validate its response contract with real provider data.
 2. Run the full-stack acceptance journey with supplied/real market data.
 3. Verify the research-validation implementations in CI on their current integrated revision where prior entries still say pending.
-4. Implement reconciliation against broker-observed orders/fills.
-5. Add live adapter only behind a feature flag after paper validation.
-6. Add execution monitoring and kill-switch integration.
+4. Add live adapter only behind a feature flag after paper validation.
+5. Add execution monitoring and kill-switch integration.
 
 ## Next dependency
-Implement reconciliation: define broker-observed versus locally expected order/fill state, detect mismatches deterministically, fail closed on unresolved discrepancies, add unit/integration tests, then verify the integrated revision in CI before advancing.
+Implement the live broker adapter boundary behind a disabled-by-default feature flag. It must reuse the stable `Broker` contract, require explicit configuration/credentials, fail closed when disabled or incomplete, and include tests that prove the default path cannot submit live orders.
