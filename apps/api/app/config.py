@@ -14,6 +14,9 @@ class Settings(BaseModel):
         gt=0,
     )
     code_version: str = os.getenv("CODE_VERSION", "api-0.1.0")
+    # Format: key_id|organization_id|user_id|role|sha256_digest|active;...
+    # Only digests are accepted here; plaintext API-key secrets are never configured or persisted.
+    api_key_records: str = os.getenv("API_KEY_RECORDS", "")
 
 
 settings = Settings()
